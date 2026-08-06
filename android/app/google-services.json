@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "160917654290",
+    "project_id": "lingomanage",
+    "storage_bucket": "lingomanage.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:160917654290:android:1f49658cceeacf97b2c1cb",
+        "android_client_info": {
+          "package_name": "com.dysaproject.lingo_manage"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCvXN9Io-hMNtPXTGMUUuY--P02LpyxPU8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
