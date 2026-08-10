@@ -48,7 +48,7 @@ Widget textFieldWidget({
           ),
           focusedBorder: OutlineInputBorder(
             borderSide: BorderSide(
-              color: AppColors.blueCard.withAlpha(100),
+              color: AppColors.primary.withAlpha(100),
               width: 2,
             ),
           ),
@@ -86,7 +86,7 @@ Widget textFieldWidget({
             borderSide: BorderSide(color: Colors.grey, width: 1.5),
           ),
           focusedBorder: const UnderlineInputBorder(
-            borderSide: BorderSide(color: AppColors.blueCard, width: 2),
+            borderSide: BorderSide(color: AppColors.primary, width: 2),
           ),
         ),
       );

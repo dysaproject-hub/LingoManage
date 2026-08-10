@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:lingo_manage/core/constants/app_colors.dart';
 
-Widget textPagratiNarrow(
+Widget textBaloo2(
   String text, {
   TextAlign textAlign = TextAlign.left,
   Color color = AppColors.black,
@@ -11,12 +12,17 @@ Widget textPagratiNarrow(
   return Text(
     text,
     textAlign: textAlign,
-    style: TextStyle(
-      fontFamily: 'PragatiNarrow',
+    style: GoogleFonts.baloo2(
       fontSize: fontSize,
       fontWeight: fontWeight,
       color: color,
     ),
+    // style: TextStyle(
+    //   fontFamily: 'PragatiNarrow',
+    //   fontSize: fontSize,
+    //   fontWeight: fontWeight,
+    //   color: color,
+    // ),
   );
 }
 
@@ -26,17 +32,23 @@ Widget textPoppins(
   Color color = AppColors.black,
   double fontSize = 12,
   FontWeight fontWeight = FontWeight.w400,
-  TextDecoration textDecoration = TextDecoration.none
+  TextDecoration textDecoration = TextDecoration.none,
 }) {
   return Text(
     text,
     textAlign: textAlign,
-    style: TextStyle(
+    style: GoogleFonts.poppins(
       decoration: textDecoration,
-      fontFamily: 'Poppins',
       fontSize: fontSize,
       fontWeight: fontWeight,
       color: color,
     ),
+    // style: TextStyle(
+    //   decoration: textDecoration,
+    //   fontFamily: 'Poppins',
+    //   fontSize: fontSize,
+    //   fontWeight: fontWeight,
+    //   color: color,
+    // ),
   );
 }

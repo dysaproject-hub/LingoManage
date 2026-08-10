@@ -14,6 +14,7 @@ class AuthGate extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    debugPrint("Auth Rebuild");
     final authState = ref.watch(authStateProvider);
 
     return authState.when(

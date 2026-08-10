@@ -93,3 +93,55 @@ class CustomIconButton extends StatelessWidget {
     );
   }
 }
+
+class FlexibleButton extends StatelessWidget {
+  final String text;
+  final Color textColor;
+  final Color bgColor;
+  final double fontSize;
+  final FontWeight fontWeight;
+  final BorderRadius borderRadius;
+  final VoidCallback onPressed;
+  final double width;
+  final double paddingVertical;
+  final double paddingHorizontal;
+
+  const FlexibleButton({
+    super.key,
+    required this.text,
+    required this.textColor,
+    required this.bgColor,
+    required this.fontSize,
+    required this.fontWeight,
+    required this.borderRadius,
+    required this.onPressed,
+    required this.width,
+    this.paddingVertical = 8,
+    this.paddingHorizontal = 16,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onPressed,
+      child: Container(
+        width: width,
+        decoration: BoxDecoration(color: bgColor, borderRadius: borderRadius),
+        child: Center(
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: paddingHorizontal,
+              vertical: paddingVertical,
+            ),
+            child: textPoppins(
+              text,
+              fontSize: fontSize,
+              fontWeight: fontWeight,
+              color: textColor,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

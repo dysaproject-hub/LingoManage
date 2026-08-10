@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:lingo_manage/core/models/app_users.dart';
-import 'package:lingo_manage/core/utils/firebase_exceptions_message.dart';
 import 'package:lingo_manage/features/auth/data/datasources/auth_datasources.dart';
 
 class AuthRepository {
@@ -16,11 +15,7 @@ class AuthRepository {
     required String email,
     required String password,
   }) async {
-    try {
       return await _datasource.signIn(email, password);
-    } on FirebaseAuthException catch (e) {
-      throw FirebaseExceptionMessage.auth(e);
-    }
   }
 
   // REGISTER Admin
@@ -32,7 +27,6 @@ class AuthRepository {
     required String phone,
     required String courseName,
   }) async {
-    try {
       return await _datasource.registerAdmin(
         email: email,
         password: password,
@@ -43,9 +37,6 @@ class AuthRepository {
         subscriptionStatus: 'free',
         studentLimit: 15,
       );
-    } on FirebaseAuthException catch (e) {
-      throw FirebaseExceptionMessage.auth(e);
-    }
   }
 
   // REGISTER STUDENT
@@ -56,7 +47,6 @@ class AuthRepository {
     required String nickname,
     required String phone,
   }) async {
-    try {
       return await _datasource.registerStudent(
         email: email,
         password: password,
@@ -64,9 +54,6 @@ class AuthRepository {
         nickname: nickname,
         phone: phone,
       );
-    } on FirebaseAuthException catch (e) {
-      throw FirebaseExceptionMessage.auth(e);
-    }
   }
 
   // LOGOUT
