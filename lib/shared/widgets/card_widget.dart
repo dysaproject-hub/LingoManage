@@ -90,7 +90,7 @@ class CardCourseWidget extends StatelessWidget {
                   PopupMenuItem(
                     value: "delete",
                     child: textPoppins(
-                      "Hapus",
+                      "Delete",
                       color: AppColors.black,
                       fontSize: 12,
                     ),

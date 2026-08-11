@@ -144,6 +144,7 @@ class _ProfileUserState extends ConsumerState<ProfileUser> {
                           if (!context.mounted) return;
 
                           Navigator.pop(context);
+                          Navigator.pop(context);
                         });
                       },
                     ),

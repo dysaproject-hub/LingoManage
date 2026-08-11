@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:lingo_manage/features/auth/presentation/providers/auth_controller.dart';
+import 'package:lingo_manage/core/routes/routes.dart';
 
 class StudentHomePage extends ConsumerStatefulWidget {
   const StudentHomePage({super.key});
@@ -20,10 +20,10 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
           children: [
             Center(
               child: IconButton(
-                onPressed: () async {
-                  return await ref.read(authController.notifier).signOut();
+                onPressed: () {
+                  Navigator.pushNamed(context, AppRoutes.profileUser);
                 },
-                icon: Icon(Icons.logout),
+                icon: Icon(Icons.person),
               ),
             ),
           ],

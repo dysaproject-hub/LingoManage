@@ -117,11 +117,11 @@ class _RegisterAdminState extends ConsumerState<CourseForm> {
                             description: _descriptionController.text,
                           );
 
+                          ref.invalidate(myCoursesProvider);
+
                           if (!context.mounted) return;
 
                           Navigator.pop(context);
-
-                          ref.invalidate(courseControllerProvider);
                         },
                       ),
                 const SizedBox(height: 24),

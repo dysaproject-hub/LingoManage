@@ -130,8 +130,10 @@ class _StudentHomePageState extends ConsumerState<AdminDashboardPage> {
                               data[index],
                               () async {
                                 await ref
-                                    .watch(courseControllerProvider.notifier)
+                                    .read(courseControllerProvider.notifier)
                                     .deleteCourse(courseId: data[index].id);
+
+                                ref.invalidate(myCoursesProvider);
 
                                 if (!context.mounted) return;
                                 Navigator.pop(context);

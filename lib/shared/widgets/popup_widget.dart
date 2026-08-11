@@ -51,7 +51,7 @@ class PopupWidget {
           ),
           actions: [
             Button(
-              text: "Batal",
+              text: "Cancel",
               textColor: AppColors.black,
               bgColor: AppColors.lightText,
               fontSize: 12,
@@ -62,7 +62,7 @@ class PopupWidget {
               },
             ),
             Button(
-              text: "Hapus",
+              text: "Delete",
               textColor: AppColors.lightText,
               bgColor: AppColors.red,
               fontSize: 12,

@@ -22,6 +22,14 @@ final courseRepositoryProvider = Provider<CourseRepository>((ref) {
 
 /// GET MY COURSES
 final myCoursesProvider = FutureProvider<List<CourseModel>>((ref) async {
+  final authState = ref.watch(authStateProvider);
+
+  final user = authState.valueOrNull;
+
+  if (user == null) {
+    return [];
+  }
+
   final repository = ref.watch(courseRepositoryProvider);
 
   return repository.getMyCourse();
