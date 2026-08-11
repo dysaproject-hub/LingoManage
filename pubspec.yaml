@@ -18,6 +18,8 @@ dependencies:
   loading_animation_widget: ^1.3.0
   google_fonts: ^8.2.1
   flutter_riverpod: ^2.6.1
+  shared_preferences: ^2.5.5
+  image_picker: ^1.2.3
 
 dev_dependencies:
   flutter_test:
@@ -28,3 +30,4 @@ flutter:
   uses-material-design: true
   assets:
     - assets/app_icon/app_icon.png
+    - assets/ilustration/ilustration_1.png

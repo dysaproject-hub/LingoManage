@@ -41,7 +41,6 @@ class AuthDatasources {
     required String fullname,
     required String nickname,
     required String phone,
-    required String courseName,
     required String subscriptionStatus,
     required int studentLimit,
   }) async {
@@ -58,11 +57,11 @@ class AuthDatasources {
 
     final data = {
       'uid': uid,
+      'email': email,
       'fullname': fullname,
       'nickname': nickname,
       'phone': phone,
       'role': UserRole.admin,
-      'courseName': courseName,
       'subscriptionStatus': subscriptionStatus,
       'studentLimit': studentLimit,
       'createdAt': FieldValue.serverTimestamp(),
@@ -88,6 +87,7 @@ class AuthDatasources {
     required String fullname,
     required String nickname,
     required String phone,
+    required String address,
   }) async {
     final userCredential = await _auth.createUserWithEmailAndPassword(
       email: email,
@@ -102,9 +102,11 @@ class AuthDatasources {
 
     final data = {
       'uid': uid,
+      'email': email,
       'fullname': fullname,
       'nickname': nickname,
       'phone': phone,
+      'address': address,
       'role': UserRole.student,
       'createdAt': FieldValue.serverTimestamp(),
       'updatedAt': FieldValue.serverTimestamp(),

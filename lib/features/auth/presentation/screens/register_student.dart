@@ -27,6 +27,7 @@ class _RegisterStudentState extends ConsumerState<RegisterStudent> {
   final _fullnameController = TextEditingController();
   final _nicknameController = TextEditingController();
   final _phoneController = TextEditingController();
+  final _addressController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
   bool _obscurePassword = true;
@@ -38,6 +39,7 @@ class _RegisterStudentState extends ConsumerState<RegisterStudent> {
     _fullnameController.dispose();
     _nicknameController.dispose();
     _phoneController.dispose();
+    _addressController.dispose();
     super.dispose();
   }
 
@@ -194,6 +196,19 @@ class _RegisterStudentState extends ConsumerState<RegisterStudent> {
                           return null;
                         },
                       ),
+                      const SizedBox(height: 16),
+                      textFieldWidget(
+                        keyboardType: TextInputType.text,
+                        labelText: "Address",
+                        controller: _addressController,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "The address field is required!";
+                          }
+
+                          return null;
+                        },
+                      ),
                     ],
                   ),
                 ),
@@ -221,6 +236,7 @@ class _RegisterStudentState extends ConsumerState<RegisterStudent> {
                             fullname: _fullnameController.text,
                             nickname: _nicknameController.text,
                             phone: _phoneController.text,
+                            address: _addressController.text,
                           );
 
                           ref.invalidate(authStateProvider);

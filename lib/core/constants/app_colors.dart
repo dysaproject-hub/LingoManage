@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class AppColors {
   // Brand Colors
   static const Color primary = Color(0xFF0D9488);
-  static const Color accentAi = Color(0xFF6366F1);
+  static const Color accent = Color(0xFF6366F1);
 
   // Background
   static const Color darkBackground = Color(0xFF020617);
@@ -18,4 +18,7 @@ class AppColors {
   // Netral Colors
   static const Color black = Color(0xff000000);
   static const Color transparent = Colors.transparent;
+
+  // Alert Color
+  static const Color red = Color.fromRGBO(193, 18, 31, 1);
 }

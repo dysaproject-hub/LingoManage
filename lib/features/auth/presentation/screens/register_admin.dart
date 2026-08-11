@@ -27,7 +27,6 @@ class _RegisterAdminState extends ConsumerState<RegisterAdmin> {
   final _fullnameController = TextEditingController();
   final _nicknameController = TextEditingController();
   final _phoneController = TextEditingController();
-  final _courseNameController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
   bool _obscurePassword = true;
@@ -39,7 +38,6 @@ class _RegisterAdminState extends ConsumerState<RegisterAdmin> {
     _fullnameController.dispose();
     _nicknameController.dispose();
     _phoneController.dispose();
-    _courseNameController.dispose();
     super.dispose();
   }
 
@@ -196,19 +194,6 @@ class _RegisterAdminState extends ConsumerState<RegisterAdmin> {
                           return null;
                         },
                       ),
-                      const SizedBox(height: 16),
-                      textFieldWidget(
-                        labelText: "Course Name",
-                        controller: _courseNameController,
-                        keyboardType: TextInputType.text,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return "Course name field cannot be empty!";
-                          }
-
-                          return null;
-                        },
-                      ),
                     ],
                   ),
                 ),
@@ -236,7 +221,6 @@ class _RegisterAdminState extends ConsumerState<RegisterAdmin> {
                             fullname: _fullnameController.text,
                             nickname: _nicknameController.text,
                             phone: _phoneController.text,
-                            courseName: _courseNameController.text,
                           );
 
                           ref.invalidate(authStateProvider);

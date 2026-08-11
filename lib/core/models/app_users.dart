@@ -7,11 +7,10 @@ class AppUser {
   final String email;
   final String phone;
   final String role;
-  final String? courseName;
   final String? subscriptionStatus;
   final int? studentLimit;
   final String? level;
-  final String? alamat;
+  final String? address;
 
   AppUser({
     required this.uid,
@@ -20,11 +19,10 @@ class AppUser {
     required this.email,
     required this.phone,
     required this.role,
-    this.courseName,
     this.subscriptionStatus,
     this.studentLimit,
     this.level,
-    this.alamat,
+    this.address,
   });
 
   factory AppUser.fromMap(String uid, Map<String, dynamic> data) {
@@ -35,11 +33,10 @@ class AppUser {
       email: data['email'] ?? '',
       phone: data['phone'] ?? '',
       role: data['role'] ?? UserRole.student,
-      courseName: data['courseName'],
       subscriptionStatus: data['subscriptionStatus'],
       studentLimit: data['studentLimit'],
       level: data['level'],
-      alamat: data['alamat'],
+      address: data['address'],
     );
   }
 
@@ -50,11 +47,10 @@ class AppUser {
       'email': email,
       'phone': phone,
       'role': role,
-      'courseName': courseName,
       'subscriptionStatus': subscriptionStatus,
       'studentLimit': studentLimit,
       'level': level,
-      'alamat': alamat,
+      'address': address,
     };
   }
 }

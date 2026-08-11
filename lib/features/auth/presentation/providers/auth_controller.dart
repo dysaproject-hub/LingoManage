@@ -39,7 +39,6 @@ class AuthController extends AsyncNotifier<AppUser?> {
     required String fullname,
     required String nickname,
     required String phone,
-    required String courseName,
   }) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
@@ -51,7 +50,6 @@ class AuthController extends AsyncNotifier<AppUser?> {
             fullname: fullname,
             nickname: nickname,
             phone: phone,
-            courseName: courseName,
           );
       return user;
     });
@@ -63,6 +61,7 @@ class AuthController extends AsyncNotifier<AppUser?> {
     required String fullname,
     required String nickname,
     required String phone,
+    required String address,
   }) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
@@ -74,6 +73,7 @@ class AuthController extends AsyncNotifier<AppUser?> {
             fullname: fullname,
             nickname: nickname,
             phone: phone,
+            address: address,
           );
       return user;
     });

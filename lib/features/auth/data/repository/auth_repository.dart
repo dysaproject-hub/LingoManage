@@ -25,7 +25,6 @@ class AuthRepository {
     required String fullname,
     required String nickname,
     required String phone,
-    required String courseName,
   }) async {
       return await _datasource.registerAdmin(
         email: email,
@@ -33,7 +32,6 @@ class AuthRepository {
         fullname: fullname,
         nickname: nickname,
         phone: phone,
-        courseName: courseName,
         subscriptionStatus: 'free',
         studentLimit: 15,
       );
@@ -46,6 +44,7 @@ class AuthRepository {
     required String fullname,
     required String nickname,
     required String phone,
+    required String address,
   }) async {
       return await _datasource.registerStudent(
         email: email,
@@ -53,6 +52,7 @@ class AuthRepository {
         fullname: fullname,
         nickname: nickname,
         phone: phone,
+        address: address,
       );
   }
 

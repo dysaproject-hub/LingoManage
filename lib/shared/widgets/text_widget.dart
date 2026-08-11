@@ -17,12 +17,6 @@ Widget textBaloo2(
       fontWeight: fontWeight,
       color: color,
     ),
-    // style: TextStyle(
-    //   fontFamily: 'PragatiNarrow',
-    //   fontSize: fontSize,
-    //   fontWeight: fontWeight,
-    //   color: color,
-    // ),
   );
 }
 
@@ -43,12 +37,5 @@ Widget textPoppins(
       fontWeight: fontWeight,
       color: color,
     ),
-    // style: TextStyle(
-    //   decoration: textDecoration,
-    //   fontFamily: 'Poppins',
-    //   fontSize: fontSize,
-    //   fontWeight: fontWeight,
-    //   color: color,
-    // ),
   );
 }
