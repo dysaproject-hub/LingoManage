@@ -49,7 +49,7 @@ class AppUserController extends AsyncNotifier<AppUser> {
 }
 
 class ImageProfileNotifier extends AsyncNotifier<String?> {
-  static const String _profileImageKey = "profile_image_path";
+  static const String _profileImageKey = "lingomanage_profile_image_path";
 
   @override
   Future<String?> build() async {

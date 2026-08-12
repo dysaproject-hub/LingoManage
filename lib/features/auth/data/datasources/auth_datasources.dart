@@ -23,7 +23,7 @@ class AuthDatasources {
     final uid = userCredential.user?.uid;
 
     if (uid == null) {
-      throw Exception("Gagal mendapatkan uid user");
+      throw Exception("Failed to retrieve user UID.");
     }
 
     final doc = await _db
@@ -52,7 +52,7 @@ class AuthDatasources {
     final uid = userCredential.user?.uid;
 
     if (uid == null) {
-      throw Exception("Gagal mendapatkan uid user");
+      throw Exception("Failed to retrieve user UID.");
     }
 
     final data = {
@@ -97,7 +97,7 @@ class AuthDatasources {
     final uid = userCredential.user?.uid;
 
     if (uid == null) {
-      throw Exception("Gagal mendapatkan uid user");
+      throw Exception("Failed to retrieve user UID.");
     }
 
     final data = {

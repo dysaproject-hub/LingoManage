@@ -123,7 +123,13 @@ class _StudentHomePageState extends ConsumerState<AdminDashboardPage> {
                           jumlahsiswa: "--",
                           buttoncolor: AppColors.lightText,
                           onTapCek: () {},
-                          onTapEdit: () {},
+                          onTapEdit: () {
+                            PopupWidget.showDialogUpdateCourseData(
+                              context: context,
+                              courseData: data[index],
+                              ref: ref,
+                            );
+                          },
                           onTapRemove: () {
                             PopupWidget.removeCourseAlert(
                               context,

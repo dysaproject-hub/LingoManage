@@ -94,7 +94,7 @@ class _ProfileUserState extends ConsumerState<ProfileUser> {
 
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text("Gagal mengubah profile: $e")));
+      ).showSnackBar(SnackBar(content: Text("Failed update the content: $e")));
     }
   }
 
@@ -298,7 +298,7 @@ class _ProfileUserState extends ConsumerState<ProfileUser> {
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               Button(
-                                text: "Batal",
+                                text: "Cancel",
                                 textColor: AppColors.black,
                                 bgColor: AppColors.mutedText,
                                 fontSize: 12,
@@ -312,7 +312,7 @@ class _ProfileUserState extends ConsumerState<ProfileUser> {
                               const SizedBox(width: 10),
 
                               Button(
-                                text: "Ubah",
+                                text: "Update",
                                 textColor: AppColors.lightText,
                                 bgColor: AppColors.accent,
                                 fontSize: 12,
