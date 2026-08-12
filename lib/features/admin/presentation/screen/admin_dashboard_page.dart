@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lingo_manage/core/constants/app_colors.dart';
 import 'package:lingo_manage/core/providers/app_users_provider.dart';
 import 'package:lingo_manage/core/routes/routes.dart';
+import 'package:lingo_manage/features/admin/presentation/widget/card_course_widget.dart';
 import 'package:lingo_manage/features/course/presentation/providers/course_provider.dart';
 import 'package:lingo_manage/shared/widgets/button_widget.dart';
 import 'package:lingo_manage/shared/widgets/card_widget.dart';
@@ -116,6 +117,7 @@ class _StudentHomePageState extends ConsumerState<AdminDashboardPage> {
                       physics: const NeverScrollableScrollPhysics(),
                       itemCount: data.length,
                       itemBuilder: (context, index) {
+                        debugPrint(data[index].name);
                         return CardCourseWidget(
                           maincolor: AppColors.accent,
                           gradientcolor: AppColors.accent,
@@ -130,6 +132,7 @@ class _StudentHomePageState extends ConsumerState<AdminDashboardPage> {
                               ref: ref,
                             );
                           },
+                          onTapManageAdmin: (){},
                           onTapRemove: () {
                             PopupWidget.removeCourseAlert(
                               context,

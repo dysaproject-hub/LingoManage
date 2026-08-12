@@ -22,23 +22,38 @@ class CourseDatasources {
 
   /// GET MY COURSES
   Future<List<CourseModel>> getMyCourses() async {
-    final uid = _currentUserId;
+  final uid = _currentUserId;
 
-    final snapshot = await _db
-        .collection(FirestoreCollection.coursesCollection)
-        .where('ownerId', isEqualTo: uid)
-        .orderBy('createdAt', descending: true)
-        .get();
+  final snapshot = await _db
+      .collection(FirestoreCollection.courseAdminsCollection)
+      .where('adminId', isEqualTo: uid)
+      .orderBy('createdAt', descending: true)
+      .get();
 
-    return snapshot.docs
-        .map(
-          (doc) => CourseModel.fromMap(
-            doc.id,
-            doc.data(),
-          ),
-        )
-        .toList();
-  }
+  final courseIds = snapshot.docs
+      .map((doc) => doc.data()['courseId'] as String)
+      .toList();
+
+  final courses = await Future.wait(
+    courseIds.map((courseId) async {
+      final courseDoc = await _db
+          .collection(FirestoreCollection.coursesCollection)
+          .doc(courseId)
+          .get();
+
+      if (!courseDoc.exists || courseDoc.data() == null) {
+        return null;
+      }
+
+      return CourseModel.fromMap(
+        courseDoc.id,
+        courseDoc.data()!,
+      );
+    }),
+  );
+
+  return courses.whereType<CourseModel>().toList();
+}
 
   /// GET COURSE BY ID
   Future<CourseModel> getCourseById(String courseId) async {
@@ -51,10 +66,7 @@ class CourseDatasources {
       throw Exception('Course tidak ditemukan');
     }
 
-    return CourseModel.fromMap(
-      doc.id,
-      doc.data()!,
-    );
+    return CourseModel.fromMap(doc.id, doc.data()!);
   }
 
   /// ADD COURSE
@@ -64,7 +76,6 @@ class CourseDatasources {
   }) async {
     final uid = _currentUserId;
 
-    // Buat reference SEKALI
     final courseRef = _db
         .collection(FirestoreCollection.coursesCollection)
         .doc();
@@ -79,14 +90,18 @@ class CourseDatasources {
 
     await courseRef.set(data);
 
-    return CourseModel.fromMap(
-      courseRef.id,
-      {
-        ...data,
-        'createdAt': DateTime.now(),
-        'updatedAt': DateTime.now(),
-      },
-    );
+    await _db.collection(FirestoreCollection.courseAdminsCollection).add({
+      'courseId': courseRef.id,
+      'adminId': uid,
+      'role': 'owner',
+      'createdAt': FieldValue.serverTimestamp(),
+    });
+
+    return CourseModel.fromMap(courseRef.id, {
+      ...data,
+      'createdAt': DateTime.now(),
+      'updatedAt': DateTime.now(),
+    });
   }
 
   /// UPDATE COURSE
