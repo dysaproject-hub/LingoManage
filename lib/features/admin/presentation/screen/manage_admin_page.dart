@@ -201,164 +201,166 @@ class _ManageAdminPageState extends ConsumerState<ManageAdminPage> {
         ),
       ),
 
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            textBaloo2(
-              widget.courseModel.name,
-              fontSize: 24,
-              fontWeight: FontWeight.w800,
-            ),
-
-            textPoppins(
-              'Manage users who have access to this course.',
-              fontSize: 13,
-              color: AppColors.mutedText,
-            ),
-
-            const SizedBox(height: 24),
-
-            textBaloo2(
-              'Course Admins',
-              fontSize: 18,
-              fontWeight: FontWeight.w700,
-            ),
-
-            const SizedBox(height: 8),
-
-            Expanded(
-              child: adminsAsync.when(
-                loading: () {
-                  return const Center(child: LoadingWidget());
-                },
-
-                error: (error, stack) {
-                  debugPrint('Get course admins error: $error');
-
-                  return Center(child: textPoppins('Failed to load admins.'));
-                },
-
-                data: (admins) {
-                  if (admins.isEmpty) {
-                    return Center(child: textPoppins('No admins found.'));
-                  }
-
-                  final currentId = currentUserId;
-
-                  final currentUserAdmins = admins
-                      .where((admin) => admin.uid == currentId)
-                      .toList();
-
-                  final otherAdmins = admins
-                      .where((admin) => admin.uid != currentId)
-                      .toList();
-
-                  return ListView(
-                    children: [
-                      if (currentUserAdmins.isNotEmpty) ...[
-                        textPoppins(
-                          'You',
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.mutedText,
-                        ),
-
-                        const SizedBox(height: 8),
-
-                        _buildAdminCard(
-                          admin: currentUserAdmins.first,
-                          isCurrentUser: true,
-                          isOwner:
-                              currentUserAdmins.first.uid ==
-                              widget.courseModel.ownerId,
-                          context: context,
-                        ),
-                      ],
-
-                      if (currentUserAdmins.isNotEmpty &&
-                          otherAdmins.isNotEmpty)
-                        const SizedBox(height: 24),
-
-                      if (otherAdmins.isNotEmpty) ...[
-                        textPoppins(
-                          'Other Admins',
-                          fontSize: 13,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.mutedText,
-                        ),
-
-                        const SizedBox(height: 8),
-
-                        ...otherAdmins.map((admin) {
-                          final isOwner =
-                              admin.uid == widget.courseModel.ownerId;
-
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 8),
-                            child: _buildAdminCard(
-                              admin: admin,
-                              isCurrentUser: false,
-                              isOwner: isOwner,
-                              context: context,
-                            ),
-                          );
-                        }),
-                      ],
-                    ],
-                  );
-                },
-              ),
-            ),
-
-            if (isCurrentUserOwner) ...[
-              const SizedBox(height: 16),
-
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
               textBaloo2(
-                'Add Admin',
+                widget.courseModel.name,
+                fontSize: 24,
+                fontWeight: FontWeight.w800,
+              ),
+        
+              textPoppins(
+                'Manage users who have access to this course.',
+                fontSize: 13,
+                color: AppColors.mutedText,
+              ),
+        
+              const SizedBox(height: 24),
+        
+              textBaloo2(
+                'Course Admins',
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
               ),
-
-              const SizedBox(height: 12),
-
-              Row(
-                children: [
-                  Expanded(
-                    child: textFieldWidget(
-                      labelText: 'Admin email',
-                      controller: _emailController,
-                      focusNode: _emailFocusNode,
-                      keyboardType: TextInputType.emailAddress,
-                    ),
-                  ),
-
-                  const SizedBox(width: 8),
-
-                  IconButton(
-                    onPressed: _isSearching ? null : _searchAdmin,
-                    icon: _isSearching
-                        ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : const Icon(Icons.search),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 12),
-
-              if (_foundAdmin != null)
-                AdminSearchResult(
-                  admin: _foundAdmin!,
-                  isLoading: controllerState.isLoading,
-                  onAdd: _addAdmin,
+        
+              const SizedBox(height: 8),
+        
+              Expanded(
+                child: adminsAsync.when(
+                  loading: () {
+                    return const Center(child: LoadingWidget());
+                  },
+        
+                  error: (error, stack) {
+                    debugPrint('Get course admins error: $error');
+        
+                    return Center(child: textPoppins('Failed to load admins.'));
+                  },
+        
+                  data: (admins) {
+                    if (admins.isEmpty) {
+                      return Center(child: textPoppins('No admins found.'));
+                    }
+        
+                    final currentId = currentUserId;
+        
+                    final currentUserAdmins = admins
+                        .where((admin) => admin.uid == currentId)
+                        .toList();
+        
+                    final otherAdmins = admins
+                        .where((admin) => admin.uid != currentId)
+                        .toList();
+        
+                    return ListView(
+                      children: [
+                        if (currentUserAdmins.isNotEmpty) ...[
+                          textPoppins(
+                            'You',
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.mutedText,
+                          ),
+        
+                          const SizedBox(height: 8),
+        
+                          _buildAdminCard(
+                            admin: currentUserAdmins.first,
+                            isCurrentUser: true,
+                            isOwner:
+                                currentUserAdmins.first.uid ==
+                                widget.courseModel.ownerId,
+                            context: context,
+                          ),
+                        ],
+        
+                        if (currentUserAdmins.isNotEmpty &&
+                            otherAdmins.isNotEmpty)
+                          const SizedBox(height: 24),
+        
+                        if (otherAdmins.isNotEmpty) ...[
+                          textPoppins(
+                            'Other Admins',
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: AppColors.mutedText,
+                          ),
+        
+                          const SizedBox(height: 8),
+        
+                          ...otherAdmins.map((admin) {
+                            final isOwner =
+                                admin.uid == widget.courseModel.ownerId;
+        
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 8),
+                              child: _buildAdminCard(
+                                admin: admin,
+                                isCurrentUser: false,
+                                isOwner: isOwner,
+                                context: context,
+                              ),
+                            );
+                          }),
+                        ],
+                      ],
+                    );
+                  },
                 ),
+              ),
+        
+              if (isCurrentUserOwner) ...[
+                const SizedBox(height: 16),
+        
+                textBaloo2(
+                  'Add Admin',
+                  fontSize: 18,
+                  fontWeight: FontWeight.w700,
+                ),
+        
+                const SizedBox(height: 12),
+        
+                Row(
+                  children: [
+                    Expanded(
+                      child: textFieldWidget(
+                        labelText: 'Admin email',
+                        controller: _emailController,
+                        focusNode: _emailFocusNode,
+                        keyboardType: TextInputType.emailAddress,
+                      ),
+                    ),
+        
+                    const SizedBox(width: 8),
+        
+                    IconButton(
+                      onPressed: _isSearching ? null : _searchAdmin,
+                      icon: _isSearching
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Icon(Icons.search),
+                    ),
+                  ],
+                ),
+        
+                const SizedBox(height: 12),
+        
+                if (_foundAdmin != null)
+                  AdminSearchResult(
+                    admin: _foundAdmin!,
+                    isLoading: controllerState.isLoading,
+                    onAdd: _addAdmin,
+                  ),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );

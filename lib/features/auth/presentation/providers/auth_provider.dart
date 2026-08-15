@@ -33,7 +33,6 @@ final authStateProvider = StreamProvider<AppUser?>((ref) {
     debugPrint("Firebase user: ${firebaseUser?.uid}");
 
     if (firebaseUser == null) {
-      debugPrint("Belum login");
       return null;
     }
 

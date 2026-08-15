@@ -14,7 +14,7 @@ class CourseDatasources {
     final uid = _auth.currentUser?.uid;
 
     if (uid == null) {
-      throw Exception('User belum login');
+      throw Exception('User is not logged in');
     }
 
     return uid;
@@ -60,7 +60,7 @@ class CourseDatasources {
         .get();
 
     if (!doc.exists || doc.data() == null) {
-      throw Exception('Course tidak ditemukan');
+      throw Exception("Course doesn't found");
     }
 
     return CourseModel.fromMap(doc.id, doc.data()!);

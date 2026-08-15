@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lingo_manage/core/constants/app_colors.dart';
@@ -9,40 +11,125 @@ import 'package:lingo_manage/features/student/presentation/screens/student_home_
 import 'package:lingo_manage/shared/widgets/loading_widget.dart';
 import 'package:lingo_manage/shared/widgets/text_widget.dart';
 
-class AuthGate extends ConsumerWidget {
+class AuthGate extends ConsumerStatefulWidget {
   const AuthGate({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    debugPrint("Auth Rebuild");
+  ConsumerState<AuthGate> createState() => _AuthGateState();
+}
+
+class _AuthGateState extends ConsumerState<AuthGate> {
+  bool _isSplashFinished = false;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _startSplash();
+  }
+
+  Future<void> _startSplash() async {
+    // Minimal waktu splash
+    await Future.delayed(const Duration(seconds: 5));
+
+    if (!mounted) return;
+
+    setState(() {
+      _isSplashFinished = true;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    debugPrint("AuthGate Rebuild");
+
     final authState = ref.watch(authStateProvider);
+
+
+    if (!_isSplashFinished) {
+      return _buildSplashScreen(context);
+    }
+
 
     return authState.when(
       data: (user) {
         if (user == null) {
-          return WelcomePage();
+          return const WelcomePage();
         }
 
         if (user.role == UserRole.student) {
-          return StudentHomePage();
+          return const StudentHomePage();
         }
 
         if (user.role == UserRole.admin) {
-          return AdminDashboardPage();
+          return const AdminDashboardPage();
         }
 
-        // Role tidak dikenali
-        return Scaffold(body: Center(child: textPoppins('Role tidak valid')));
+        return Scaffold(
+          body: Center(
+            child: textPoppins(
+              'Role tidak valid',
+              color: AppColors.black,
+            ),
+          ),
+        );
       },
-      error: (error, stack) =>
-          Scaffold(body: Center(child: textPoppins("Maaf terjadi kesalahan"))),
-      loading: () => Scaffold(
-        body: Center(
+
+      loading: () {
+        return _buildSplashScreen(context);
+      },
+
+      error: (error, stack) {
+        debugPrint('AuthGate error: $error');
+
+        return Scaffold(
+          body: Center(
+            child: textPoppins(
+              "Maaf terjadi kesalahan",
+              color: AppColors.black,
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildSplashScreen(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.lightText,
+      body: SizedBox(
+        width: double.infinity,
+        height: MediaQuery.sizeOf(context).height,
+        child: Center(
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
+              Image.asset(
+                "assets/app_icon/app_icon.png",
+                width: 150,
+                height: 150,
+              ),
+
+              const SizedBox(height: 16),
+
+              textBaloo2(
+                "LingoManage",
+                fontSize: 32,
+                fontWeight: FontWeight.w800,
+                color: AppColors.black,
+              ),
+
+              const SizedBox(height: 24),
+
               const LoadingWidget(),
-              const SizedBox(),
-              textPoppins("Loading...", color: AppColors.black),
+
+              const SizedBox(height: 12),
+
+              textPoppins(
+                "Loading...",
+                color: AppColors.black,
+                fontSize: 12,
+              ),
             ],
           ),
         ),
