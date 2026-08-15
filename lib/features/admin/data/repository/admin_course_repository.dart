@@ -16,4 +16,18 @@ class AdminCourseRepository {
   Future<AppUser?> findAdminByEmail({required String email}) async {
     return await _datasources.findAdminByEmail(email);
   }
+
+  Future<List<AppUser>> getCourseAdmins({required String courseId}) async {
+    return await _datasources.getCourseAdmins(courseId: courseId);
+  }
+
+  Future<void> removeAdminFromCourse({
+    required String courseId,
+    required String adminId,
+  }) async {
+    return await _datasources.removeAdminFromCourse(
+      courseId: courseId,
+      adminId: adminId,
+    );
+  }
 }

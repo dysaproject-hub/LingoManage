@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:lingo_manage/core/constants/app_colors.dart';
 import 'package:lingo_manage/core/routes/routes.dart';
 import 'package:lingo_manage/features/admin/presentation/screen/admin_dashboard_page.dart';
+import 'package:lingo_manage/features/admin/presentation/screen/manage_admin_page.dart';
 import 'package:lingo_manage/features/auth/presentation/screens/auth_gate.dart';
 import 'package:lingo_manage/features/course/presentation/screens/course_form.dart';
 import 'package:lingo_manage/features/student/presentation/screens/student_home_page.dart';
@@ -10,10 +11,9 @@ import 'package:lingo_manage/shared/widgets/text_widget.dart';
 
 class AppRouter {
   static Route<dynamic>? generate(RouteSettings settings) {
-    // final args = settings.arguments as Map<String, dynamic>? ?? {};
+    final args = settings.arguments as Map<String, dynamic>? ?? {};
 
     switch (settings.name) {
-
       case AppRoutes.studentHomePage:
         return MaterialPageRoute(builder: (_) => StudentHomePage());
 
@@ -26,8 +26,14 @@ class AppRouter {
       case AppRoutes.courseFormPage:
         return MaterialPageRoute(builder: (_) => CourseForm());
 
-      case AppRoutes.profileUser:
+      case AppRoutes.profileUserPage:
         return MaterialPageRoute(builder: (_) => ProfileUser());
+
+      case AppRoutes.manageAdminPage:
+        final courseModel = args['courseModel'];
+        return MaterialPageRoute(
+          builder: (_) => ManageAdminPage(courseModel: courseModel),
+        );
 
       default:
         return MaterialPageRoute(

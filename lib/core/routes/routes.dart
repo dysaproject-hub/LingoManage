@@ -3,5 +3,6 @@ class AppRoutes {
   static const String adminPage = '/adminPage';
   static const String studentHomePage = '/studentHomePage';
   static const String courseFormPage = '/courseForm';
-  static const String profileUser = '/profileUser';
+  static const String profileUserPage = '/profileUser';
+  static const String manageAdminPage = '/manageAdmin';
 }

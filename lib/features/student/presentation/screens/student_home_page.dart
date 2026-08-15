@@ -21,7 +21,7 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
             Center(
               child: IconButton(
                 onPressed: () {
-                  Navigator.pushNamed(context, AppRoutes.profileUser);
+                  Navigator.pushNamed(context, AppRoutes.profileUserPage);
                 },
                 icon: Icon(Icons.person),
               ),

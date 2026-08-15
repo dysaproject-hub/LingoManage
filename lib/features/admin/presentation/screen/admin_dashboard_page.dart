@@ -58,7 +58,7 @@ class _StudentHomePageState extends ConsumerState<AdminDashboardPage> {
                       boxColor: AppColors.success,
                       iconColor: AppColors.lightText,
                       onTap: () {
-                        Navigator.pushNamed(context, AppRoutes.profileUser);
+                        Navigator.pushNamed(context, AppRoutes.profileUserPage);
                       },
                       iconData: Icons.person,
                       borderRadius: BorderRadius.circular(15),
@@ -132,7 +132,13 @@ class _StudentHomePageState extends ConsumerState<AdminDashboardPage> {
                               ref: ref,
                             );
                           },
-                          onTapManageAdmin: (){},
+                          onTapManageAdmin: () {
+                            Navigator.pushNamed(
+                              context,
+                              AppRoutes.manageAdminPage,
+                              arguments: {'courseModel': data[index]},
+                            );
+                          },
                           onTapRemove: () {
                             PopupWidget.removeCourseAlert(
                               context,
