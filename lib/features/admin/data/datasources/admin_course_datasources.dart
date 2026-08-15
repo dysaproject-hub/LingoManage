@@ -12,12 +12,25 @@ class AdminCourseDatasources {
     required String courseId,
     required String adminId,
   }) async {
-    await _db.collection(FirestoreCollection.courseAdminsCollection).add({
+    final existing = await _db
+        .collection(FirestoreCollection.courseAdminsCollection)
+        .where('courseId', isEqualTo: courseId)
+        .where('adminId', isEqualTo: adminId)
+        .limit(1)
+        .get();
+
+    if (existing.docs.isNotEmpty) {
+      throw Exception('Admin has been added in this course');
+    }
+
+    final data = {
       'courseId': courseId,
       'adminId': adminId,
-      'role': 'admin',
+      'role': UserRole.admin,
       'createdAt': FieldValue.serverTimestamp(),
-    });
+    };
+
+    await _db.collection(FirestoreCollection.courseAdminsCollection).add(data);
   }
 
   Future<AppUser?> findAdminByEmail(String email) async {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lingo_manage/core/constants/app_colors.dart';
 import 'package:lingo_manage/core/models/app_users.dart';
+import 'package:lingo_manage/shared/widgets/loading_widget.dart';
 import 'package:lingo_manage/shared/widgets/text_widget.dart';
 
 class AdminSearchResult
@@ -19,6 +20,7 @@ class AdminSearchResult
   @override
   Widget build(BuildContext context) {
     return Card(
+      color: AppColors.lightText,
       child: Padding(
         padding: const EdgeInsets.all(12),
         child: Row(
@@ -70,20 +72,15 @@ class AdminSearchResult
             const SizedBox(width: 8),
 
             ElevatedButton(
+              style: ElevatedButton.styleFrom(backgroundColor: AppColors.primary),
               onPressed:
                   isLoading ? null : onAdd,
 
               child: isLoading
-                  ? const SizedBox(
-                      width: 18,
-                      height: 18,
-                      child:
-                          CircularProgressIndicator(
-                        strokeWidth: 2,
-                      ),
-                    )
-                  : const Text(
+                  ? LoadingWidget()
+                  : textPoppins(
                       'Add',
+                      color: AppColors.lightText,
                     ),
             ),
           ],

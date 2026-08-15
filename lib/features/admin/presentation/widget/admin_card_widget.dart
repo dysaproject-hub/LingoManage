@@ -30,13 +30,11 @@ class AdminCardWidget extends StatelessWidget {
         leading: CircleAvatar(
           backgroundColor: AppColors.primary,
 
-          child: Text(
+          child: textBaloo2(
             admin.fullname.isNotEmpty ? admin.fullname[0].toUpperCase() : '?',
-
-            style: const TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-            ),
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+            color: AppColors.lightText,
           ),
         ),
 
@@ -72,6 +70,8 @@ class AdminCardWidget extends StatelessWidget {
 
         subtitle: textPoppins(
           admin.email,
+          maxLines: 1,
+          textOverflow: TextOverflow.ellipsis,
           fontSize: 12,
           color: AppColors.mutedText,
         ),

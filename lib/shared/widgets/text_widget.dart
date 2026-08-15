@@ -27,10 +27,14 @@ Widget textPoppins(
   double fontSize = 12,
   FontWeight fontWeight = FontWeight.w400,
   TextDecoration textDecoration = TextDecoration.none,
+  int? maxLines,
+  TextOverflow? textOverflow,
 }) {
   return Text(
     text,
     textAlign: textAlign,
+    maxLines: maxLines,
+    overflow: textOverflow,
     style: GoogleFonts.poppins(
       decoration: textDecoration,
       fontSize: fontSize,

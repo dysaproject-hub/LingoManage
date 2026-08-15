@@ -22,38 +22,35 @@ class CourseDatasources {
 
   /// GET MY COURSES
   Future<List<CourseModel>> getMyCourses() async {
-  final uid = _currentUserId;
+    final uid = _currentUserId;
 
-  final snapshot = await _db
-      .collection(FirestoreCollection.courseAdminsCollection)
-      .where('adminId', isEqualTo: uid)
-      .orderBy('createdAt', descending: true)
-      .get();
+    final snapshot = await _db
+        .collection(FirestoreCollection.courseAdminsCollection)
+        .where('adminId', isEqualTo: uid)
+        .orderBy('createdAt', descending: true)
+        .get();
 
-  final courseIds = snapshot.docs
-      .map((doc) => doc.data()['courseId'] as String)
-      .toList();
+    final courseIds = snapshot.docs
+        .map((doc) => doc.data()['courseId'] as String)
+        .toList();
 
-  final courses = await Future.wait(
-    courseIds.map((courseId) async {
-      final courseDoc = await _db
-          .collection(FirestoreCollection.coursesCollection)
-          .doc(courseId)
-          .get();
+    final courses = await Future.wait(
+      courseIds.map((courseId) async {
+        final courseDoc = await _db
+            .collection(FirestoreCollection.coursesCollection)
+            .doc(courseId)
+            .get();
 
-      if (!courseDoc.exists || courseDoc.data() == null) {
-        return null;
-      }
+        if (!courseDoc.exists || courseDoc.data() == null) {
+          return null;
+        }
 
-      return CourseModel.fromMap(
-        courseDoc.id,
-        courseDoc.data()!,
-      );
-    }),
-  );
+        return CourseModel.fromMap(courseDoc.id, courseDoc.data()!);
+      }),
+    );
 
-  return courses.whereType<CourseModel>().toList();
-}
+    return courses.whereType<CourseModel>().toList();
+  }
 
   /// GET COURSE BY ID
   Future<CourseModel> getCourseById(String courseId) async {
@@ -122,9 +119,23 @@ class CourseDatasources {
 
   /// DELETE COURSE
   Future<void> deleteCourse(String courseId) async {
-    await _db
+    final courseRef = _db
         .collection(FirestoreCollection.coursesCollection)
-        .doc(courseId)
-        .delete();
+        .doc(courseId);
+
+    final adminSnapshot = await _db
+        .collection(FirestoreCollection.courseAdminsCollection)
+        .where('courseId', isEqualTo: courseId)
+        .get();
+
+    final batch = _db.batch();
+
+    for (final doc in adminSnapshot.docs) {
+      batch.delete(doc.reference);
+    }
+
+    batch.delete(courseRef);
+
+    batch.commit();
   }
 }

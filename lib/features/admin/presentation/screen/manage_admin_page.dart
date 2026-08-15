@@ -23,6 +23,7 @@ class ManageAdminPage extends ConsumerStatefulWidget {
 
 class _ManageAdminPageState extends ConsumerState<ManageAdminPage> {
   final _emailController = TextEditingController();
+  final _emailFocusNode = FocusNode();
 
   AppUser? _foundAdmin;
 
@@ -31,6 +32,7 @@ class _ManageAdminPageState extends ConsumerState<ManageAdminPage> {
   @override
   void dispose() {
     _emailController.dispose();
+    _emailFocusNode.dispose();
     super.dispose();
   }
 
@@ -48,14 +50,14 @@ class _ManageAdminPageState extends ConsumerState<ManageAdminPage> {
     if (email.isEmpty) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Enter the email first')));
+      ).showSnackBar(SnackBar(content: textPoppins('Enter the email first', color: AppColors.lightText)));
 
       return;
     }
 
     if (!isCurrentUserOwner) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Just owner who can add the admin')),
+        SnackBar(content: textPoppins('Just owner who can add the admin', color: AppColors.lightText)),
       );
 
       return;
@@ -80,7 +82,7 @@ class _ManageAdminPageState extends ConsumerState<ManageAdminPage> {
     if (admin == null) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(const SnackBar(content: Text('Admin not found.')));
+      ).showSnackBar(SnackBar(content: textPoppins('Admin not found.', color: AppColors.lightText)));
 
       return;
     }
@@ -91,7 +93,7 @@ class _ManageAdminPageState extends ConsumerState<ManageAdminPage> {
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('You already be an owner in this course')),
+        SnackBar(content: textPoppins('You already be an owner in this course', color: AppColors.lightText)),
       );
 
       return;
@@ -102,14 +104,6 @@ class _ManageAdminPageState extends ConsumerState<ManageAdminPage> {
     final admin = _foundAdmin;
 
     if (admin == null) return;
-
-    if (!isCurrentUserOwner) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Just owner who can add the admin')),
-      );
-
-      return;
-    }
 
     await ref
         .read(adminCourseControllerProvider.notifier)
@@ -122,14 +116,12 @@ class _ManageAdminPageState extends ConsumerState<ManageAdminPage> {
     if (state.hasError) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text(state.error.toString())));
+      ).showSnackBar(SnackBar(content: textPoppins(state.error.toString(), color: AppColors.lightText)));
 
       return;
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Admin added in this course successfully')),
-    );
+    _emailFocusNode.unfocus();
 
     setState(() {
       _foundAdmin = null;
@@ -137,6 +129,10 @@ class _ManageAdminPageState extends ConsumerState<ManageAdminPage> {
     });
 
     ref.invalidate(courseAdminsProvider(widget.courseModel.id));
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: textPoppins('Admin added in this course successfully', color: AppColors.lightText)),
+    );
   }
 
   Future<void> _deleteAdmin(AppUser admin) async {
@@ -154,13 +150,13 @@ class _ManageAdminPageState extends ConsumerState<ManageAdminPage> {
     if (state.hasError) {
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text(state.error.toString())));
+      ).showSnackBar(SnackBar(content: textPoppins(state.error.toString(), color: AppColors.lightText)));
 
       return;
     }
 
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('${admin.fullname} removed from this course')),
+      SnackBar(content: textPoppins('${admin.fullname} removed from this course', color: AppColors.lightText)),
     );
 
     ref.invalidate(courseAdminsProvider(widget.courseModel.id));
@@ -170,7 +166,7 @@ class _ManageAdminPageState extends ConsumerState<ManageAdminPage> {
     required AppUser admin,
     required bool isCurrentUser,
     required bool isOwner,
-    required BuildContext context
+    required BuildContext context,
   }) {
     return AdminCardWidget(
       admin: admin,
@@ -216,8 +212,6 @@ class _ManageAdminPageState extends ConsumerState<ManageAdminPage> {
               fontWeight: FontWeight.w800,
             ),
 
-            const SizedBox(height: 4),
-
             textPoppins(
               'Manage users who have access to this course.',
               fontSize: 13,
@@ -232,7 +226,7 @@ class _ManageAdminPageState extends ConsumerState<ManageAdminPage> {
               fontWeight: FontWeight.w700,
             ),
 
-            const SizedBox(height: 12),
+            const SizedBox(height: 8),
 
             Expanded(
               child: adminsAsync.when(
@@ -279,7 +273,7 @@ class _ManageAdminPageState extends ConsumerState<ManageAdminPage> {
                           isOwner:
                               currentUserAdmins.first.uid ==
                               widget.courseModel.ownerId,
-                          context: context
+                          context: context,
                         ),
                       ],
 
@@ -307,7 +301,7 @@ class _ManageAdminPageState extends ConsumerState<ManageAdminPage> {
                               admin: admin,
                               isCurrentUser: false,
                               isOwner: isOwner,
-                              context: context
+                              context: context,
                             ),
                           );
                         }),
@@ -335,6 +329,7 @@ class _ManageAdminPageState extends ConsumerState<ManageAdminPage> {
                     child: textFieldWidget(
                       labelText: 'Admin email',
                       controller: _emailController,
+                      focusNode: _emailFocusNode,
                       keyboardType: TextInputType.emailAddress,
                     ),
                   ),
