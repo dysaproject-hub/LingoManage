@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:lingo_manage/core/constants/app_colors.dart';
 
 enum TextFieldType { normal, outline }
@@ -12,7 +13,7 @@ Widget textFieldWidget({
   Widget? suffixIcon,
   FocusNode? focusNode,
   final String? Function(String?)? validator,
-  String errorText = "field ini harus diisi!",
+  String errorText = "this field must be filled in!",
   bool alert = false,
   TextFieldType textFieldType = TextFieldType.normal,
   TextInputType? keyboardType,
@@ -30,8 +31,7 @@ Widget textFieldWidget({
         minLines: 1,
         maxLines: maxLines,
         textAlignVertical: TextAlignVertical.center,
-        style: const TextStyle(
-          fontFamily: 'Poppins',
+        style: GoogleFonts.poppins(
           color: AppColors.black,
           fontSize: 14,
           fontWeight: FontWeight.w300,
@@ -39,8 +39,7 @@ Widget textFieldWidget({
         decoration: InputDecoration(
           errorText: alert ? errorText : null,
           labelText: labelText,
-          labelStyle: const TextStyle(
-            fontFamily: 'Poppins',
+          labelStyle: GoogleFonts.poppins(
             color: AppColors.black,
           ),
           suffixIcon: suffixIcon,
@@ -68,8 +67,7 @@ Widget textFieldWidget({
         controller: controller,
         validator: validator,
         textAlignVertical: TextAlignVertical.center,
-        style: const TextStyle(
-          fontFamily: 'Poppins',
+        style: GoogleFonts.poppins(
           color: AppColors.black,
           fontSize: 14,
           fontWeight: FontWeight.w300,
@@ -77,8 +75,7 @@ Widget textFieldWidget({
         decoration: InputDecoration(
           errorText: alert ? errorText : null,
           hintText: labelText,
-          hintStyle: TextStyle(
-            fontFamily: 'Poppins',
+          hintStyle: GoogleFonts.poppins(
             color: AppColors.black.withAlpha(100),
             fontSize: 14,
             fontWeight: FontWeight.w300,

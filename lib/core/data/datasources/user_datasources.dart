@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:lingo_manage/core/constants/firestore_collections.dart';
 import 'package:lingo_manage/core/models/app_users.dart';
+import 'package:lingo_manage/core/utils/education_level_enum.dart';
 
 class UserDatasources {
   final FirebaseFirestore _firestore;
@@ -26,6 +27,8 @@ class UserDatasources {
     String? nickname,
     String? phone,
     String? address,
+    String? schoolName,
+    EducationLevel? educationLevel,
   }) async {
     final Map<String, dynamic> data = {};
 
@@ -43,6 +46,14 @@ class UserDatasources {
 
     if (address != null) {
       data["address"] = address;
+    }
+
+    if (schoolName != null) {
+      data["schoolName"] = schoolName;
+    }
+
+    if (schoolName != null) {
+      data["educationLevel"] = educationLevel;
     }
 
     if (data.isEmpty) return;

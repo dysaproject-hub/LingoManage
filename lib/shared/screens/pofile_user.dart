@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lingo_manage/core/constants/app_colors.dart';
 import 'package:lingo_manage/core/constants/user_role.dart';
 import 'package:lingo_manage/core/providers/app_users_provider.dart';
+import 'package:lingo_manage/core/utils/education_level_enum.dart';
 import 'package:lingo_manage/features/auth/presentation/providers/auth_controller.dart';
 import 'package:lingo_manage/shared/widgets/button_widget.dart';
 import 'package:lingo_manage/shared/widgets/loading_widget.dart';
@@ -24,13 +25,17 @@ class _ProfileUserState extends ConsumerState<ProfileUser> {
   final _nicknameController = TextEditingController();
   final _phoneController = TextEditingController();
   final _addressController = TextEditingController();
+  final _schoolNameController = TextEditingController();
 
   String originalFullname = "";
   String originalNickname = "";
   String originalPhone = "";
   String originalAddress = "";
+  String originalSchoolName = "";
 
   bool isEditing = false;
+
+  EducationLevel? selectedValue;
 
   @override
   void dispose() {
@@ -38,6 +43,7 @@ class _ProfileUserState extends ConsumerState<ProfileUser> {
     _nicknameController.dispose();
     _phoneController.dispose();
     _addressController.dispose();
+    _schoolNameController.dispose();
 
     super.dispose();
   }
@@ -55,6 +61,7 @@ class _ProfileUserState extends ConsumerState<ProfileUser> {
     _nicknameController.text = originalNickname;
     _phoneController.text = originalPhone;
     _addressController.text = originalAddress;
+    _schoolNameController.text = originalSchoolName;
 
     setState(() {
       isEditing = false;
@@ -69,6 +76,7 @@ class _ProfileUserState extends ConsumerState<ProfileUser> {
       final nickname = _nicknameController.text.trim();
       final phone = _phoneController.text.trim();
       final address = _addressController.text.trim();
+      final schoolName = _schoolNameController.text.trim();
 
       await ref
           .read(appUserControllerProvider.notifier)
@@ -77,12 +85,15 @@ class _ProfileUserState extends ConsumerState<ProfileUser> {
             nickname: nickname,
             phone: phone,
             address: address,
+            schoolName: schoolName,
+            educationLevel: selectedValue,
           );
 
       originalFullname = fullname;
       originalNickname = nickname;
       originalPhone = phone;
       originalAddress = address;
+      originalSchoolName = schoolName;
 
       if (!mounted) return;
 
@@ -92,9 +103,14 @@ class _ProfileUserState extends ConsumerState<ProfileUser> {
     } catch (e) {
       if (!mounted) return;
 
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Failed update the content: $e")));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: textPoppins(
+            "Failed update the content: $e",
+            color: AppColors.lightText,
+          ),
+        ),
+      );
     }
   }
 
@@ -239,6 +255,11 @@ class _ProfileUserState extends ConsumerState<ProfileUser> {
                       _addressController.text = data.address ?? "-";
                     }
 
+                    if (originalSchoolName.isEmpty) {
+                      originalSchoolName = data.schoolName ?? "-";
+                      _schoolNameController.text = data.schoolName ?? "-";
+                    }
+
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
@@ -287,6 +308,41 @@ class _ProfileUserState extends ConsumerState<ProfileUser> {
                             isEdit: isEditing,
                             onChanged: (_) {
                               startEditing();
+                            },
+                          ),
+
+                          const SizedBox(height: 12),
+
+                          buildTextField(
+                            controller: _schoolNameController,
+                            label: "School Name",
+                            icon: Icons.school,
+                            isEdit: isEditing,
+                            onChanged: (_) {
+                              startEditing();
+                            },
+                          ),
+
+                          DropdownButtonFormField<EducationLevel>(
+                            focusColor: AppColors.primary,
+                            initialValue: data.educationLevel,
+                            decoration: const InputDecoration(
+                              labelText: 'Educational Level',
+                              border: UnderlineInputBorder(),
+                            ),
+                            items: EducationLevel.values.map((
+                              EducationLevel level,
+                            ) {
+                              return DropdownMenuItem<EducationLevel>(
+                                value: level,
+                                child: textPoppins(level.label),
+                              );
+                            }).toList(),
+                            onChanged: (EducationLevel? newValue) {
+                              setState(() {
+                                selectedValue = newValue;
+                                isEditing = true;
+                              });
                             },
                           ),
                         ],

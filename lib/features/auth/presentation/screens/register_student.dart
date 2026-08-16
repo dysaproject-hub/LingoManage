@@ -1,8 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:lingo_manage/core/constants/app_colors.dart';
 import 'package:lingo_manage/core/constants/regex.dart';
+import 'package:lingo_manage/core/utils/education_level_enum.dart';
 import 'package:lingo_manage/core/utils/firebase_exceptions_message.dart';
 import 'package:lingo_manage/core/utils/media_query_helper.dart';
 import 'package:lingo_manage/features/auth/presentation/providers/auth_controller.dart';
@@ -15,7 +17,11 @@ import 'package:lingo_manage/shared/widgets/text_widget.dart';
 class RegisterStudent extends ConsumerStatefulWidget {
   final VoidCallback onBack;
   final VoidCallback onLogin;
-  const RegisterStudent({super.key, required this.onBack, required this.onLogin});
+  const RegisterStudent({
+    super.key,
+    required this.onBack,
+    required this.onLogin,
+  });
 
   @override
   ConsumerState<RegisterStudent> createState() => _RegisterStudentState();
@@ -28,6 +34,9 @@ class _RegisterStudentState extends ConsumerState<RegisterStudent> {
   final _nicknameController = TextEditingController();
   final _phoneController = TextEditingController();
   final _addressController = TextEditingController();
+  final _schoolNameController = TextEditingController();
+
+  EducationLevel? selectedLevel;
 
   final _formKey = GlobalKey<FormState>();
   bool _obscurePassword = true;
@@ -40,6 +49,7 @@ class _RegisterStudentState extends ConsumerState<RegisterStudent> {
     _nicknameController.dispose();
     _phoneController.dispose();
     _addressController.dispose();
+    _schoolNameController.dispose();
     super.dispose();
   }
 
@@ -207,6 +217,46 @@ class _RegisterStudentState extends ConsumerState<RegisterStudent> {
                           }
 
                           return null;
+                        },
+                      ),
+                      const SizedBox(height: 16),
+                      textFieldWidget(
+                        keyboardType: TextInputType.text,
+                        labelText: "School Name",
+                        controller: _schoolNameController,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "The school name field is required!";
+                          }
+
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 32),
+                      DropdownButtonFormField<EducationLevel>(
+                        dropdownColor: AppColors.lightText,
+                        initialValue: selectedLevel,
+                        decoration: InputDecoration(
+                          labelText: 'Educational Level',
+                          border: UnderlineInputBorder(),
+                          labelStyle: GoogleFonts.poppins(
+                            color: AppColors.black.withAlpha(100),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w300,
+                          ),
+                        ),
+                        items: EducationLevel.values.map((
+                          EducationLevel level,
+                        ) {
+                          return DropdownMenuItem<EducationLevel>(
+                            value: level,
+                            child: textPoppins(level.label),
+                          );
+                        }).toList(),
+                        onChanged: (EducationLevel? newValue) {
+                          setState(() {
+                            selectedLevel = newValue;
+                          });
                         },
                       ),
                     ],

@@ -1,4 +1,5 @@
 import 'package:lingo_manage/core/constants/user_role.dart';
+import 'package:lingo_manage/core/utils/education_level_enum.dart';
 
 class AppUser {
   final String uid;
@@ -7,10 +8,9 @@ class AppUser {
   final String email;
   final String phone;
   final String role;
-  final String? subscriptionStatus;
-  final int? studentLimit;
-  final String? level;
   final String? address;
+  final String? schoolName;
+  final EducationLevel? educationLevel;
 
   AppUser({
     required this.uid,
@@ -19,10 +19,9 @@ class AppUser {
     required this.email,
     required this.phone,
     required this.role,
-    this.subscriptionStatus,
-    this.studentLimit,
-    this.level,
     this.address,
+    this.schoolName,
+    this.educationLevel,
   });
 
   factory AppUser.fromMap(String uid, Map<String, dynamic> data) {
@@ -33,10 +32,9 @@ class AppUser {
       email: data['email'] ?? '',
       phone: data['phone'] ?? '',
       role: data['role'] ?? UserRole.student,
-      subscriptionStatus: data['subscriptionStatus'],
-      studentLimit: data['studentLimit'],
-      level: data['level'],
-      address: data['address'],
+      address: data['address'] ?? '',
+      schoolName: data['schoolName'] ?? '',
+      educationLevel: data['educationLevel'] ?? EducationLevel.other,
     );
   }
 
@@ -47,10 +45,9 @@ class AppUser {
       'email': email,
       'phone': phone,
       'role': role,
-      'subscriptionStatus': subscriptionStatus,
-      'studentLimit': studentLimit,
-      'level': level,
       'address': address,
+      'schoolName': schoolName,
+      'educationLevel': educationLevel,
     };
   }
 }
