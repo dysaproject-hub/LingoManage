@@ -8,10 +8,14 @@ Widget textBaloo2(
   Color color = AppColors.black,
   double fontSize = 12,
   FontWeight fontWeight = FontWeight.w400,
+  int? maxlines,
+  TextOverflow? textOverFlow,
 }) {
   return Text(
     text,
     textAlign: textAlign,
+    maxLines: maxlines,
+    overflow: textOverFlow,
     style: GoogleFonts.baloo2(
       fontSize: fontSize,
       fontWeight: fontWeight,

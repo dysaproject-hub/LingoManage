@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:lingo_manage/core/models/app_users.dart';
 import 'package:lingo_manage/core/providers/app_users_provider.dart';
-import 'package:lingo_manage/core/utils/education_level_enum.dart';
 import 'package:lingo_manage/features/auth/presentation/providers/auth_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -26,7 +25,7 @@ class AppUserController extends AsyncNotifier<AppUser> {
     String? phone,
     String? address,
     String? schoolName,
-    EducationLevel? educationLevel
+    String? educationLevel
   }) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {

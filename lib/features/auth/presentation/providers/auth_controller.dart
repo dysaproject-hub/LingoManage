@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lingo_manage/core/models/app_users.dart';
+import 'package:lingo_manage/core/utils/education_level_enum.dart';
 import 'package:lingo_manage/features/auth/presentation/providers/auth_provider.dart';
 
 final authController = AsyncNotifierProvider<AuthController, AppUser?>(
@@ -62,6 +63,8 @@ class AuthController extends AsyncNotifier<AppUser?> {
     required String nickname,
     required String phone,
     required String address,
+    required String schoolName,
+    required EducationLevel educationalLevel,
   }) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
@@ -74,6 +77,8 @@ class AuthController extends AsyncNotifier<AppUser?> {
             nickname: nickname,
             phone: phone,
             address: address,
+            schoolName: schoolName,
+            educationalLevel: educationalLevel,
           );
       return user;
     });

@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:lingo_manage/core/constants/firestore_collections.dart';
 import 'package:lingo_manage/core/models/app_users.dart';
-import 'package:lingo_manage/core/utils/education_level_enum.dart';
 
 class UserDatasources {
   final FirebaseFirestore _firestore;
@@ -15,10 +14,10 @@ class UserDatasources {
         .get();
 
     if (!docSnapshot.exists || docSnapshot.data() == null) {
-      throw Exception("Data User Tidak Ditemukan");
+      throw Exception("User data not found.");
     }
 
-    return AppUser.fromMap(uid ,docSnapshot.data()!);
+    return AppUser.fromMap(uid, docSnapshot.data()!);
   }
 
   Future<void> updateDataUser({
@@ -28,7 +27,7 @@ class UserDatasources {
     String? phone,
     String? address,
     String? schoolName,
-    EducationLevel? educationLevel,
+    String? educationLevel,
   }) async {
     final Map<String, dynamic> data = {};
 

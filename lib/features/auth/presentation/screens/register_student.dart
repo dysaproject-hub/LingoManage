@@ -238,7 +238,25 @@ class _RegisterStudentState extends ConsumerState<RegisterStudent> {
                         initialValue: selectedLevel,
                         decoration: InputDecoration(
                           labelText: 'Educational Level',
-                          border: UnderlineInputBorder(),
+                          enabledBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Colors.grey,
+                              width: 1.5,
+                            ),
+                          ),
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                              color: AppColors
+                                  .primary,
+                              width: 2.0,
+                            ),
+                          ),
+                          errorBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Colors.red,
+                              width: 1.5,
+                            ),
+                          ),
                           labelStyle: GoogleFonts.poppins(
                             color: AppColors.black.withAlpha(100),
                             fontSize: 14,
@@ -287,6 +305,8 @@ class _RegisterStudentState extends ConsumerState<RegisterStudent> {
                             nickname: _nicknameController.text,
                             phone: _phoneController.text,
                             address: _addressController.text,
+                            schoolName: _schoolNameController.text,
+                            educationalLevel: selectedLevel ?? EducationLevel.other,
                           );
 
                           ref.invalidate(authStateProvider);

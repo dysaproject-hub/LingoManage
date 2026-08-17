@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:lingo_manage/core/constants/app_colors.dart';
 import 'package:lingo_manage/core/constants/user_role.dart';
 import 'package:lingo_manage/core/providers/app_users_provider.dart';
@@ -32,9 +33,9 @@ class _ProfileUserState extends ConsumerState<ProfileUser> {
   String originalPhone = "";
   String originalAddress = "";
   String originalSchoolName = "";
+  EducationLevel? originalEducationLevel;
 
   bool isEditing = false;
-
   EducationLevel? selectedValue;
 
   @override
@@ -44,7 +45,6 @@ class _ProfileUserState extends ConsumerState<ProfileUser> {
     _phoneController.dispose();
     _addressController.dispose();
     _schoolNameController.dispose();
-
     super.dispose();
   }
 
@@ -64,6 +64,7 @@ class _ProfileUserState extends ConsumerState<ProfileUser> {
     _schoolNameController.text = originalSchoolName;
 
     setState(() {
+      selectedValue = originalEducationLevel;
       isEditing = false;
     });
   }
@@ -86,7 +87,7 @@ class _ProfileUserState extends ConsumerState<ProfileUser> {
             phone: phone,
             address: address,
             schoolName: schoolName,
-            educationLevel: selectedValue,
+            educationLevel: selectedValue?.label,
           );
 
       originalFullname = fullname;
@@ -94,6 +95,7 @@ class _ProfileUserState extends ConsumerState<ProfileUser> {
       originalPhone = phone;
       originalAddress = address;
       originalSchoolName = schoolName;
+      originalEducationLevel = selectedValue;
 
       if (!mounted) return;
 
@@ -139,7 +141,6 @@ class _ProfileUserState extends ConsumerState<ProfileUser> {
                         Navigator.pop(context);
                       },
                     ),
-
                     Center(
                       child: textBaloo2(
                         "Profile",
@@ -148,7 +149,6 @@ class _ProfileUserState extends ConsumerState<ProfileUser> {
                         color: AppColors.black,
                       ),
                     ),
-
                     CustomIconButton(
                       iconData: Icons.logout,
                       boxColor: AppColors.lightText,
@@ -166,9 +166,7 @@ class _ProfileUserState extends ConsumerState<ProfileUser> {
                     ),
                   ],
                 ),
-
                 const SizedBox(height: 50),
-
                 imageProfileData.when(
                   data: (data) {
                     ImageProvider profileImage;
@@ -195,7 +193,6 @@ class _ProfileUserState extends ConsumerState<ProfileUser> {
                             backgroundImage: profileImage,
                           ),
                         ),
-
                         Positioned(
                           bottom: 0,
                           right: 0,
@@ -222,17 +219,13 @@ class _ProfileUserState extends ConsumerState<ProfileUser> {
                       ],
                     );
                   },
-
                   error: (error, stackTrace) => textPoppins(
-                    "Maaf Terjadi Kesalahan",
+                    "Sorry, Something Went Wrong!",
                     color: AppColors.black,
                   ),
-
                   loading: () => const LoadingWidget(),
                 ),
-
                 const SizedBox(height: 50),
-
                 userDataProvider.when(
                   data: (data) {
                     if (originalFullname.isEmpty) {
@@ -260,6 +253,11 @@ class _ProfileUserState extends ConsumerState<ProfileUser> {
                       _schoolNameController.text = data.schoolName ?? "-";
                     }
 
+                    if (originalEducationLevel == null && !isEditing) {
+                      originalEducationLevel = EducationLevelExtension.fromLabel(data.educationLevel);
+                      selectedValue = EducationLevelExtension.fromLabel(data.educationLevel);
+                    }
+
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
@@ -272,9 +270,7 @@ class _ProfileUserState extends ConsumerState<ProfileUser> {
                             startEditing();
                           },
                         ),
-
                         const SizedBox(height: 12),
-
                         buildTextField(
                           controller: _nicknameController,
                           label: "Nickname",
@@ -284,9 +280,7 @@ class _ProfileUserState extends ConsumerState<ProfileUser> {
                             startEditing();
                           },
                         ),
-
                         const SizedBox(height: 12),
-
                         buildTextField(
                           controller: _phoneController,
                           keyboardType: TextInputType.phone,
@@ -297,10 +291,8 @@ class _ProfileUserState extends ConsumerState<ProfileUser> {
                             startEditing();
                           },
                         ),
-
                         if (data.role == UserRole.student) ...[
                           const SizedBox(height: 12),
-
                           buildTextField(
                             controller: _addressController,
                             label: "Address",
@@ -310,9 +302,7 @@ class _ProfileUserState extends ConsumerState<ProfileUser> {
                               startEditing();
                             },
                           ),
-
                           const SizedBox(height: 12),
-
                           buildTextField(
                             controller: _schoolNameController,
                             label: "School Name",
@@ -322,13 +312,29 @@ class _ProfileUserState extends ConsumerState<ProfileUser> {
                               startEditing();
                             },
                           ),
-
+                          const SizedBox(height: 12),
                           DropdownButtonFormField<EducationLevel>(
-                            focusColor: AppColors.primary,
-                            initialValue: data.educationLevel,
-                            decoration: const InputDecoration(
+                            dropdownColor: AppColors.lightText,
+                            initialValue: selectedValue,
+                            decoration: InputDecoration(
                               labelText: 'Educational Level',
-                              border: UnderlineInputBorder(),
+                              labelStyle: GoogleFonts.poppins(
+                                color: AppColors.black.withAlpha(100),
+                                fontSize: 14,
+                                fontWeight: FontWeight.w300,
+                              ),
+                              enabledBorder: const UnderlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: AppColors.primary,
+                                  width: 1.5,
+                                ),
+                              ),
+                              focusedBorder: const UnderlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: AppColors.primary,
+                                  width: 2.0,
+                                ),
+                              ),
                             ),
                             items: EducationLevel.values.map((
                               EducationLevel level,
@@ -346,9 +352,7 @@ class _ProfileUserState extends ConsumerState<ProfileUser> {
                             },
                           ),
                         ],
-
                         const SizedBox(height: 20),
-
                         if (isEditing)
                           Row(
                             mainAxisAlignment: MainAxisAlignment.end,
@@ -364,9 +368,7 @@ class _ProfileUserState extends ConsumerState<ProfileUser> {
                                   cancelEditing();
                                 },
                               ),
-
                               const SizedBox(width: 10),
-
                               Button(
                                 text: "Update",
                                 textColor: AppColors.lightText,
@@ -383,12 +385,10 @@ class _ProfileUserState extends ConsumerState<ProfileUser> {
                       ],
                     );
                   },
-
                   error: (error, stackTrace) => textPoppins(
-                    "Maaf Terjadi Kesalahan",
+                    "Sorry, Something Went Wrong!",
                     color: AppColors.black,
                   ),
-
                   loading: () => const LoadingWidget(),
                 ),
               ],

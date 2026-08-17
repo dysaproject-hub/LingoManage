@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lingo_manage/core/constants/app_colors.dart';
@@ -11,45 +9,14 @@ import 'package:lingo_manage/features/student/presentation/screens/student_home_
 import 'package:lingo_manage/shared/widgets/loading_widget.dart';
 import 'package:lingo_manage/shared/widgets/text_widget.dart';
 
-class AuthGate extends ConsumerStatefulWidget {
+class AuthGate extends ConsumerWidget {
   const AuthGate({super.key});
 
   @override
-  ConsumerState<AuthGate> createState() => _AuthGateState();
-}
-
-class _AuthGateState extends ConsumerState<AuthGate> {
-  bool _isSplashFinished = false;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _startSplash();
-  }
-
-  Future<void> _startSplash() async {
-    // Minimal waktu splash
-    await Future.delayed(const Duration(seconds: 5));
-
-    if (!mounted) return;
-
-    setState(() {
-      _isSplashFinished = true;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     debugPrint("AuthGate Rebuild");
 
     final authState = ref.watch(authStateProvider);
-
-
-    if (!_isSplashFinished) {
-      return _buildSplashScreen(context);
-    }
-
 
     return authState.when(
       data: (user) {
@@ -57,35 +24,26 @@ class _AuthGateState extends ConsumerState<AuthGate> {
           return const WelcomePage();
         }
 
-        if (user.role == UserRole.student) {
-          return const StudentHomePage();
+        switch (user.role) {
+          case UserRole.student:
+            return const StudentHomePage();
+          case UserRole.admin:
+            return const AdminDashboardPage();
+          default:
+            return Scaffold(
+              body: Center(
+                child: textPoppins('Invalid Role', color: AppColors.black),
+              ),
+            );
         }
-
-        if (user.role == UserRole.admin) {
-          return const AdminDashboardPage();
-        }
-
-        return Scaffold(
-          body: Center(
-            child: textPoppins(
-              'Role tidak valid',
-              color: AppColors.black,
-            ),
-          ),
-        );
       },
-
-      loading: () {
-        return _buildSplashScreen(context);
-      },
-
+      loading: () => _buildSplashScreen(context),
       error: (error, stack) {
         debugPrint('AuthGate error: $error');
-
         return Scaffold(
           body: Center(
             child: textPoppins(
-              "Maaf terjadi kesalahan",
+              "Sorry, Something Went Wrong!",
               color: AppColors.black,
             ),
           ),
@@ -109,27 +67,17 @@ class _AuthGateState extends ConsumerState<AuthGate> {
                 width: 150,
                 height: 150,
               ),
-
               const SizedBox(height: 16),
-
               textBaloo2(
                 "LingoManage",
                 fontSize: 32,
                 fontWeight: FontWeight.w800,
                 color: AppColors.black,
               ),
-
               const SizedBox(height: 24),
-
               const LoadingWidget(),
-
               const SizedBox(height: 12),
-
-              textPoppins(
-                "Loading...",
-                color: AppColors.black,
-                fontSize: 12,
-              ),
+              textPoppins("Loading...", color: AppColors.black, fontSize: 12),
             ],
           ),
         ),

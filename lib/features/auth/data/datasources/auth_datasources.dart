@@ -88,6 +88,8 @@ class AuthDatasources {
     required String nickname,
     required String phone,
     required String address,
+    required String schoolName,
+    required String educationLevel,
   }) async {
     final userCredential = await _auth.createUserWithEmailAndPassword(
       email: email,
@@ -107,6 +109,8 @@ class AuthDatasources {
       'nickname': nickname,
       'phone': phone,
       'address': address,
+      'schoolName': schoolName,
+      'educationLevel': educationLevel,
       'role': UserRole.student,
       'createdAt': FieldValue.serverTimestamp(),
       'updatedAt': FieldValue.serverTimestamp(),
@@ -136,7 +140,7 @@ class AuthDatasources {
         .get();
 
     if (!doc.exists || doc.data() == null) {
-      throw Exception('Data user tidak ditemukan');
+      throw Exception('User data not found.');
     }
 
     return AppUser.fromMap(uid, doc.data()!);

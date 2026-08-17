@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:lingo_manage/core/models/app_users.dart';
+import 'package:lingo_manage/core/utils/education_level_enum.dart';
 import 'package:lingo_manage/features/auth/data/datasources/auth_datasources.dart';
 
 class AuthRepository {
@@ -45,7 +46,10 @@ class AuthRepository {
     required String nickname,
     required String phone,
     required String address,
+    required String schoolName,
+    required EducationLevel educationalLevel,
   }) async {
+
       return await _datasource.registerStudent(
         email: email,
         password: password,
@@ -53,6 +57,8 @@ class AuthRepository {
         nickname: nickname,
         phone: phone,
         address: address,
+        schoolName: schoolName,
+        educationLevel: educationalLevel.label
       );
   }
 

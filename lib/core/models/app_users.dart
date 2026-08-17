@@ -10,7 +10,7 @@ class AppUser {
   final String role;
   final String? address;
   final String? schoolName;
-  final EducationLevel? educationLevel;
+  final String? educationLevel;
 
   AppUser({
     required this.uid,
@@ -34,7 +34,7 @@ class AppUser {
       role: data['role'] ?? UserRole.student,
       address: data['address'] ?? '',
       schoolName: data['schoolName'] ?? '',
-      educationLevel: data['educationLevel'] ?? EducationLevel.other,
+      educationLevel: data['educationLevel'] ?? EducationLevel.other.label,
     );
   }
 

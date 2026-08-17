@@ -1,4 +1,4 @@
 class UserRole {
-  static final String student = 'student';
-  static final String admin = 'admin';
+  static const String student = 'student';
+  static const String admin = 'admin';
 }
