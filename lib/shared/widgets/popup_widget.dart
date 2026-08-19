@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lingo_manage/core/constants/app_colors.dart';
 import 'package:lingo_manage/core/models/app_users.dart';
 import 'package:lingo_manage/features/course/models/course_model.dart';
+import 'package:lingo_manage/features/course/presentation/providers/course_program_provider.dart';
 import 'package:lingo_manage/features/course/presentation/providers/course_provider.dart';
 import 'package:lingo_manage/shared/widgets/button_widget.dart';
 import 'package:lingo_manage/shared/widgets/text_field_widget.dart';
@@ -250,6 +251,101 @@ class PopupWidget {
               fontWeight: FontWeight.w700,
               borderRadius: BorderRadius.circular(10),
               onPressed: onRemove,
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  static void showDialogAddCourseProgram({
+    required BuildContext context,
+    required CourseModel courseData,
+    required WidgetRef ref,
+  }) {
+    final TextEditingController programNameController = TextEditingController();
+
+    final TextEditingController descriptionController = TextEditingController();
+
+    final TextEditingController registrationFeeController = TextEditingController();
+
+    final TextEditingController monthlyFeeController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: AppColors.lightText,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: textBaloo2("Add Course Programs", fontSize: 24),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 24),
+              textFieldWidget(
+                labelText: "Program Name",
+                controller: programNameController,
+                textFieldType: TextFieldType.outline,
+              ),
+              const SizedBox(height: 16),
+              textFieldWidget(
+                labelText: "Description",
+                controller: descriptionController,
+                textFieldType: TextFieldType.outline,
+              ),
+              const SizedBox(height: 16),
+              textFieldWidget(
+                labelText: "Registration Fee",
+                controller: registrationFeeController,
+                textFieldType: TextFieldType.outline,
+                keyboardType: TextInputType.number,
+              ),
+              const SizedBox(height: 16),
+              textFieldWidget(
+                labelText: "Monthly Fee",
+                controller: monthlyFeeController,
+                textFieldType: TextFieldType.outline,
+                keyboardType: TextInputType.number
+              ),
+              const SizedBox(height: 24),
+            ],
+          ),
+          actions: [
+            Button(
+              text: "Cancel",
+              textColor: AppColors.black,
+              bgColor: AppColors.lightText,
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+              borderRadius: BorderRadius.circular(10),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+            Button(
+              text: "Add Program",
+              textColor: AppColors.lightText,
+              bgColor: AppColors.accent,
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+              borderRadius: BorderRadius.circular(10),
+              onPressed: () async {
+                await ref
+                    .read(courseProgramControllerProvider.notifier)
+                    .addCourseProgram(
+                      courseId: courseData.id,
+                      name: programNameController.text,
+                      description: descriptionController.text,
+                      registrationFee: int.tryParse(registrationFeeController.text) ?? 0,
+                      monthlyFee: int.tryParse(monthlyFeeController.text) ?? 0,
+                      isActive: true,
+                    );
+
+                if (!context.mounted) return;
+                Navigator.pop(context);
+              },
             ),
           ],
         );

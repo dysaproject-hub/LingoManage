@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lingo_manage/features/course/models/course_model.dart';
 import 'package:lingo_manage/features/course/presentation/providers/course_provider.dart';
 
 class CourseController extends AsyncNotifier<void> {
@@ -54,5 +55,14 @@ class CourseController extends AsyncNotifier<void> {
 
       ref.invalidate(myCoursesProvider);
     });
+  }
+}
+
+class GetCourseController extends AsyncNotifier<List<CourseModel>> {
+  @override
+  Future<List<CourseModel>> build() async {
+    final repo = ref.watch(courseRepositoryProvider);
+
+    return repo.getAllCourses();
   }
 }

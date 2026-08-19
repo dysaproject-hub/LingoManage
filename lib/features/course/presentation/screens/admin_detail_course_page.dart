@@ -133,7 +133,7 @@ class AdminDetailCoursePage extends ConsumerWidget {
                               );
                             },
                             error: (error, s) => textPoppins('--'),
-                            loading: () => LoadingWidget(size: 20,),
+                            loading: () => LoadingWidget(size: 20),
                           ),
                         ],
                       ),
@@ -208,7 +208,11 @@ class AdminDetailCoursePage extends ConsumerWidget {
 
                     TextButton.icon(
                       onPressed: () {
-                        // TODO: Add Program
+                        PopupWidget.showDialogAddCourseProgram(
+                          context: context,
+                          courseData: courseModel,
+                          ref: ref,
+                        );
                       },
 
                       icon: const Icon(Icons.add, size: 18),
@@ -224,6 +228,8 @@ class AdminDetailCoursePage extends ConsumerWidget {
 
                 const SizedBox(height: 8),
 
+
+
                 EmptySection(
                   icon: Icons.menu_book_outlined,
                   title: 'No programs yet',
@@ -231,7 +237,12 @@ class AdminDetailCoursePage extends ConsumerWidget {
                       'Add programs such as Regular, Private, or Intensive.',
                   buttonText: 'Add Program',
                   onPressed: () {
-                    // TODO: Add Program
+                    // TODO: Show The Program (First: Create the controller)
+                    PopupWidget.showDialogAddCourseProgram(
+                      context: context,
+                      courseData: courseModel,
+                      ref: ref,
+                    );
                   },
                 ),
 
