@@ -5,4 +5,5 @@ class AppRoutes {
   static const String courseFormPage = '/courseForm';
   static const String profileUserPage = '/profileUser';
   static const String manageAdminPage = '/manageAdmin';
+  static const String adminDetailCourse = '/adminDetailCourse';
 }

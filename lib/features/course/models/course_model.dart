@@ -3,6 +3,7 @@ class CourseModel {
   final String ownerId;
 
   final String name;
+  final String address;
   final String? description;
 
   final DateTime? createdAt;
@@ -12,6 +13,7 @@ class CourseModel {
     required this.id,
     required this.ownerId,
     required this.name,
+    required this.address,
     this.description,
     this.createdAt,
     this.updatedAt,
@@ -25,6 +27,7 @@ class CourseModel {
       id: id,
       ownerId: data['ownerId'] ?? '',
       name: data['name'] ?? '',
+      address: data['address'] ?? '',
       description: data['description'] ?? '',
       createdAt: data['createdAt']?.toDate(),
       updatedAt: data['updatedAt']?.toDate(),

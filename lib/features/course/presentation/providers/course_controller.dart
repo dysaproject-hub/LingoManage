@@ -9,14 +9,14 @@ class CourseController extends AsyncNotifier<void> {
   Future<void> addCourse({
     required String name,
     required String description,
+    required String address,
   }) async {
     state = const AsyncLoading();
 
     state = await AsyncValue.guard(() async {
-      await ref.read(courseRepositoryProvider).addCourse(
-            name: name,
-            description: description,
-          );
+      await ref
+          .read(courseRepositoryProvider)
+          .addCourse(name: name, description: description, address: address);
 
       ref.invalidate(myCoursesProvider);
     });
@@ -27,14 +27,18 @@ class CourseController extends AsyncNotifier<void> {
     required String courseId,
     required String name,
     required String description,
+    required String address,
   }) async {
     state = const AsyncLoading();
 
     state = await AsyncValue.guard(() async {
-      await ref.read(courseRepositoryProvider).updateCourse(
+      await ref
+          .read(courseRepositoryProvider)
+          .updateCourse(
             courseId: courseId,
             name: name,
             description: description,
+            address: address,
           );
 
       ref.invalidate(myCoursesProvider);
@@ -42,15 +46,11 @@ class CourseController extends AsyncNotifier<void> {
   }
 
   /// DELETE COURSE
-  Future<void> deleteCourse({
-    required String courseId,
-  }) async {
+  Future<void> deleteCourse({required String courseId}) async {
     state = const AsyncLoading();
 
     state = await AsyncValue.guard(() async {
-      await ref.read(courseRepositoryProvider).deleteCourse(
-            courseId: courseId,
-          );
+      await ref.read(courseRepositoryProvider).deleteCourse(courseId: courseId);
 
       ref.invalidate(myCoursesProvider);
     });

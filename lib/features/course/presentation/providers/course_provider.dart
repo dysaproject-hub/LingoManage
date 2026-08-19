@@ -40,3 +40,25 @@ final courseControllerProvider =
     AsyncNotifierProvider<CourseController, void>(
   CourseController.new,
 );
+
+/// GET COURSE CONTROLLER
+final getCourseControllerProvider = FutureProvider<List<CourseModel>>((ref) async {
+  final authState = ref.watch(authStateProvider);
+
+  final user = authState.valueOrNull;
+
+  if (user == null) {
+    return [];
+  }
+
+  final repository = ref.watch(courseRepositoryProvider);
+
+  return repository.getAllCourses();
+});
+
+final courseDetailProvider =
+    FutureProvider.family<CourseModel, String>((ref, courseId) async {
+  return ref
+      .read(courseRepositoryProvider)
+      .getCourseById(courseId: courseId);
+});

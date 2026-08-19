@@ -66,10 +66,22 @@ class CourseDatasources {
     return CourseModel.fromMap(doc.id, doc.data()!);
   }
 
+  Future<List<CourseModel>> getAllCourses() async {
+    final snapshot = await _db
+        .collection(FirestoreCollection.coursesCollection)
+        .get();
+
+        return  snapshot.docs.map((doc) {
+          final data = doc.data();
+          return CourseModel.fromMap(doc.id, data);
+        }).toList();
+  }
+
   /// ADD COURSE
   Future<CourseModel> addCourse({
     required String name,
     required String description,
+    required String address,
   }) async {
     final uid = _currentUserId;
 
@@ -81,6 +93,7 @@ class CourseDatasources {
       'ownerId': uid,
       'name': name,
       'description': description,
+      'address': address,
       'createdAt': FieldValue.serverTimestamp(),
       'updatedAt': FieldValue.serverTimestamp(),
     };
@@ -106,6 +119,7 @@ class CourseDatasources {
     required String courseId,
     required String name,
     required String description,
+    required String address,
   }) async {
     await _db
         .collection(FirestoreCollection.coursesCollection)
@@ -113,6 +127,7 @@ class CourseDatasources {
         .update({
           'name': name,
           'description': description,
+          'address': address,
           'updatedAt': FieldValue.serverTimestamp(),
         });
   }

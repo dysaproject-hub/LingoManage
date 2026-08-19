@@ -18,6 +18,7 @@ class CourseForm extends ConsumerStatefulWidget {
 class _RegisterAdminState extends ConsumerState<CourseForm> {
   final _courseNameController = TextEditingController();
   final _descriptionController = TextEditingController();
+  final _addressController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
 
@@ -25,6 +26,7 @@ class _RegisterAdminState extends ConsumerState<CourseForm> {
   void dispose() {
     _courseNameController.dispose();
     _descriptionController.dispose();
+    _addressController.dispose();
     super.dispose();
   }
 
@@ -85,9 +87,22 @@ class _RegisterAdminState extends ConsumerState<CourseForm> {
                       ),
                       const SizedBox(height: 16),
                       textFieldWidget(
-                        labelText: "Description",
+                        labelText: "Address",
                         controller: _descriptionController,
                         keyboardType: TextInputType.text,
+                      ),
+                      const SizedBox(height: 16,),
+                      textFieldWidget(
+                        labelText: "Address",
+                        controller: _addressController,
+                        keyboardType: TextInputType.text,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "The address field cannot be empty!";
+                          }
+
+                          return null;
+                        },
                       ),
                     ],
                   ),
@@ -115,6 +130,7 @@ class _RegisterAdminState extends ConsumerState<CourseForm> {
                           await notifier.addCourse(
                             name: _courseNameController.text,
                             description: _descriptionController.text,
+                            address: _addressController.text,
                           );
 
                           ref.invalidate(myCoursesProvider);

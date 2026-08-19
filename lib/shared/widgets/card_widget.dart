@@ -6,14 +6,14 @@ import 'package:lingo_manage/shared/widgets/text_widget.dart';
 class CardWithStrokeWidget extends StatelessWidget {
   final String title;
   final String description;
-  final Image image;
+  final Image? image;
   final double borderRadius;
 
   const CardWithStrokeWidget({
     super.key,
     required this.title,
     required this.description,
-    required this.image,
+    this.image,
     required this.borderRadius,
   });
 
@@ -53,7 +53,7 @@ class CardWithStrokeWidget extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 8),
-          Expanded(child: image),
+          Expanded(child: image ?? SizedBox.shrink()),
         ],
       ),
     );

@@ -93,6 +93,10 @@ class PopupWidget {
       text: courseData.description,
     );
 
+    final TextEditingController addressController = TextEditingController(
+      text: courseData.address,
+    );
+
     showDialog(
       context: context,
       builder: (context) {
@@ -115,6 +119,12 @@ class PopupWidget {
               textFieldWidget(
                 labelText: "Description",
                 controller: descriptionController,
+                textFieldType: TextFieldType.outline,
+              ),
+              const SizedBox(height: 16),
+              textFieldWidget(
+                labelText: "address",
+                controller: addressController,
                 textFieldType: TextFieldType.outline,
               ),
               const SizedBox(height: 24),
@@ -146,9 +156,11 @@ class PopupWidget {
                       courseId: courseData.id,
                       name: nameController.text,
                       description: descriptionController.text,
+                      address: addressController.text,
                     );
 
                 ref.invalidate(myCoursesProvider);
+                ref.invalidate(courseDetailProvider);
 
                 if (!context.mounted) return;
                 Navigator.pop(context);

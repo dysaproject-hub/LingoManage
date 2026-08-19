@@ -105,7 +105,13 @@ class _AdminDashboardPageState extends ConsumerState<AdminDashboardPage> {
                             courseData: data[index],
                             jumlahsiswa: "--",
                             buttoncolor: AppColors.lightText,
-                            onTapCek: () {},
+                            onTapCek: () {
+                              Navigator.pushNamed(
+                                context,
+                                AppRoutes.adminDetailCourse,
+                                arguments: {"courseModel": data[index]},
+                              );
+                            },
                             onTapEdit: () {
                               PopupWidget.showDialogUpdateCourseData(
                                 context: context,
