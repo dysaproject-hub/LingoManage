@@ -26,9 +26,16 @@ class CurrencyInputFormatter extends TextInputFormatter {
 
     return TextEditingValue(
       text: formatted,
-      selection: TextSelection.collapsed(
-        offset: formatted.length,
-      ),
+      selection: TextSelection.collapsed(offset: formatted.length),
     );
   }
 }
+
+String formatRupiah(int value) {
+    final formatted = value.toString().replaceAllMapped(
+      RegExp(r'\B(?=(\d{3})+(?!\d))'),
+      (match) => '.',
+    );
+
+    return "Rp$formatted";
+  }

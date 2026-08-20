@@ -29,4 +29,34 @@ class CourseProgramController extends AsyncNotifier<void> {
           );
     });
   }
+
+  Future<void> deleteCourseProgram({required String programId}) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
+      await ref
+          .watch(courseProgramRepositoryProvider)
+          .deleteProgram(programId: programId);
+    });
+  }
+
+  Future<void> updateCourseProgram({
+    required String programId,
+    required String programName,
+    required String description,
+    required int registrationFee,
+    required int monthlyFee,
+  }) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
+      await ref
+          .watch(courseProgramRepositoryProvider)
+          .updateProgram(
+            programId: programId,
+            programName: programName,
+            description: description,
+            registrationFee: registrationFee,
+            monthlyFee: monthlyFee,
+          );
+    });
+  }
 }

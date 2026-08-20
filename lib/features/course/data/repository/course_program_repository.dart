@@ -22,11 +22,32 @@ class CourseProgramRepository {
       description: description,
       registrationFee: registrationFee,
       monthlyFee: monthlyFee,
-      isActive: isActive,
     );
   }
 
-  Future<List<CourseProgramModel>> getAllCourseProgram({required String courseId}) async {
+  Future<void> deleteProgram({required String programId}) async {
+    await _datasources.deleteCourseProgram(programId: programId);
+  }
+
+  Future<void> updateProgram({
+    required String programId,
+    required String programName,
+    required String description,
+    required int registrationFee,
+    required int monthlyFee,
+  }) async {
+    await _datasources.updateProgram(
+      programId: programId,
+      programName: programName,
+      description: description,
+      registrationFee: registrationFee,
+      monthlyFee: monthlyFee,
+    );
+  }
+
+  Future<List<CourseProgramModel>> getAllCourseProgram({
+    required String courseId,
+  }) async {
     return await _datasources.getAllCourseProgram(courseId: courseId);
   }
 }

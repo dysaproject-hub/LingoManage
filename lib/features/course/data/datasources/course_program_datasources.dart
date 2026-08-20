@@ -14,8 +14,6 @@ class CourseProgramDatasources {
 
     required int registrationFee,
     required int monthlyFee,
-
-    required bool isActive,
   }) async {
     final programRef = _db
         .collection(FirestoreCollection.programsCollection)
@@ -27,7 +25,6 @@ class CourseProgramDatasources {
       'description': description,
       'registrationFee': registrationFee,
       'monthlyFee': monthlyFee,
-      'isActive': isActive,
       'createdAt': FieldValue.serverTimestamp(),
       'updatedAt': FieldValue.serverTimestamp(),
     };
@@ -41,7 +38,35 @@ class CourseProgramDatasources {
     });
   }
 
-  Future<List<CourseProgramModel>> getAllCourseProgram({required String courseId}) async {
+  Future<void> deleteCourseProgram({required String programId}) async {
+    await _db
+        .collection(FirestoreCollection.programsCollection)
+        .doc(programId)
+        .delete();
+  }
+
+  Future<void> updateProgram({
+    required String programId,
+    required String programName,
+    required String description,
+    required int registrationFee,
+    required int monthlyFee,
+  }) async {
+    await _db
+        .collection(FirestoreCollection.programsCollection)
+        .doc(programId)
+        .update({
+          'name': programName,
+          'description': description,
+          'registrationFee': registrationFee,
+          'monthlyFee': monthlyFee,
+          'updatedAt': FieldValue.serverTimestamp(),
+        });
+  }
+
+  Future<List<CourseProgramModel>> getAllCourseProgram({
+    required String courseId,
+  }) async {
     final snapshot = await _db
         .collection(FirestoreCollection.programsCollection)
         .where('courseId', isEqualTo: courseId)

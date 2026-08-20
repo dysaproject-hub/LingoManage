@@ -87,7 +87,7 @@ class _RegisterAdminState extends ConsumerState<CourseForm> {
                       ),
                       const SizedBox(height: 16),
                       textFieldWidget(
-                        labelText: "Address",
+                        labelText: "Description",
                         controller: _descriptionController,
                         keyboardType: TextInputType.text,
                       ),

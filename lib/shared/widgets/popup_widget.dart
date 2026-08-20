@@ -4,6 +4,7 @@ import 'package:lingo_manage/core/constants/app_colors.dart';
 import 'package:lingo_manage/core/models/app_users.dart';
 import 'package:lingo_manage/core/utils/currency_formatters.dart';
 import 'package:lingo_manage/features/course/models/course_model.dart';
+import 'package:lingo_manage/features/course/models/course_program_model.dart';
 import 'package:lingo_manage/features/course/presentation/providers/course_program_provider.dart';
 import 'package:lingo_manage/features/course/presentation/providers/course_provider.dart';
 import 'package:lingo_manage/shared/widgets/button_widget.dart';
@@ -34,7 +35,7 @@ class PopupWidget {
               const SizedBox(height: 24),
               textPoppins(
                 "CourseName : ${course.name}",
-                fontSize: 16,
+                fontSize: 14,
                 color: AppColors.black,
                 textAlign: TextAlign.left,
               ),
@@ -445,6 +446,233 @@ class PopupWidget {
                 if (!context.mounted) return;
                 Navigator.pop(context);
               },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  static void showDialogEditCourseProgram({
+    required BuildContext context,
+    required CourseProgramModel program,
+    required WidgetRef ref,
+  }) {
+    final TextEditingController programNameController = TextEditingController(
+      text: program.name,
+    );
+
+    final TextEditingController descriptionController = TextEditingController(
+      text: program.description,
+    );
+
+    final TextEditingController registrationFeeController =
+        TextEditingController(text: program.registrationFee.toString());
+
+    final TextEditingController monthlyFeeController = TextEditingController(
+      text: program.monthlyFee.toString(),
+    );
+
+    final formKey = GlobalKey<FormState>();
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          backgroundColor: AppColors.lightText,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: textBaloo2("Edit Course Data", fontSize: 24),
+
+          content: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.sizeOf(context).height * 0.6,
+            ),
+            child: SingleChildScrollView(
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              child: Form(
+                key: formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const SizedBox(height: 24),
+
+                    textFieldWidget(
+                      labelText: "Program Name",
+                      controller: programNameController,
+                      textFieldType: TextFieldType.outline,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "Program name is required!";
+                        }
+
+                        return null;
+                      },
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    textFieldWidget(
+                      labelText: "Description",
+                      controller: descriptionController,
+                      textFieldType: TextFieldType.outline,
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    textFieldWidget(
+                      labelText: "Registration Fee",
+                      controller: registrationFeeController,
+                      textFieldType: TextFieldType.outline,
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [CurrencyInputFormatter()],
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "The registration fee is required!";
+                        }
+
+                        final monthlyFeeText = value
+                            .replaceAll('.', '')
+                            .replaceAll(',', '');
+
+                        final fee = int.tryParse(monthlyFeeText);
+
+                        if (fee == null) {
+                          return "The registration fee invalid!";
+                        }
+
+                        return null;
+                      },
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    textFieldWidget(
+                      labelText: "Monthly Fee",
+                      controller: monthlyFeeController,
+                      textFieldType: TextFieldType.outline,
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [CurrencyInputFormatter()],
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "The monthly fee is required!";
+                        }
+
+                        final monthlyFeeText = value
+                            .replaceAll('.', '')
+                            .replaceAll(',', '');
+
+                        final fee = int.tryParse(monthlyFeeText);
+
+                        if (fee == null) {
+                          return "The monthly fee invalid!";
+                        }
+
+                        return null;
+                      },
+                    ),
+
+                    const SizedBox(height: 24),
+                  ],
+                ),
+              ),
+            ),
+          ),
+
+          actions: [
+            Button(
+              text: "Cancel",
+              textColor: AppColors.black,
+              bgColor: AppColors.lightText,
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+              borderRadius: BorderRadius.circular(10),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+            Button(
+              text: "Update",
+              textColor: AppColors.lightText,
+              bgColor: AppColors.accent,
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+              borderRadius: BorderRadius.circular(10),
+              onPressed: () async {
+                final registrationFeeText = registrationFeeController.text
+                    .replaceAll('.', '')
+                    .replaceAll(',', '');
+
+                final monthlyFeeText = monthlyFeeController.text
+                    .replaceAll('.', '')
+                    .replaceAll(',', '');
+
+                if (!formKey.currentState!.validate()) {
+                  return;
+                }
+
+                await ref
+                    .read(courseProgramControllerProvider.notifier)
+                    .updateCourseProgram(
+                      programId: program.id,
+                      programName: programNameController.text,
+                      description: descriptionController.text,
+                      registrationFee: int.tryParse(registrationFeeText) ?? 0,
+                      monthlyFee: int.tryParse(monthlyFeeText) ?? 0,
+                    );
+
+                ref.invalidate(getAllCourseProgramProvider);
+
+                if (!context.mounted) return;
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  static void showDialogDeleteCourseProgram(
+    BuildContext context,
+    CourseProgramModel courseProgramModel,
+    VoidCallback onDelete,
+  ) {
+    showDialog(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          backgroundColor: AppColors.lightText,
+          title: textPoppins(
+            "Delete Course Program",
+            fontSize: 16,
+            fontWeight: FontWeight.w700,
+            color: AppColors.black,
+          ),
+          content: textPoppins(
+            'Are you sure to delete "${courseProgramModel.name}" program from this course?',
+          ),
+          actions: [
+            Button(
+              text: "Cancel",
+              textColor: AppColors.black,
+              bgColor: AppColors.lightText,
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+              borderRadius: BorderRadius.circular(10),
+              onPressed: () {
+                Navigator.pop(dialogContext);
+              },
+            ),
+            Button(
+              text: "Delete",
+              textColor: AppColors.lightText,
+              bgColor: AppColors.red,
+              fontSize: 12,
+              fontWeight: FontWeight.w700,
+              borderRadius: BorderRadius.circular(10),
+              onPressed: onDelete,
             ),
           ],
         );

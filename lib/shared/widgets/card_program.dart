@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lingo_manage/core/constants/app_colors.dart';
+import 'package:lingo_manage/core/utils/currency_formatters.dart';
 import 'package:lingo_manage/features/course/models/course_program_model.dart';
 import 'package:lingo_manage/shared/widgets/text_widget.dart';
 
@@ -19,6 +20,9 @@ class ProgramCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final registrationFee = formatRupiah(program.registrationFee);
+    final monthlyFee = formatRupiah(program.monthlyFee);
+
     return Card(
       elevation: 0,
       color: AppColors.lightText,
@@ -123,7 +127,7 @@ class ProgramCard extends StatelessWidget {
                     child: _ProgramInfo(
                       icon: Icons.payments_outlined,
                       label: 'RegistrationFee',
-                      value: 'Rp ${program.registrationFee}',
+                      value: registrationFee,
                     ),
                   ),
 
@@ -133,7 +137,7 @@ class ProgramCard extends StatelessWidget {
                     child: _ProgramInfo(
                       icon: Icons.payments_outlined,
                       label: 'MonthlyFee',
-                      value: 'Rp ${program.monthlyFee}',
+                      value: monthlyFee,
                     ),
                   ),
                 ],
@@ -200,6 +204,7 @@ class _ProgramInfo extends StatelessWidget {
                   fontWeight: FontWeight.w600,
                   color: AppColors.black,
                   maxLines: 1,
+                  textOverflow: TextOverflow.ellipsis
                 ),
               ],
             ),

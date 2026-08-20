@@ -53,9 +53,6 @@ class AdminDetailCoursePage extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // =========================================================
-                // COURSE HEADER
-                // =========================================================
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(20),
@@ -138,9 +135,6 @@ class AdminDetailCoursePage extends ConsumerWidget {
 
                 const SizedBox(height: 28),
 
-                // =========================================================
-                // STATISTICS
-                // =========================================================
                 textBaloo2(
                   'Overview',
                   fontSize: 20,
@@ -189,9 +183,6 @@ class AdminDetailCoursePage extends ConsumerWidget {
 
                 const SizedBox(height: 28),
 
-                // =========================================================
-                // PROGRAM
-                // =========================================================
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -233,7 +224,6 @@ class AdminDetailCoursePage extends ConsumerWidget {
                                 'Add programs such as Regular, Private, or Intensive.',
                             buttonText: 'Add Program',
                             onPressed: () {
-                              // TODO: Show The Program (First: Create the controller)
                               PopupWidget.showDialogAddCourseProgram(
                                 context: context,
                                 courseData: courseModel,
@@ -249,7 +239,49 @@ class AdminDetailCoursePage extends ConsumerWidget {
                                 const SizedBox(height: 16),
                             itemBuilder: (context, index) {
                               final courseProgram = data[index];
-                              return ProgramCard(program: courseProgram);
+                              return ProgramCard(
+                                program: courseProgram,
+                                onDelete: () {
+                                  PopupWidget.showDialogDeleteCourseProgram(
+                                    context,
+                                    courseProgram,
+                                    () async {
+                                      await ref
+                                          .watch(
+                                            courseProgramControllerProvider
+                                                .notifier,
+                                          )
+                                          .deleteCourseProgram(
+                                            programId: courseProgram.id,
+                                          );
+
+                                      ref.invalidate(
+                                        getAllCourseProgramProvider,
+                                      );
+
+                                      if (!context.mounted) return;
+                                      Navigator.pop(context);
+                                    },
+                                  );
+                                },
+                                onEdit: () {
+                                  PopupWidget.showDialogEditCourseProgram(
+                                    context: context,
+                                    program: courseProgram,
+                                    ref: ref,
+                                  );
+                                },
+                                onTap: () {
+                                  Navigator.pushNamed(
+                                    context,
+                                    AppRoutes.courseProgramDetail,
+                                    arguments: {
+                                      'courseModel': courseModel,
+                                      'courseProgramModel': courseProgram,
+                                    },
+                                  );
+                                },
+                              );
                             },
                           );
                   },
@@ -259,9 +291,6 @@ class AdminDetailCoursePage extends ConsumerWidget {
 
                 const SizedBox(height: 28),
 
-                // =========================================================
-                // CLASSES
-                // =========================================================
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -302,9 +331,6 @@ class AdminDetailCoursePage extends ConsumerWidget {
 
                 const SizedBox(height: 28),
 
-                // =========================================================
-                // MANAGEMENT
-                // =========================================================
                 textBaloo2(
                   'Management',
                   fontSize: 20,
@@ -339,9 +365,6 @@ class AdminDetailCoursePage extends ConsumerWidget {
 
                 const SizedBox(height: 30),
 
-                // =========================================================
-                // ACTION
-                // =========================================================
                 SizedBox(
                   width: double.infinity,
 
@@ -363,7 +386,7 @@ class AdminDetailCoursePage extends ConsumerWidget {
                   ),
                 ),
 
-                const SizedBox(height: 30),
+                const SizedBox(height: 16),
               ],
             ),
           ),

@@ -7,8 +7,6 @@ class CourseProgramModel {
   final int registrationFee;
   final int monthlyFee;
 
-  final bool isActive;
-
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
@@ -19,7 +17,6 @@ class CourseProgramModel {
     this.description,
     required this.registrationFee,
     required this.monthlyFee,
-    required this.isActive,
     this.createdAt,
     this.updatedAt,
   });
@@ -32,7 +29,6 @@ class CourseProgramModel {
       description: data['description'],
       registrationFee: data['registrationFee'],
       monthlyFee: data['monthlyFee'],
-      isActive: data['isActive'],
       createdAt: data['createdAt']?.toDate(),
       updatedAt: data['updatedAt']?.toDate(),
     );

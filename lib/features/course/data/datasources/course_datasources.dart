@@ -71,10 +71,10 @@ class CourseDatasources {
         .collection(FirestoreCollection.coursesCollection)
         .get();
 
-        return  snapshot.docs.map((doc) {
-          final data = doc.data();
-          return CourseModel.fromMap(doc.id, data);
-        }).toList();
+    return snapshot.docs.map((doc) {
+      final data = doc.data();
+      return CourseModel.fromMap(doc.id, data);
+    }).toList();
   }
 
   /// ADD COURSE
@@ -143,9 +143,18 @@ class CourseDatasources {
         .where('courseId', isEqualTo: courseId)
         .get();
 
+    final courseProgramSnapshot = await _db
+        .collection(FirestoreCollection.programsCollection)
+        .where('courseId', isEqualTo: courseId)
+        .get();
+
     final batch = _db.batch();
 
     for (final doc in adminSnapshot.docs) {
+      batch.delete(doc.reference);
+    }
+
+    for (final doc in courseProgramSnapshot.docs) {
       batch.delete(doc.reference);
     }
 

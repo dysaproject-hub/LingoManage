@@ -6,6 +6,7 @@ import 'package:lingo_manage/features/admin/presentation/screen/manage_admin_pag
 import 'package:lingo_manage/features/auth/presentation/screens/auth_gate.dart';
 import 'package:lingo_manage/features/course/presentation/screens/admin_detail_course_page.dart';
 import 'package:lingo_manage/features/course/presentation/screens/course_form.dart';
+import 'package:lingo_manage/features/course/presentation/screens/detail_course_page.dart';
 import 'package:lingo_manage/features/student/presentation/screens/student_home_page.dart';
 import 'package:lingo_manage/shared/screens/pofile_user.dart';
 import 'package:lingo_manage/shared/widgets/text_widget.dart';
@@ -40,6 +41,14 @@ class AppRouter {
         final courseModel = args['courseModel'];
         return MaterialPageRoute(
           builder: (_) => AdminDetailCoursePage(courseModel: courseModel),
+        );
+
+      case AppRoutes.courseProgramDetail:
+        final courseModel = args['courseModel'];
+        final programModel = args['courseProgramModel'];
+        return MaterialPageRoute(
+          builder: (_) =>
+              ProgramDetailPage(program: programModel, course: courseModel),
         );
 
       default:
