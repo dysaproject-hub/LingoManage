@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lingo_manage/core/constants/app_colors.dart';
 
@@ -17,6 +18,7 @@ Widget textFieldWidget({
   bool alert = false,
   TextFieldType textFieldType = TextFieldType.normal,
   TextInputType? keyboardType,
+  List<TextInputFormatter>? inputFormatters,
 }) {
   switch (textFieldType) {
     case TextFieldType.outline:
@@ -31,6 +33,7 @@ Widget textFieldWidget({
         minLines: 1,
         maxLines: maxLines,
         textAlignVertical: TextAlignVertical.center,
+        inputFormatters: inputFormatters,
         style: GoogleFonts.poppins(
           color: AppColors.black,
           fontSize: 14,
@@ -60,13 +63,15 @@ Widget textFieldWidget({
       return TextFormField(
         obscureText: obscureText,
         keyboardType: keyboardType,
+        controller: controller,
+        autofocus: true,
+        focusNode: focusNode,
         maxLength: maxLength,
+        validator: validator,
         minLines: 1,
         maxLines: maxLines,
-        focusNode: focusNode,
-        controller: controller,
-        validator: validator,
         textAlignVertical: TextAlignVertical.center,
+        inputFormatters: inputFormatters,
         style: GoogleFonts.poppins(
           color: AppColors.black,
           fontSize: 14,

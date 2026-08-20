@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lingo_manage/core/constants/app_colors.dart';
 import 'package:lingo_manage/core/models/app_users.dart';
+import 'package:lingo_manage/core/utils/currency_formatters.dart';
 import 'package:lingo_manage/features/course/models/course_model.dart';
 import 'package:lingo_manage/features/course/presentation/providers/course_program_provider.dart';
 import 'package:lingo_manage/features/course/presentation/providers/course_provider.dart';
@@ -107,30 +108,47 @@ class PopupWidget {
             borderRadius: BorderRadius.circular(20),
           ),
           title: textBaloo2("Edit Course Data", fontSize: 24),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const SizedBox(height: 24),
-              textFieldWidget(
-                labelText: "Course Name",
-                controller: nameController,
-                textFieldType: TextFieldType.outline,
+
+          // HANYA DITAMBAHKAN AGAR TIDAK OVERFLOW
+          content: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.sizeOf(context).height * 0.6,
+            ),
+            child: SingleChildScrollView(
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const SizedBox(height: 24),
+
+                  textFieldWidget(
+                    labelText: "Course Name",
+                    controller: nameController,
+                    textFieldType: TextFieldType.outline,
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  textFieldWidget(
+                    labelText: "Description",
+                    controller: descriptionController,
+                    textFieldType: TextFieldType.outline,
+                  ),
+
+                  const SizedBox(height: 16),
+
+                  textFieldWidget(
+                    labelText: "address",
+                    controller: addressController,
+                    textFieldType: TextFieldType.outline,
+                  ),
+
+                  const SizedBox(height: 24),
+                ],
               ),
-              const SizedBox(height: 16),
-              textFieldWidget(
-                labelText: "Description",
-                controller: descriptionController,
-                textFieldType: TextFieldType.outline,
-              ),
-              const SizedBox(height: 16),
-              textFieldWidget(
-                labelText: "address",
-                controller: addressController,
-                textFieldType: TextFieldType.outline,
-              ),
-              const SizedBox(height: 24),
-            ],
+            ),
           ),
+
           actions: [
             Button(
               text: "Cancel",
@@ -267,9 +285,12 @@ class PopupWidget {
 
     final TextEditingController descriptionController = TextEditingController();
 
-    final TextEditingController registrationFeeController = TextEditingController();
+    final TextEditingController registrationFeeController =
+        TextEditingController();
 
     final TextEditingController monthlyFeeController = TextEditingController();
+
+    final formKey = GlobalKey<FormState>();
 
     showDialog(
       context: context,
@@ -280,38 +301,102 @@ class PopupWidget {
             borderRadius: BorderRadius.circular(20),
           ),
           title: textBaloo2("Add Course Programs", fontSize: 24),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const SizedBox(height: 24),
-              textFieldWidget(
-                labelText: "Program Name",
-                controller: programNameController,
-                textFieldType: TextFieldType.outline,
+
+          content: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.sizeOf(context).height * 0.6,
+            ),
+            child: SingleChildScrollView(
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              child: Form(
+                key: formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const SizedBox(height: 24),
+
+                    textFieldWidget(
+                      labelText: "Program Name",
+                      controller: programNameController,
+                      textFieldType: TextFieldType.outline,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "Program name is required!";
+                        }
+
+                        return null;
+                      },
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    textFieldWidget(
+                      labelText: "Description",
+                      controller: descriptionController,
+                      textFieldType: TextFieldType.outline,
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    textFieldWidget(
+                      labelText: "Registration Fee",
+                      controller: registrationFeeController,
+                      textFieldType: TextFieldType.outline,
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [CurrencyInputFormatter()],
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "The registration fee is required!";
+                        }
+
+                        final monthlyFeeText = value
+                            .replaceAll('.', '')
+                            .replaceAll(',', '');
+
+                        final fee = int.tryParse(monthlyFeeText);
+
+                        if (fee == null) {
+                          return "The registration fee invalid!";
+                        }
+
+                        return null;
+                      },
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    textFieldWidget(
+                      labelText: "Monthly Fee",
+                      controller: monthlyFeeController,
+                      textFieldType: TextFieldType.outline,
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [CurrencyInputFormatter()],
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "The monthly fee is required!";
+                        }
+
+                        final monthlyFeeText = value
+                            .replaceAll('.', '')
+                            .replaceAll(',', '');
+
+                        final fee = int.tryParse(monthlyFeeText);
+
+                        if (fee == null) {
+                          return "The monthly fee invalid!";
+                        }
+
+                        return null;
+                      },
+                    ),
+
+                    const SizedBox(height: 24),
+                  ],
+                ),
               ),
-              const SizedBox(height: 16),
-              textFieldWidget(
-                labelText: "Description",
-                controller: descriptionController,
-                textFieldType: TextFieldType.outline,
-              ),
-              const SizedBox(height: 16),
-              textFieldWidget(
-                labelText: "Registration Fee",
-                controller: registrationFeeController,
-                textFieldType: TextFieldType.outline,
-                keyboardType: TextInputType.number,
-              ),
-              const SizedBox(height: 16),
-              textFieldWidget(
-                labelText: "Monthly Fee",
-                controller: monthlyFeeController,
-                textFieldType: TextFieldType.outline,
-                keyboardType: TextInputType.number
-              ),
-              const SizedBox(height: 24),
-            ],
+            ),
           ),
+
           actions: [
             Button(
               text: "Cancel",
@@ -332,16 +417,30 @@ class PopupWidget {
               fontWeight: FontWeight.w700,
               borderRadius: BorderRadius.circular(10),
               onPressed: () async {
+                final registrationFeeText = registrationFeeController.text
+                    .replaceAll('.', '')
+                    .replaceAll(',', '');
+
+                final monthlyFeeText = monthlyFeeController.text
+                    .replaceAll('.', '')
+                    .replaceAll(',', '');
+
+                if (!formKey.currentState!.validate()) {
+                  return;
+                }
+
                 await ref
                     .read(courseProgramControllerProvider.notifier)
                     .addCourseProgram(
                       courseId: courseData.id,
                       name: programNameController.text,
                       description: descriptionController.text,
-                      registrationFee: int.tryParse(registrationFeeController.text) ?? 0,
-                      monthlyFee: int.tryParse(monthlyFeeController.text) ?? 0,
+                      registrationFee: int.tryParse(registrationFeeText) ?? 0,
+                      monthlyFee: int.tryParse(monthlyFeeText) ?? 0,
                       isActive: true,
                     );
+
+                ref.invalidate(getAllCourseProgramProvider);
 
                 if (!context.mounted) return;
                 Navigator.pop(context);

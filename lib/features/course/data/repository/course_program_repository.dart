@@ -25,4 +25,8 @@ class CourseProgramRepository {
       isActive: isActive,
     );
   }
+
+  Future<List<CourseProgramModel>> getAllCourseProgram({required String courseId}) async {
+    return await _datasources.getAllCourseProgram(courseId: courseId);
+  }
 }

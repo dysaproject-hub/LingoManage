@@ -29,6 +29,7 @@ class CourseProgramModel {
       id: id,
       courseId: data['courseId'],
       name: data['name'],
+      description: data['description'],
       registrationFee: data['registrationFee'],
       monthlyFee: data['monthlyFee'],
       isActive: data['isActive'],

@@ -4,8 +4,10 @@ import 'package:lingo_manage/core/constants/app_colors.dart';
 import 'package:lingo_manage/core/routes/routes.dart';
 import 'package:lingo_manage/features/admin/presentation/providers/admin_course_provider.dart';
 import 'package:lingo_manage/features/course/models/course_model.dart';
+import 'package:lingo_manage/features/course/presentation/providers/course_program_provider.dart';
 import 'package:lingo_manage/features/course/presentation/providers/course_provider.dart';
 import 'package:lingo_manage/shared/widgets/button_widget.dart';
+import 'package:lingo_manage/shared/widgets/card_program.dart';
 import 'package:lingo_manage/shared/widgets/empty_section_widget.dart';
 import 'package:lingo_manage/shared/widgets/loading_widget.dart';
 import 'package:lingo_manage/shared/widgets/management_button_widget.dart';
@@ -22,8 +24,13 @@ class AdminDetailCoursePage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final adminProvider = ref.watch(courseAdminsProvider(courseModel.id));
     final courseAsync = ref.watch(courseDetailProvider(courseModel.id));
+    final courseProgramDataList = ref.watch(
+      getAllCourseProgramProvider(courseModel.id),
+    );
 
-    Future<void> refreshPage() async {}
+    Future<void> refreshPage() async {
+      ref.invalidate(getAllCourseProgramProvider);
+    }
 
     return Scaffold(
       backgroundColor: AppColors.lightText,
@@ -62,82 +69,70 @@ class AdminDetailCoursePage extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(20),
                   ),
 
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        width: 58,
-                        height: 58,
+                  child: courseAsync.when(
+                    data: (data) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            width: 58,
+                            height: 58,
 
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.18),
-                          borderRadius: BorderRadius.circular(16),
-                        ),
+                            decoration: BoxDecoration(
+                              color: Colors.white.withValues(alpha: 0.18),
+                              borderRadius: BorderRadius.circular(16),
+                            ),
 
-                        child: const Icon(
-                          Icons.school_rounded,
-                          color: Colors.white,
-                          size: 30,
-                        ),
-                      ),
+                            child: const Icon(
+                              Icons.school_rounded,
+                              color: Colors.white,
+                              size: 30,
+                            ),
+                          ),
 
-                      const SizedBox(height: 20),
+                          const SizedBox(height: 20),
 
-                      courseAsync.when(
-                        data: (data) {
-                          return textBaloo2(
+                          textBaloo2(
                             data.name,
                             fontSize: 28,
                             fontWeight: FontWeight.w800,
                             color: Colors.white,
-                          );
-                        },
-                        error: (error, s) => textBaloo2('--'),
-                        loading: () => LoadingWidget(size: 35),
-                      ),
+                          ),
 
-                      const SizedBox(height: 8),
+                          const SizedBox(height: 8),
 
-                      courseAsync.when(
-                        data: (data) {
-                          return textPoppins(
+                          textPoppins(
                             data.description ?? 'No description available.',
                             fontSize: 13,
                             color: Colors.white.withValues(alpha: 0.85),
-                          );
-                        },
-                        error: (error, s) => textPoppins('--'),
-                        loading: () => LoadingWidget(size: 20),
-                      ),
-
-                      const SizedBox(height: 18),
-
-                      Row(
-                        children: [
-                          const Icon(
-                            Icons.location_on_outlined,
-                            color: Colors.white,
-                            size: 17,
                           ),
 
-                          const SizedBox(width: 5),
+                          const SizedBox(height: 18),
 
-                          courseAsync.when(
-                            data: (data) {
-                              return Expanded(
+                          Row(
+                            children: [
+                              const Icon(
+                                Icons.location_on_outlined,
+                                color: Colors.white,
+                                size: 17,
+                              ),
+
+                              const SizedBox(width: 5),
+
+                              Expanded(
                                 child: textPoppins(
                                   data.address.isEmpty ? "-" : data.address,
                                   fontSize: 12,
                                   color: Colors.white.withValues(alpha: 0.85),
                                 ),
-                              );
-                            },
-                            error: (error, s) => textPoppins('--'),
-                            loading: () => LoadingWidget(size: 20),
+                              ),
+                            ],
                           ),
                         ],
-                      ),
-                    ],
+                      );
+                    },
+                    error: (e, s) => textBaloo2('Sorry, something went wrong'),
+                    loading: () => LoadingWidget(),
                   ),
                 ),
 
@@ -228,22 +223,38 @@ class AdminDetailCoursePage extends ConsumerWidget {
 
                 const SizedBox(height: 8),
 
-
-
-                EmptySection(
-                  icon: Icons.menu_book_outlined,
-                  title: 'No programs yet',
-                  description:
-                      'Add programs such as Regular, Private, or Intensive.',
-                  buttonText: 'Add Program',
-                  onPressed: () {
-                    // TODO: Show The Program (First: Create the controller)
-                    PopupWidget.showDialogAddCourseProgram(
-                      context: context,
-                      courseData: courseModel,
-                      ref: ref,
-                    );
+                courseProgramDataList.when(
+                  data: (data) {
+                    return data.isEmpty
+                        ? EmptySection(
+                            icon: Icons.menu_book_outlined,
+                            title: 'No programs yet',
+                            description:
+                                'Add programs such as Regular, Private, or Intensive.',
+                            buttonText: 'Add Program',
+                            onPressed: () {
+                              // TODO: Show The Program (First: Create the controller)
+                              PopupWidget.showDialogAddCourseProgram(
+                                context: context,
+                                courseData: courseModel,
+                                ref: ref,
+                              );
+                            },
+                          )
+                        : ListView.separated(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: data.length,
+                            separatorBuilder: (_, _) =>
+                                const SizedBox(height: 16),
+                            itemBuilder: (context, index) {
+                              final courseProgram = data[index];
+                              return ProgramCard(program: courseProgram);
+                            },
+                          );
                   },
+                  error: (e, s) => textPoppins('Sorry, something went wrong!'),
+                  loading: () => LoadingWidget(),
                 ),
 
                 const SizedBox(height: 28),

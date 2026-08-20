@@ -20,6 +20,7 @@ dependencies:
   flutter_riverpod: ^2.6.1
   shared_preferences: ^2.5.5
   image_picker: ^1.2.3
+  intl: ^0.20.3
 
 dev_dependencies:
   flutter_test:

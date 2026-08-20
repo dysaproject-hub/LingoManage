@@ -24,6 +24,7 @@ class CourseProgramDatasources {
     final data = {
       'courseId': courseId,
       'name': name,
+      'description': description,
       'registrationFee': registrationFee,
       'monthlyFee': monthlyFee,
       'isActive': isActive,
@@ -38,5 +39,17 @@ class CourseProgramDatasources {
       'createdAt': DateTime.now(),
       'updatedAt': DateTime.now(),
     });
+  }
+
+  Future<List<CourseProgramModel>> getAllCourseProgram({required String courseId}) async {
+    final snapshot = await _db
+        .collection(FirestoreCollection.programsCollection)
+        .where('courseId', isEqualTo: courseId)
+        .get();
+
+    return snapshot.docs.map((doc) {
+      final data = doc.data();
+      return CourseProgramModel.fromMap(doc.id, data);
+    }).toList();
   }
 }
