@@ -7,4 +7,7 @@ class AppRoutes {
   static const String manageAdminPage = '/manageAdmin';
   static const String adminDetailCourse = '/adminDetailCourse';
   static const String courseProgramDetail = '/courseProgramDetail';
+  static const String studentDetailCourse = '/studentDetailCourse';
+  static const String enrollmentForm = '/enrollmentForm';
+
 }

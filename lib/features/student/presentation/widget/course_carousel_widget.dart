@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lingo_manage/core/constants/app_colors.dart';
+import 'package:lingo_manage/core/routes/routes.dart';
 import 'package:lingo_manage/features/course/models/course_model.dart';
 import 'package:lingo_manage/features/student/presentation/widget/card_course_widget.dart';
 import 'package:lingo_manage/shared/widgets/carousel_indicator.dart';
@@ -7,10 +8,7 @@ import 'package:lingo_manage/shared/widgets/carousel_indicator.dart';
 class CourseCarouselWidget extends StatefulWidget {
   final List<CourseModel> data;
 
-  const CourseCarouselWidget({
-    super.key,
-    required this.data,
-  });
+  const CourseCarouselWidget({super.key, required this.data});
 
   @override
   State<CourseCarouselWidget> createState() => _CourseCarouselState();
@@ -26,8 +24,7 @@ class _CourseCarouselState extends State<CourseCarouselWidget> {
         NotificationListener<ScrollNotification>(
           onNotification: (notification) {
             if (notification is ScrollEndNotification) {
-              final index =
-                  (notification.metrics.pixels / 300).round();
+              final index = (notification.metrics.pixels / 300).round();
 
               if (index != _currentIndex &&
                   index >= 0 &&
@@ -55,7 +52,11 @@ class _CourseCarouselState extends State<CourseCarouselWidget> {
                   courseData: widget.data[index],
                   jumlahsiswa: "--",
                   buttoncolor: AppColors.lightText,
-                  onTapCek: () {},
+                  onTapCek: () {
+                    Navigator.pushNamed(context, AppRoutes.studentDetailCourse, arguments: {
+                      'courseModel': widget.data[index],
+                    });
+                  },
                 );
               },
             ),
@@ -64,10 +65,7 @@ class _CourseCarouselState extends State<CourseCarouselWidget> {
 
         const SizedBox(height: 8),
 
-        CarouselIndicator(
-          currentIndex: _currentIndex,
-          data: widget.data,
-        ),
+        CarouselIndicator(currentIndex: _currentIndex, data: widget.data),
       ],
     );
   }

@@ -3,4 +3,5 @@ class FirestoreCollection {
   static const String coursesCollection = 'courses';
   static const String courseAdminsCollection = 'course_admins';
   static const String programsCollection = 'programs';
+  static const String enrollmentsCollection = 'enrollments';
 }
