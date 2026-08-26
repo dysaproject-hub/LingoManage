@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lingo_manage/core/constants/app_colors.dart';
 import 'package:lingo_manage/core/providers/app_users_provider.dart';
+import 'package:lingo_manage/core/routes/routes.dart';
 import 'package:lingo_manage/core/utils/currency_formatters.dart';
 import 'package:lingo_manage/core/utils/education_level_enum.dart';
 import 'package:lingo_manage/core/utils/status_enrollments_enum.dart';
 import 'package:lingo_manage/features/course/models/course_model.dart';
+import 'package:lingo_manage/features/course/models/course_program_model.dart';
 import 'package:lingo_manage/features/enrollments/presentation/providers/enrollment_provider.dart';
 import 'package:lingo_manage/shared/widgets/button_widget.dart';
 import 'package:lingo_manage/shared/widgets/loading_widget.dart';
@@ -15,18 +17,20 @@ import 'package:lingo_manage/shared/widgets/text_widget.dart';
 class EnrollmentPage extends ConsumerStatefulWidget {
   final CourseModel course;
 
-  final String programId;
-  final String programName;
-  final int registrationFee;
-  final int monthlyFee;
+  // final String programId;
+  // final String programName;
+  // final int registrationFee;
+  // final int monthlyFee;
+  final CourseProgramModel programModel;
 
   const EnrollmentPage({
     super.key,
     required this.course,
-    required this.programId,
-    required this.programName,
-    required this.registrationFee,
-    required this.monthlyFee,
+    required this.programModel,
+    // required this.programId,
+    // required this.programName,
+    // required this.registrationFee,
+    // required this.monthlyFee,
   });
 
   @override
@@ -54,52 +58,63 @@ class _EnrollmentPageState extends ConsumerState<EnrollmentPage> {
   }
 
   void _submitEnrollment() {
-  FocusScope.of(context).unfocus();
+    FocusScope.of(context).unfocus();
 
-  if (!_formKey.currentState!.validate()) {
-    return;
-  }
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
 
-  if (_educationLevel == null) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text(
-          'Silakan pilih jenjang pendidikan terlebih dahulu',
-        ),
-      ),
-    );
-
-    return;
-  }
-
-  final userState = ref.read(appUserControllerProvider);
-
-  userState.when(
-    data: (user) {
-
-      const status = StatusEnrollments.pending;
-
-      _showEnrollmentConfirmation(
-        courseId: widget.course.id,
-        studentId: user.uid,
-        programId: widget.programId,
-        status: status.label,
-      );
-    },
-    loading: () => LoadingWidget(),
-    error: (error, stackTrace) {
+    if (_educationLevel == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Gagal mengambil data user'),
+          content: Text('Silakan pilih jenjang pendidikan terlebih dahulu'),
         ),
       );
-    },
-  );
-}
+
+      return;
+    }
+
+    final userState = ref.read(appUserControllerProvider);
+
+    userState.when(
+      data: (user) {
+        const status = StatusEnrollments.pending;
+
+        final studentFullName = _fullnameController.text;
+        final studentPhoneNumber = _phoneController.text;
+        final studentEducationLevel = _educationLevel?.label;
+        final studentSchoolName = _schoolController.text;
+        final studentAddress = _addressController.text;
+
+        _showEnrollmentConfirmation(
+          courseId: widget.course.id,
+          studentId: user.uid,
+          studentFullName: studentFullName,
+          studentPhoneNumber: studentPhoneNumber,
+          studentEducationLevel: studentEducationLevel ?? "other",
+          studentSchoolName: studentSchoolName,
+          studentAddress: studentAddress,
+          programId: widget.programModel.id,
+          status: status.label,
+        );
+      },
+      loading: () => LoadingWidget(),
+      error: (error, stackTrace) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Gagal mengambil data user')),
+        );
+      },
+    );
+  }
 
   void _showEnrollmentConfirmation({
     required String courseId,
     required String studentId,
+    required String studentFullName,
+    required String studentPhoneNumber,
+    required String studentEducationLevel,
+    required String studentSchoolName,
+    required String studentAddress,
     required String programId,
     required String status,
   }) {
@@ -149,16 +164,16 @@ class _EnrollmentPageState extends ConsumerState<EnrollmentPage> {
 
                 _SummaryItem(title: 'Course', value: widget.course.name),
 
-                _SummaryItem(title: 'Program', value: widget.programName),
+                _SummaryItem(title: 'Program', value: widget.programModel.name),
 
                 _SummaryItem(
                   title: 'Registration Fee',
-                  value: formatRupiah(widget.registrationFee),
+                  value: formatRupiah(widget.programModel.registrationFee),
                 ),
 
                 _SummaryItem(
                   title: 'Monthly Fee',
-                  value: formatRupiah(widget.monthlyFee),
+                  value: formatRupiah(widget.programModel.monthlyFee),
                 ),
 
                 const SizedBox(height: 20),
@@ -172,17 +187,43 @@ class _EnrollmentPageState extends ConsumerState<EnrollmentPage> {
                     fontSize: 13,
                     fontWeight: FontWeight.w700,
                     borderRadius: BorderRadius.circular(12),
-                    onPressed: () {
-                      Navigator.pop(context);
-
-                      ref
-                          .watch(enrollmentControllerProvider.notifier)
+                    onPressed: () async {
+                      final enrollment = await ref
+                          .read(enrollmentControllerProvider.notifier)
                           .addEnrollment(
-                            courseId: courseId,
                             studentId: studentId,
+                            studentFullName: studentFullName,
+                            studentPhoneNumber: studentPhoneNumber,
+                            studentEducationLevel: studentEducationLevel,
+                            studentSchoolName: studentSchoolName,
+                            studentAddress: studentAddress,
+                            courseId: courseId,
                             programId: programId,
                             status: status,
                           );
+
+                      if (!context.mounted) return;
+
+                      if (enrollment == null) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Failed to create enrollment'),
+                          ),
+                        );
+                        return;
+                      }
+
+                      Navigator.pop(context); // tutup bottom sheet
+
+                      Navigator.pushReplacementNamed(
+                        context,
+                        AppRoutes.enrollmentDetailPage,
+                        arguments: {
+                          'courseName': widget.course.name,
+                          'programModel': widget.programModel,
+                          'enrollmentModel': enrollment,
+                        },
+                      );
                     },
                   ),
                 ),
@@ -237,9 +278,6 @@ class _EnrollmentPageState extends ConsumerState<EnrollmentPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // ========================================================
-                // COURSE & PROGRAM
-                // ========================================================
                 textBaloo2(
                   'Your Enrollment',
                   fontSize: 24,
@@ -303,7 +341,7 @@ class _EnrollmentPageState extends ConsumerState<EnrollmentPage> {
                       const SizedBox(height: 4),
 
                       textPoppins(
-                        widget.programName,
+                        widget.programModel.name,
                         fontSize: 15,
                         fontWeight: FontWeight.w700,
                       ),
@@ -313,15 +351,14 @@ class _EnrollmentPageState extends ConsumerState<EnrollmentPage> {
 
                 const SizedBox(height: 20),
 
-                // ========================================================
-                // FEE
-                // ========================================================
                 Row(
                   children: [
                     Expanded(
                       child: _FeeCard(
                         title: 'Registration',
-                        value: formatRupiah(widget.registrationFee),
+                        value: formatRupiah(
+                          widget.programModel.registrationFee,
+                        ),
                         icon: Icons.receipt_long_outlined,
                       ),
                     ),
@@ -331,7 +368,7 @@ class _EnrollmentPageState extends ConsumerState<EnrollmentPage> {
                     Expanded(
                       child: _FeeCard(
                         title: 'Monthly',
-                        value: formatRupiah(widget.monthlyFee),
+                        value: formatRupiah(widget.programModel.monthlyFee),
                         icon: Icons.calendar_month_outlined,
                       ),
                     ),
@@ -340,9 +377,6 @@ class _EnrollmentPageState extends ConsumerState<EnrollmentPage> {
 
                 const SizedBox(height: 30),
 
-                // ========================================================
-                // PERSONAL INFORMATION
-                // ========================================================
                 textBaloo2(
                   'Personal Information',
                   fontSize: 20,
@@ -407,10 +441,8 @@ class _EnrollmentPageState extends ConsumerState<EnrollmentPage> {
 
                         const SizedBox(height: 6),
 
-                        DropdownButtonFormField<EducationLevel>(
-                          initialValue: EducationLevelExtension.fromLabel(
-                            data.educationLevel,
-                          ),
+                        DropdownButtonFormField<String>(
+                          initialValue: _educationLevel?.label,
 
                           decoration: InputDecoration(
                             hintText: 'Select education level',
@@ -432,19 +464,28 @@ class _EnrollmentPageState extends ConsumerState<EnrollmentPage> {
                             fillColor: AppColors.lightText,
                           ),
 
-                          items: EducationLevel.values.map((
-                            EducationLevel level,
-                          ) {
-                            return DropdownMenuItem<EducationLevel>(
-                              value: level,
+                          items: EducationLevel.values.map((level) {
+                            return DropdownMenuItem<String>(
+                              value: level.label,
                               child: textPoppins(level.label),
                             );
                           }).toList(),
 
                           onChanged: (value) {
+                            if (value == null) return;
+
                             setState(() {
-                              _educationLevel = value;
+                              _educationLevel =
+                                  EducationLevelExtension.fromLabel(value);
                             });
+                          },
+
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Education level is required';
+                            }
+
+                            return null;
                           },
                         ),
 
@@ -519,9 +560,6 @@ class _EnrollmentPageState extends ConsumerState<EnrollmentPage> {
 
                 const SizedBox(height: 30),
 
-                // ========================================================
-                // NOTICE
-                // ========================================================
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(14),
@@ -555,9 +593,6 @@ class _EnrollmentPageState extends ConsumerState<EnrollmentPage> {
 
                 const SizedBox(height: 24),
 
-                // ========================================================
-                // SUBMIT
-                // ========================================================
                 SizedBox(
                   width: double.infinity,
                   child: Button(
@@ -580,10 +615,6 @@ class _EnrollmentPageState extends ConsumerState<EnrollmentPage> {
     );
   }
 }
-
-// ==========================================================================
-// FEE CARD
-// ==========================================================================
 
 class _FeeCard extends StatelessWidget {
   final String title;
@@ -630,10 +661,6 @@ class _FeeCard extends StatelessWidget {
     );
   }
 }
-
-// ==========================================================================
-// SUMMARY ITEM
-// ==========================================================================
 
 class _SummaryItem extends StatelessWidget {
   final String title;

@@ -77,4 +77,17 @@ class CourseProgramDatasources {
       return CourseProgramModel.fromMap(doc.id, data);
     }).toList();
   }
+
+  Future<CourseProgramModel> getProgramById({required String programId}) async {
+    final doc = await _db
+        .collection(FirestoreCollection.programsCollection)
+        .doc(programId)
+        .get();
+
+    if (!doc.exists || doc.data() == null) {
+      throw Exception("Program doesn't found!");
+    }
+
+    return CourseProgramModel.fromMap(doc.id, doc.data()!);
+  }
 }

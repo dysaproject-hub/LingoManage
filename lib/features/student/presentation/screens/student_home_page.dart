@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lingo_manage/core/constants/app_colors.dart';
 import 'package:lingo_manage/core/providers/app_users_provider.dart';
+import 'package:lingo_manage/core/routes/routes.dart';
 import 'package:lingo_manage/features/course/presentation/providers/course_provider.dart';
+import 'package:lingo_manage/features/student/presentation/provider/student_course_provider.dart';
+import 'package:lingo_manage/features/student/presentation/widget/card_course_widget.dart';
 import 'package:lingo_manage/features/student/presentation/widget/course_carousel_widget.dart';
 import 'package:lingo_manage/shared/widgets/appbar_widget.dart';
 import 'package:lingo_manage/shared/widgets/card_widget.dart';
@@ -19,7 +22,6 @@ class StudentHomePage extends ConsumerStatefulWidget {
 class _StudentHomePageState extends ConsumerState<StudentHomePage> {
   Future<void> _refreshPage() async {
     ref.invalidate(getCourseControllerProvider);
-
     await ref.read(getCourseControllerProvider.future);
   }
 
@@ -27,6 +29,7 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
   Widget build(BuildContext context) {
     final userDataProvider = ref.watch(appUserControllerProvider);
     final courseData = ref.watch(getCourseControllerProvider);
+    final studentCourse = ref.watch(getStudentCourseProvider);
 
     debugPrint("StudentHomePage Rebuild");
     return Scaffold(
@@ -48,6 +51,56 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
                     description: "Let's start your journey!",
                     image: Image.asset("assets/ilustration/ilustration_1.png"),
                     borderRadius: 15,
+                  ),
+                  const SizedBox(height: 50),
+                  textPoppins(
+                    "Your Courses",
+                    fontSize: 12,
+                    fontWeight: FontWeight.w400,
+                    color: AppColors.black,
+                  ),
+                  const SizedBox(height: 16),
+                  studentCourse.when(
+                    loading: () => const LoadingWidget(),
+
+                    error: (error, stackTrace) {
+                      return textPoppins('Failed to load your courses');
+                    },
+
+                    data: (courses) {
+                      if (courses.isEmpty) {
+                        return textPoppins('No courses yet');
+                      }
+
+                      return ListView.separated(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: courses.length,
+                        separatorBuilder: (_, _) => const SizedBox(height: 16),
+                        itemBuilder: (context, index) {
+                          final studentCourse = courses[index];
+
+                          return CardCourseWidgetStudent(
+                            maincolor: AppColors.accent,
+                            gradientcolor: AppColors.accent,
+                            courseData: studentCourse.course,
+                            jumlahsiswa: '--',
+                            buttoncolor: AppColors.lightText,
+                            onTapCek: () {
+                              Navigator.pushNamed(
+                                context,
+                                AppRoutes.enrollmentDetailPage,
+                                arguments: {
+                                  'courseName': studentCourse.course.name,
+                                  'programModel': studentCourse.program,
+                                  'enrollmentModel': studentCourse.enrollment,
+                                },
+                              );
+                            },
+                          );
+                        },
+                      );
+                    },
                   ),
                   const SizedBox(height: 50),
                   textPoppins(

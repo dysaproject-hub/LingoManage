@@ -8,6 +8,7 @@ import 'package:lingo_manage/features/course/presentation/screens/admin_detail_c
 import 'package:lingo_manage/features/course/presentation/screens/course_form.dart';
 import 'package:lingo_manage/features/course/presentation/screens/detail_course_page.dart';
 import 'package:lingo_manage/features/course/presentation/screens/student_detail_course_page.dart';
+import 'package:lingo_manage/features/enrollments/presentation/screen/enrollment_detail_page.dart';
 import 'package:lingo_manage/features/enrollments/presentation/screen/enrollment_form.dart';
 import 'package:lingo_manage/features/student/presentation/screens/student_home_page.dart';
 import 'package:lingo_manage/shared/screens/pofile_user.dart';
@@ -61,17 +62,23 @@ class AppRouter {
 
       case AppRoutes.enrollmentForm:
         final courseModel = args['courseModel'];
-        final programId = args['programId'];
-        final programName = args['programName'];
-        final registrationFee = args['registrationFee'];
-        final monthlyFee = args['monthlyFee'];
+        final programModel = args['programModel'];
         return MaterialPageRoute(
           builder: (_) => EnrollmentPage(
             course: courseModel,
-            programId: programId,
-            programName: programName,
-            registrationFee: registrationFee,
-            monthlyFee: monthlyFee,
+            programModel: programModel,
+          ),
+        );
+
+      case AppRoutes.enrollmentDetailPage:
+        final courseName = args['courseName'];
+        final programModel = args['programModel'];
+        final enrollmentModel = args['enrollmentModel'];
+        return MaterialPageRoute(
+          builder: (_) => EnrollmentDetailPage(
+            courseName: courseName,
+            programModel: programModel,
+            enrollmentModel: enrollmentModel,
           ),
         );
 

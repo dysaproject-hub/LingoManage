@@ -46,9 +46,6 @@ class _StudentDetailCoursePageState
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // ============================================================
-              // COURSE HEADER
-              // ============================================================
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(20),
@@ -104,9 +101,9 @@ class _StudentDetailCoursePageState
 
               const SizedBox(height: 28),
 
-              // ============================================================
+              // 
               // ABOUT COURSE
-              // ============================================================
+              // 
               textBaloo2(
                 'About Course',
                 fontSize: 20,
@@ -126,9 +123,9 @@ class _StudentDetailCoursePageState
 
               const SizedBox(height: 28),
 
-              // ============================================================
+              // 
               // PROGRAM SECTION
-              // ============================================================
+              // 
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -182,10 +179,7 @@ class _StudentDetailCoursePageState
                             AppRoutes.enrollmentForm,
                             arguments: {
                               'courseModel': widget.course,
-                              'programId': courseProgram.id,
-                              'programName': courseProgram.name,
-                              'registrationFee': courseProgram.registrationFee,
-                              'monthlyFee': courseProgram.monthlyFee,
+                              'programModel': courseProgram,
                             },
                           );
                         },
@@ -199,9 +193,9 @@ class _StudentDetailCoursePageState
 
               const SizedBox(height: 28),
 
-              // ============================================================
+              // 
               // INFORMATION
-              // ============================================================
+              // 
               textBaloo2(
                 'Important Information',
                 fontSize: 20,
@@ -238,9 +232,9 @@ class _StudentDetailCoursePageState
 
               const SizedBox(height: 30),
 
-              // ============================================================
+              // 
               // BOTTOM INFORMATION
-              // ============================================================
+              // 
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(16),
@@ -279,10 +273,6 @@ class _StudentDetailCoursePageState
     );
   }
 }
-
-// ==========================================================================
-// PROGRAM CARD
-// ==========================================================================
 
 class _ProgramCard extends StatelessWidget {
   final String programName;
@@ -332,9 +322,6 @@ class _ProgramCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // ================================================================
-          // PROGRAM NAME
-          // ================================================================
           Row(
             children: [
               Container(
@@ -364,16 +351,10 @@ class _ProgramCard extends StatelessWidget {
 
           const SizedBox(height: 12),
 
-          // ================================================================
-          // DESCRIPTION
-          // ================================================================
           textPoppins(description, fontSize: 12, color: AppColors.mutedText),
 
           const SizedBox(height: 16),
 
-          // ================================================================
-          // FEE
-          // ================================================================
           Row(
             children: [
               Expanded(
@@ -396,9 +377,6 @@ class _ProgramCard extends StatelessWidget {
 
           const SizedBox(height: 16),
 
-          // ================================================================
-          // CHOOSE BUTTON
-          // ================================================================
           SizedBox(
             width: double.infinity,
 
@@ -430,9 +408,9 @@ class _ProgramCard extends StatelessWidget {
   }
 }
 
-// ==========================================================================
+
 // FEE ITEM
-// ==========================================================================
+
 
 class _FeeItem extends StatelessWidget {
   final String title;
@@ -469,9 +447,9 @@ class _FeeItem extends StatelessWidget {
   }
 }
 
-// ==========================================================================
+
 // INFORMATION ITEM
-// ==========================================================================
+
 
 class _InformationItem extends StatelessWidget {
   final IconData icon;

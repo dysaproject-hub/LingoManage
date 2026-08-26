@@ -59,4 +59,13 @@ class CourseProgramController extends AsyncNotifier<void> {
           );
     });
   }
+
+  Future<void> getProgramById({required String programId}) async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() async {
+      await ref
+          .watch(courseProgramRepositoryProvider)
+          .getProgramById(programId: programId);
+    });
+  }
 }

@@ -50,4 +50,8 @@ class CourseProgramRepository {
   }) async {
     return await _datasources.getAllCourseProgram(courseId: courseId);
   }
+
+  Future<CourseProgramModel> getProgramById({required String programId}) async {
+    return await _datasources.getProgramById(programId: programId);
+  }
 }

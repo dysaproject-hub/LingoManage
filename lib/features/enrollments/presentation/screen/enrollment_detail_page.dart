@@ -1,0 +1,567 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lingo_manage/core/constants/app_colors.dart';
+import 'package:lingo_manage/features/course/models/course_program_model.dart';
+import 'package:lingo_manage/features/enrollments/models/enrollment_model.dart';
+import 'package:lingo_manage/shared/widgets/button_widget.dart';
+import 'package:lingo_manage/shared/widgets/text_widget.dart';
+
+class EnrollmentDetailPage extends ConsumerWidget {
+  final String courseName;
+  final CourseProgramModel programModel;
+
+  final EnrollmentModel enrollmentModel;
+
+  const EnrollmentDetailPage({
+    super.key,
+    required this.courseName,
+    required this.programModel,
+    required this.enrollmentModel,
+  });
+
+  String _formatRupiah(int value) {
+    final text = value.toString();
+
+    final buffer = StringBuffer();
+
+    for (int i = 0; i < text.length; i++) {
+      if (i > 0 && (text.length - i) % 3 == 0) {
+        buffer.write('.');
+      }
+
+      buffer.write(text[i]);
+    }
+
+    return 'Rp ${buffer.toString()}';
+  }
+
+  Color _statusColor() {
+    switch (enrollmentModel.status.toLowerCase()) {
+      case 'approved':
+        return AppColors.success;
+
+      case 'rejected':
+        return Colors.red;
+
+      case 'active':
+        return AppColors.primary;
+
+      case 'pending':
+      default:
+        return Colors.orange;
+    }
+  }
+
+  String _statusTitle() {
+    switch (enrollmentModel.status.toLowerCase()) {
+      case 'approved':
+        return 'Enrollment Approved';
+
+      case 'rejected':
+        return 'Enrollment Rejected';
+
+      case 'active':
+        return 'Enrollment Active';
+
+      case 'pending':
+      default:
+        return 'Waiting for Approval';
+    }
+  }
+
+  String _statusDescription() {
+    switch (enrollmentModel.status.toLowerCase()) {
+      case 'approved':
+        return 'Your enrollment has been approved by the course administrator.';
+
+      case 'rejected':
+        return 'Unfortunately, your enrollment was rejected by the course administrator.';
+
+      case 'active':
+        return 'You are now an active student in this course.';
+
+      case 'pending':
+      default:
+        return 'Your enrollment has been submitted and is waiting for the course administrator to review.';
+    }
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final statusColor = _statusColor();
+
+    return Scaffold(
+      backgroundColor: AppColors.lightText,
+
+      appBar: AppBar(
+        backgroundColor: AppColors.lightText,
+        elevation: 0,
+
+        title: textPoppins(
+          'Enrollment Detail',
+          fontSize: 16,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(20),
+
+                decoration: BoxDecoration(
+                  color: statusColor.withValues(alpha: 0.08),
+
+                  borderRadius: BorderRadius.circular(18),
+
+                  border: Border.all(
+                    color: statusColor.withValues(alpha: 0.18),
+                  ),
+                ),
+
+                child: Column(
+                  children: [
+                    Container(
+                      width: 64,
+                      height: 64,
+
+                      decoration: BoxDecoration(
+                        color: statusColor.withValues(alpha: 0.12),
+                        shape: BoxShape.circle,
+                      ),
+
+                      child: Icon(
+                        _getStatusIcon(),
+                        color: statusColor,
+                        size: 32,
+                      ),
+                    ),
+
+                    const SizedBox(height: 14),
+
+                    textBaloo2(
+                      _statusTitle(),
+                      fontSize: 21,
+                      fontWeight: FontWeight.w800,
+                      textAlign: TextAlign.center,
+                    ),
+
+                    const SizedBox(height: 6),
+
+                    textPoppins(
+                      _statusDescription(),
+                      fontSize: 12,
+                      color: AppColors.mutedText,
+                      textAlign: TextAlign.center,
+                    ),
+
+                    const SizedBox(height: 14),
+
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 14,
+                        vertical: 6,
+                      ),
+
+                      decoration: BoxDecoration(
+                        color: statusColor,
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+
+                      child: textPoppins(
+                        enrollmentModel.status.toUpperCase(),
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.lightText,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 28),
+
+              // ============================================================
+              // COURSE
+              // ============================================================
+              textBaloo2(
+                'Course Information',
+                fontSize: 20,
+                fontWeight: FontWeight.w800,
+              ),
+
+              const SizedBox(height: 12),
+
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+
+                decoration: BoxDecoration(
+                  color: AppColors.lightText,
+
+                  borderRadius: BorderRadius.circular(16),
+
+                  border: Border.all(
+                    color: AppColors.mutedText.withValues(alpha: 0.15),
+                  ),
+                ),
+
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    _DetailRow(
+                      icon: Icons.school_outlined,
+                      title: 'Course',
+                      value: courseName,
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    _DetailRow(
+                      icon: Icons.menu_book_outlined,
+                      title: 'Program',
+                      value: programModel.name,
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 28),
+
+              // ============================================================
+              // FEE
+              // ============================================================
+              textBaloo2(
+                'Fee Information',
+                fontSize: 20,
+                fontWeight: FontWeight.w800,
+              ),
+
+              const SizedBox(height: 12),
+
+              Row(
+                children: [
+                  Expanded(
+                    child: _FeeCard(
+                      icon: Icons.receipt_long_outlined,
+                      title: 'Registration',
+                      value: _formatRupiah(programModel.registrationFee),
+                    ),
+                  ),
+
+                  const SizedBox(width: 12),
+
+                  Expanded(
+                    child: _FeeCard(
+                      icon: Icons.calendar_month_outlined,
+                      title: 'Monthly',
+                      value: _formatRupiah(programModel.monthlyFee),
+                    ),
+                  ),
+                ],
+              ),
+
+              const SizedBox(height: 28),
+
+              // ============================================================
+              // STUDENT INFORMATION
+              // ============================================================
+              textBaloo2(
+                'Student Information',
+                fontSize: 20,
+                fontWeight: FontWeight.w800,
+              ),
+
+              const SizedBox(height: 12),
+
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+
+                decoration: BoxDecoration(
+                  color: AppColors.lightText,
+
+                  borderRadius: BorderRadius.circular(16),
+
+                  border: Border.all(
+                    color: AppColors.mutedText.withValues(alpha: 0.15),
+                  ),
+                ),
+
+                child: Column(
+                  children: [
+                    _DetailRow(
+                      icon: Icons.person_outline,
+                      title: 'Full Name',
+                      value: enrollmentModel.studentFullName,
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    _DetailRow(
+                      icon: Icons.phone_outlined,
+                      title: 'Phone Number',
+                      value: enrollmentModel.studentPhoneNumber,
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    _DetailRow(
+                      icon: Icons.school_outlined,
+                      title: 'Education',
+                      value: enrollmentModel.studentEducationLevel,
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    _DetailRow(
+                      icon: Icons.business_outlined,
+                      title: 'School / Institution',
+                      value: enrollmentModel.studentSchoolName,
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    _DetailRow(
+                      icon: Icons.location_on_outlined,
+                      title: 'Address',
+                      value: enrollmentModel.studentAddress,
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 28),
+
+              // ============================================================
+              // ENROLLMENT ID
+              // ============================================================
+              textBaloo2(
+                'Enrollment Information',
+                fontSize: 20,
+                fontWeight: FontWeight.w800,
+              ),
+
+              const SizedBox(height: 12),
+
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withValues(alpha: 0.06),
+
+                  borderRadius: BorderRadius.circular(14),
+                ),
+
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.confirmation_number_outlined,
+                      color: AppColors.primary,
+                    ),
+
+                    const SizedBox(width: 12),
+
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          textPoppins(
+                            'Enrollment ID',
+                            fontSize: 10,
+                            color: AppColors.mutedText,
+                          ),
+
+                          const SizedBox(height: 3),
+
+                          textPoppins(
+                            enrollmentModel.id,
+                            fontSize: 12,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 30),
+
+              if (enrollmentModel.status.toLowerCase() == 'approved')
+                SizedBox(
+                  width: double.infinity,
+                  child: Button(
+                    text: 'View My Course',
+                    textColor: AppColors.lightText,
+                    bgColor: AppColors.primary,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w700,
+                    borderRadius: BorderRadius.circular(12),
+                    onPressed: () {
+                      // TODO:
+                      // Navigasi ke course student
+                    },
+                  ),
+                ),
+
+              if (enrollmentModel.status.toLowerCase() == 'pending')
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(14),
+
+                  decoration: BoxDecoration(
+                    color: Colors.orange.withValues(alpha: 0.08),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Icon(
+                        Icons.info_outline,
+                        color: Colors.orange,
+                        size: 20,
+                      ),
+
+                      const SizedBox(width: 10),
+
+                      Expanded(
+                        child: textPoppins(
+                          'Please wait while the course administrator reviews your enrollment.',
+                          fontSize: 11,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+              const SizedBox(height: 30),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  IconData _getStatusIcon() {
+    switch (enrollmentModel.status.toLowerCase()) {
+      case 'approved':
+        return Icons.check_circle_outline;
+
+      case 'rejected':
+        return Icons.cancel_outlined;
+
+      case 'active':
+        return Icons.verified_outlined;
+
+      case 'pending':
+      default:
+        return Icons.hourglass_empty;
+    }
+  }
+}
+
+// ==========================================================================
+// DETAIL ROW
+// ==========================================================================
+
+class _DetailRow extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String value;
+
+  const _DetailRow({
+    required this.icon,
+    required this.title,
+    required this.value,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Container(
+          width: 38,
+          height: 38,
+
+          decoration: BoxDecoration(
+            color: AppColors.primary.withValues(alpha: 0.08),
+            borderRadius: BorderRadius.circular(10),
+          ),
+
+          child: Icon(icon, color: AppColors.primary, size: 20),
+        ),
+
+        const SizedBox(width: 12),
+
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              textPoppins(title, fontSize: 10, color: AppColors.mutedText),
+
+              const SizedBox(height: 3),
+
+              textPoppins(
+                value.isEmpty ? '-' : value,
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _FeeCard extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String value;
+
+  const _FeeCard({
+    required this.icon,
+    required this.title,
+    required this.value,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+
+      decoration: BoxDecoration(
+        color: AppColors.lightText,
+
+        borderRadius: BorderRadius.circular(14),
+
+        border: Border.all(color: AppColors.mutedText.withValues(alpha: 0.15)),
+      ),
+
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: AppColors.primary, size: 21),
+
+          const SizedBox(height: 10),
+
+          textPoppins(title, fontSize: 10, color: AppColors.mutedText),
+
+          const SizedBox(height: 3),
+
+          textPoppins(value, fontSize: 13, fontWeight: FontWeight.w700),
+        ],
+      ),
+    );
+  }
+}

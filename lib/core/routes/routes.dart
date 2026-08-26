@@ -9,5 +9,5 @@ class AppRoutes {
   static const String courseProgramDetail = '/courseProgramDetail';
   static const String studentDetailCourse = '/studentDetailCourse';
   static const String enrollmentForm = '/enrollmentForm';
-
+  static const String enrollmentDetailPage = '/enrollmentDetailPage';
 }

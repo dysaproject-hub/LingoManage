@@ -70,4 +70,6 @@ class AuthRepository {
   Future<AppUser> getCurrentUser(String uid) async {
     return await _datasource.getCurrentUser(uid);
   }
+
+  
 }

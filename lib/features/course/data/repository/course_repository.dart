@@ -1,7 +1,8 @@
 import 'package:lingo_manage/features/course/data/datasources/course_datasources.dart';
 import 'package:lingo_manage/features/course/models/course_model.dart';
 
-class CourseRepository {
+class 
+CourseRepository {
   final CourseDatasources _datasources;
 
   CourseRepository(this._datasources);

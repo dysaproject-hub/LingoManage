@@ -1,26 +1,60 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lingo_manage/features/enrollments/models/enrollment_model.dart';
 import 'package:lingo_manage/features/enrollments/presentation/providers/enrollment_provider.dart';
 
-class EnrollmentController extends AsyncNotifier<void> {
+class EnrollmentController extends AsyncNotifier<EnrollmentModel?> {
   @override
-  Future<void> build() async {}
+  Future<EnrollmentModel?> build() async {
+    return null;
+  }
 
-  Future<void> addEnrollment({
-    required String courseId,
+  Future<EnrollmentModel?> addEnrollment({
     required String studentId,
+    required String studentFullName,
+    required String studentPhoneNumber,
+    required String studentEducationLevel,
+    required String studentSchoolName,
+    required String studentAddress,
+    required String courseId,
     required String programId,
     required String status,
   }) async {
     state = const AsyncLoading();
-    state = await AsyncValue.guard(() async {
-      await ref
-          .watch(enrollmentRepositoryProvider)
+
+    final result = await AsyncValue.guard(() async {
+      return await ref
+          .read(enrollmentRepositoryProvider)
           .addEnrollment(
-            courseId: courseId,
             studentId: studentId,
+            studentFullName: studentFullName,
+            studentPhoneNumber: studentPhoneNumber,
+            studentEducationLevel: studentEducationLevel,
+            studentSchoolName: studentSchoolName,
+            studentAddress: studentAddress,
+            courseId: courseId,
             programId: programId,
             status: status,
           );
     });
+
+    state = result;
+
+    return result.value;
+  }
+
+  Future<EnrollmentModel?> getEnrollmentById({
+    required String enrollmentId,
+  }) async {
+    state = const AsyncLoading();
+
+    final result = await AsyncValue.guard(() async {
+      return await ref
+          .read(enrollmentRepositoryProvider)
+          .getEnrollmentById(enrollmentId: enrollmentId);
+    });
+
+    state = result;
+
+    return result.value;
   }
 }
