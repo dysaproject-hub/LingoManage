@@ -8,11 +8,11 @@ import 'package:lingo_manage/core/constants/user_role.dart';
 import 'package:lingo_manage/core/providers/app_users_provider.dart';
 import 'package:lingo_manage/core/utils/education_level_enum.dart';
 import 'package:lingo_manage/features/auth/presentation/providers/auth_controller.dart';
-import 'package:lingo_manage/shared/widgets/button_widget.dart';
-import 'package:lingo_manage/shared/widgets/loading_widget.dart';
-import 'package:lingo_manage/shared/widgets/popup_widget.dart';
-import 'package:lingo_manage/shared/widgets/text_field_widget.dart';
-import 'package:lingo_manage/shared/widgets/text_widget.dart';
+import 'package:lingo_manage/shared/widgets/buttons/button_widget.dart';
+import 'package:lingo_manage/shared/widgets/loadings/loading_widget.dart';
+import 'package:lingo_manage/shared/widgets/popups/auth_section/auth_popup.dart';
+import 'package:lingo_manage/shared/widgets/text/text_field_widget.dart';
+import 'package:lingo_manage/shared/widgets/text/text_widget.dart';
 
 class ProfileUser extends ConsumerStatefulWidget {
   const ProfileUser({super.key});
@@ -154,7 +154,7 @@ class _ProfileUserState extends ConsumerState<ProfileUser> {
                       boxColor: AppColors.lightText,
                       iconColor: AppColors.red,
                       onTap: () async {
-                        return PopupWidget.signOutAlert(context, () async {
+                        return AuthPopup.signOutAlert(context, () async {
                           await ref.read(authController.notifier).signOut();
 
                           if (!context.mounted) return;

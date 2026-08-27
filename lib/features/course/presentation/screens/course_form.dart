@@ -3,10 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lingo_manage/core/constants/app_colors.dart';
 import 'package:lingo_manage/core/utils/media_query_helper.dart';
 import 'package:lingo_manage/features/course/presentation/providers/course_provider.dart';
-import 'package:lingo_manage/shared/widgets/button_widget.dart';
-import 'package:lingo_manage/shared/widgets/loading_widget.dart';
-import 'package:lingo_manage/shared/widgets/text_field_widget.dart';
-import 'package:lingo_manage/shared/widgets/text_widget.dart';
+import 'package:lingo_manage/shared/widgets/buttons/button_widget.dart';
+import 'package:lingo_manage/shared/widgets/loadings/loading_widget.dart';
+import 'package:lingo_manage/shared/widgets/text/text_field_widget.dart';
+import 'package:lingo_manage/shared/widgets/text/text_widget.dart';
 
 class CourseForm extends ConsumerStatefulWidget {
   const CourseForm({super.key});

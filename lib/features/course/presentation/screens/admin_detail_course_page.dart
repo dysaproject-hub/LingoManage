@@ -6,14 +6,15 @@ import 'package:lingo_manage/features/admin/presentation/providers/admin_course_
 import 'package:lingo_manage/features/course/models/course_model.dart';
 import 'package:lingo_manage/features/course/presentation/providers/course_program_provider.dart';
 import 'package:lingo_manage/features/course/presentation/providers/course_provider.dart';
-import 'package:lingo_manage/shared/widgets/button_widget.dart';
-import 'package:lingo_manage/shared/widgets/card_program.dart';
-import 'package:lingo_manage/shared/widgets/empty_section_widget.dart';
-import 'package:lingo_manage/shared/widgets/loading_widget.dart';
-import 'package:lingo_manage/shared/widgets/management_button_widget.dart';
-import 'package:lingo_manage/shared/widgets/popup_widget.dart';
-import 'package:lingo_manage/shared/widgets/statistic_widget.dart';
-import 'package:lingo_manage/shared/widgets/text_widget.dart';
+import 'package:lingo_manage/shared/widgets/buttons/button_widget.dart';
+import 'package:lingo_manage/shared/widgets/cards/card_program.dart';
+import 'package:lingo_manage/shared/widgets/cards/empty_card.dart';
+import 'package:lingo_manage/shared/widgets/loadings/loading_widget.dart';
+import 'package:lingo_manage/shared/widgets/buttons/management_button_widget.dart';
+import 'package:lingo_manage/shared/widgets/cards/statistic_card.dart';
+import 'package:lingo_manage/shared/widgets/popups/course_program_section/course_program_popup.dart';
+import 'package:lingo_manage/shared/widgets/popups/course_section/course_popup.dart';
+import 'package:lingo_manage/shared/widgets/text/text_widget.dart';
 
 class AdminDetailCoursePage extends ConsumerWidget {
   final CourseModel courseModel;
@@ -194,7 +195,7 @@ class AdminDetailCoursePage extends ConsumerWidget {
 
                     TextButton.icon(
                       onPressed: () {
-                        PopupWidget.showDialogAddCourseProgram(
+                        CourseProgramPopup.showDialogAddCourseProgram(
                           context: context,
                           courseData: courseModel,
                           ref: ref,
@@ -224,7 +225,7 @@ class AdminDetailCoursePage extends ConsumerWidget {
                                 'Add programs such as Regular, Private, or Intensive.',
                             buttonText: 'Add Program',
                             onPressed: () {
-                              PopupWidget.showDialogAddCourseProgram(
+                              CourseProgramPopup.showDialogAddCourseProgram(
                                 context: context,
                                 courseData: courseModel,
                                 ref: ref,
@@ -242,7 +243,7 @@ class AdminDetailCoursePage extends ConsumerWidget {
                               return ProgramCard(
                                 program: courseProgram,
                                 onDelete: () {
-                                  PopupWidget.showDialogDeleteCourseProgram(
+                                  CourseProgramPopup.showDialogDeleteCourseProgram(
                                     context,
                                     courseProgram,
                                     () async {
@@ -265,7 +266,7 @@ class AdminDetailCoursePage extends ConsumerWidget {
                                   );
                                 },
                                 onEdit: () {
-                                  PopupWidget.showDialogEditCourseProgram(
+                                  CourseProgramPopup.showDialogEditCourseProgram(
                                     context: context,
                                     program: courseProgram,
                                     ref: ref,
@@ -377,7 +378,7 @@ class AdminDetailCoursePage extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(12),
 
                     onPressed: () {
-                      PopupWidget.showDialogUpdateCourseData(
+                      CoursePopup.showDialogUpdateCourseData(
                         context: context,
                         courseData: courseModel,
                         ref: ref,

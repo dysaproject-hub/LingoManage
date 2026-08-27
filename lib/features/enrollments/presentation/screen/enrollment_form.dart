@@ -9,10 +9,13 @@ import 'package:lingo_manage/core/utils/status_enrollments_enum.dart';
 import 'package:lingo_manage/features/course/models/course_model.dart';
 import 'package:lingo_manage/features/course/models/course_program_model.dart';
 import 'package:lingo_manage/features/enrollments/presentation/providers/enrollment_provider.dart';
-import 'package:lingo_manage/shared/widgets/button_widget.dart';
-import 'package:lingo_manage/shared/widgets/loading_widget.dart';
-import 'package:lingo_manage/shared/widgets/text_field_widget.dart';
-import 'package:lingo_manage/shared/widgets/text_widget.dart';
+import 'package:lingo_manage/features/student/presentation/provider/student_course_provider.dart';
+import 'package:lingo_manage/shared/widgets/buttons/button_widget.dart';
+import 'package:lingo_manage/shared/widgets/cards/fee_card.dart';
+import 'package:lingo_manage/shared/widgets/loadings/loading_widget.dart';
+import 'package:lingo_manage/shared/widgets/items/summary_item.dart';
+import 'package:lingo_manage/shared/widgets/text/text_field_widget.dart';
+import 'package:lingo_manage/shared/widgets/text/text_widget.dart';
 
 class EnrollmentPage extends ConsumerStatefulWidget {
   final CourseModel course;
@@ -162,16 +165,16 @@ class _EnrollmentPageState extends ConsumerState<EnrollmentPage> {
 
                 const SizedBox(height: 20),
 
-                _SummaryItem(title: 'Course', value: widget.course.name),
+                SummaryItem(title: 'Course', value: widget.course.name),
 
-                _SummaryItem(title: 'Program', value: widget.programModel.name),
+                SummaryItem(title: 'Program', value: widget.programModel.name),
 
-                _SummaryItem(
+                SummaryItem(
                   title: 'Registration Fee',
                   value: formatRupiah(widget.programModel.registrationFee),
                 ),
 
-                _SummaryItem(
+                SummaryItem(
                   title: 'Monthly Fee',
                   value: formatRupiah(widget.programModel.monthlyFee),
                 ),
@@ -201,6 +204,8 @@ class _EnrollmentPageState extends ConsumerState<EnrollmentPage> {
                             programId: programId,
                             status: status,
                           );
+
+                      ref.invalidate(getStudentCourseProvider);
 
                       if (!context.mounted) return;
 
@@ -354,7 +359,7 @@ class _EnrollmentPageState extends ConsumerState<EnrollmentPage> {
                 Row(
                   children: [
                     Expanded(
-                      child: _FeeCard(
+                      child: FeeCard(
                         title: 'Registration',
                         value: formatRupiah(
                           widget.programModel.registrationFee,
@@ -366,7 +371,7 @@ class _EnrollmentPageState extends ConsumerState<EnrollmentPage> {
                     const SizedBox(width: 12),
 
                     Expanded(
-                      child: _FeeCard(
+                      child: FeeCard(
                         title: 'Monthly',
                         value: formatRupiah(widget.programModel.monthlyFee),
                         icon: Icons.calendar_month_outlined,
@@ -611,86 +616,6 @@ class _EnrollmentPageState extends ConsumerState<EnrollmentPage> {
             ),
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _FeeCard extends StatelessWidget {
-  final String title;
-  final String value;
-  final IconData icon;
-
-  const _FeeCard({
-    required this.title,
-    required this.value,
-    required this.icon,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-
-      decoration: BoxDecoration(
-        color: AppColors.lightText,
-        borderRadius: BorderRadius.circular(14),
-
-        border: Border.all(color: AppColors.mutedText.withValues(alpha: 0.18)),
-      ),
-
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(icon, size: 20, color: AppColors.primary),
-
-          const SizedBox(height: 8),
-
-          textPoppins(title, fontSize: 10, color: AppColors.mutedText),
-
-          const SizedBox(height: 3),
-
-          textPoppins(
-            value,
-            fontSize: 13,
-            fontWeight: FontWeight.w700,
-            color: AppColors.black,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _SummaryItem extends StatelessWidget {
-  final String title;
-  final String value;
-
-  const _SummaryItem({required this.title, required this.value});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
-
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Expanded(
-            child: textPoppins(title, fontSize: 12, color: AppColors.mutedText),
-          ),
-
-          const SizedBox(width: 12),
-
-          Expanded(
-            child: textPoppins(
-              value,
-              fontSize: 12,
-              fontWeight: FontWeight.w600,
-              textAlign: TextAlign.end,
-            ),
-          ),
-        ],
       ),
     );
   }

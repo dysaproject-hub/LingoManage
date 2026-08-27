@@ -12,7 +12,7 @@ import 'package:lingo_manage/features/enrollments/presentation/screen/enrollment
 import 'package:lingo_manage/features/enrollments/presentation/screen/enrollment_form.dart';
 import 'package:lingo_manage/features/student/presentation/screens/student_home_page.dart';
 import 'package:lingo_manage/shared/screens/pofile_user.dart';
-import 'package:lingo_manage/shared/widgets/text_widget.dart';
+import 'package:lingo_manage/shared/widgets/text/text_widget.dart';
 
 class AppRouter {
   static Route<dynamic>? generate(RouteSettings settings) {

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lingo_manage/shared/widgets/text_widget.dart';
+import 'package:lingo_manage/shared/widgets/text/text_widget.dart';
 
 class Button extends StatelessWidget {
   final String text;

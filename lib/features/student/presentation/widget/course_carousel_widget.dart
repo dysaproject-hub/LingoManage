@@ -3,7 +3,7 @@ import 'package:lingo_manage/core/constants/app_colors.dart';
 import 'package:lingo_manage/core/routes/routes.dart';
 import 'package:lingo_manage/features/course/models/course_model.dart';
 import 'package:lingo_manage/features/student/presentation/widget/card_course_widget.dart';
-import 'package:lingo_manage/shared/widgets/carousel_indicator.dart';
+import 'package:lingo_manage/shared/widgets/items/carousel_indicator.dart';
 
 class CourseCarouselWidget extends StatefulWidget {
   final List<CourseModel> data;

@@ -5,12 +5,12 @@ import 'package:lingo_manage/core/providers/app_users_provider.dart';
 import 'package:lingo_manage/core/routes/routes.dart';
 import 'package:lingo_manage/features/admin/presentation/widget/card_course_widget.dart';
 import 'package:lingo_manage/features/course/presentation/providers/course_provider.dart';
-import 'package:lingo_manage/shared/widgets/appbar_widget.dart';
-import 'package:lingo_manage/shared/widgets/button_widget.dart';
-import 'package:lingo_manage/shared/widgets/card_widget.dart';
-import 'package:lingo_manage/shared/widgets/loading_widget.dart';
-import 'package:lingo_manage/shared/widgets/popup_widget.dart';
-import 'package:lingo_manage/shared/widgets/text_widget.dart';
+import 'package:lingo_manage/shared/widgets/app_bar/appbar_widget.dart';
+import 'package:lingo_manage/shared/widgets/buttons/button_widget.dart';
+import 'package:lingo_manage/shared/widgets/cards/card_widget.dart';
+import 'package:lingo_manage/shared/widgets/loadings/loading_widget.dart';
+import 'package:lingo_manage/shared/widgets/popups/course_section/course_popup.dart';
+import 'package:lingo_manage/shared/widgets/text/text_widget.dart';
 
 class AdminDashboardPage extends ConsumerStatefulWidget {
   const AdminDashboardPage({super.key});
@@ -113,7 +113,7 @@ class _AdminDashboardPageState extends ConsumerState<AdminDashboardPage> {
                               );
                             },
                             onTapEdit: () {
-                              PopupWidget.showDialogUpdateCourseData(
+                              CoursePopup.showDialogUpdateCourseData(
                                 context: context,
                                 courseData: data[index],
                                 ref: ref,
@@ -127,7 +127,7 @@ class _AdminDashboardPageState extends ConsumerState<AdminDashboardPage> {
                               );
                             },
                             onTapRemove: () {
-                              PopupWidget.removeCourseAlert(
+                              CoursePopup.removeCourseAlert(
                                 context,
                                 data[index],
                                 () async {

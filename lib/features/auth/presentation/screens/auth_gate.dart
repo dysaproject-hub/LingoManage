@@ -6,8 +6,8 @@ import 'package:lingo_manage/features/admin/presentation/screen/admin_dashboard_
 import 'package:lingo_manage/features/auth/presentation/providers/auth_provider.dart';
 import 'package:lingo_manage/features/auth/presentation/screens/welcome_page.dart';
 import 'package:lingo_manage/features/student/presentation/screens/student_home_page.dart';
-import 'package:lingo_manage/shared/widgets/loading_widget.dart';
-import 'package:lingo_manage/shared/widgets/text_widget.dart';
+import 'package:lingo_manage/shared/widgets/loadings/loading_widget.dart';
+import 'package:lingo_manage/shared/widgets/text/text_widget.dart';
 
 class AuthGate extends ConsumerWidget {
   const AuthGate({super.key});

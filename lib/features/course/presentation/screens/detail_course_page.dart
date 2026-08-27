@@ -4,9 +4,9 @@ import 'package:lingo_manage/core/constants/app_colors.dart';
 import 'package:lingo_manage/core/utils/currency_formatters.dart';
 import 'package:lingo_manage/features/course/models/course_model.dart';
 import 'package:lingo_manage/features/course/models/course_program_model.dart';
-import 'package:lingo_manage/features/course/presentation/widget/card_info_widget.dart';
-import 'package:lingo_manage/shared/widgets/button_widget.dart';
-import 'package:lingo_manage/shared/widgets/text_widget.dart';
+import 'package:lingo_manage/shared/widgets/cards/card_info_widget.dart';
+import 'package:lingo_manage/shared/widgets/buttons/button_widget.dart';
+import 'package:lingo_manage/shared/widgets/text/text_widget.dart';
 
 class ProgramDetailPage extends ConsumerStatefulWidget {
   final CourseProgramModel program;

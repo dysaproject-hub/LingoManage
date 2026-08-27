@@ -7,10 +7,10 @@ import 'package:lingo_manage/core/utils/firebase_exceptions_message.dart';
 import 'package:lingo_manage/core/utils/media_query_helper.dart';
 import 'package:lingo_manage/features/auth/presentation/providers/auth_controller.dart';
 import 'package:lingo_manage/features/auth/presentation/providers/auth_provider.dart';
-import 'package:lingo_manage/shared/widgets/button_widget.dart';
-import 'package:lingo_manage/shared/widgets/loading_widget.dart';
-import 'package:lingo_manage/shared/widgets/text_field_widget.dart';
-import 'package:lingo_manage/shared/widgets/text_widget.dart';
+import 'package:lingo_manage/shared/widgets/buttons/button_widget.dart';
+import 'package:lingo_manage/shared/widgets/loadings/loading_widget.dart';
+import 'package:lingo_manage/shared/widgets/text/text_field_widget.dart';
+import 'package:lingo_manage/shared/widgets/text/text_widget.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
   final VoidCallback onBack;

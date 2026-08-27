@@ -7,10 +7,10 @@ import 'package:lingo_manage/features/admin/presentation/providers/admin_course_
 import 'package:lingo_manage/features/admin/presentation/widget/admin_card_widget.dart';
 import 'package:lingo_manage/features/admin/presentation/widget/admin_search_result_widget.dart';
 import 'package:lingo_manage/features/course/models/course_model.dart';
-import 'package:lingo_manage/shared/widgets/loading_widget.dart';
-import 'package:lingo_manage/shared/widgets/popup_widget.dart';
-import 'package:lingo_manage/shared/widgets/text_field_widget.dart';
-import 'package:lingo_manage/shared/widgets/text_widget.dart';
+import 'package:lingo_manage/shared/widgets/loadings/loading_widget.dart';
+import 'package:lingo_manage/shared/widgets/popups/admin_section/admin_popup.dart';
+import 'package:lingo_manage/shared/widgets/text/text_field_widget.dart';
+import 'package:lingo_manage/shared/widgets/text/text_widget.dart';
 
 class ManageAdminPage extends ConsumerStatefulWidget {
   final CourseModel courseModel;
@@ -174,7 +174,7 @@ class _ManageAdminPageState extends ConsumerState<ManageAdminPage> {
       isCurrentUser: isCurrentUser,
 
       onDelete: isCurrentUserOwner && !isOwner
-          ? () => PopupWidget.removeAdminCourse(context, admin, () async {
+          ? () => AdminPopup.removeAdminCourse(context, admin, () async {
               await _deleteAdmin(admin);
 
               if (!context.mounted) return;

@@ -7,10 +7,10 @@ import 'package:lingo_manage/features/course/presentation/providers/course_provi
 import 'package:lingo_manage/features/student/presentation/provider/student_course_provider.dart';
 import 'package:lingo_manage/features/student/presentation/widget/card_course_widget.dart';
 import 'package:lingo_manage/features/student/presentation/widget/course_carousel_widget.dart';
-import 'package:lingo_manage/shared/widgets/appbar_widget.dart';
-import 'package:lingo_manage/shared/widgets/card_widget.dart';
-import 'package:lingo_manage/shared/widgets/loading_widget.dart';
-import 'package:lingo_manage/shared/widgets/text_widget.dart';
+import 'package:lingo_manage/shared/widgets/app_bar/appbar_widget.dart';
+import 'package:lingo_manage/shared/widgets/cards/card_widget.dart';
+import 'package:lingo_manage/shared/widgets/loadings/loading_widget.dart';
+import 'package:lingo_manage/shared/widgets/text/text_widget.dart';
 
 class StudentHomePage extends ConsumerStatefulWidget {
   const StudentHomePage({super.key});
@@ -22,6 +22,7 @@ class StudentHomePage extends ConsumerStatefulWidget {
 class _StudentHomePageState extends ConsumerState<StudentHomePage> {
   Future<void> _refreshPage() async {
     ref.invalidate(getCourseControllerProvider);
+    ref.invalidate(getStudentCourseProvider);
     await ref.read(getCourseControllerProvider.future);
   }
 

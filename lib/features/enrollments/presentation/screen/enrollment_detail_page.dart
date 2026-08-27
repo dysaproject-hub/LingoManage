@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lingo_manage/core/constants/app_colors.dart';
+import 'package:lingo_manage/core/utils/currency_formatters.dart';
 import 'package:lingo_manage/features/course/models/course_program_model.dart';
 import 'package:lingo_manage/features/enrollments/models/enrollment_model.dart';
-import 'package:lingo_manage/shared/widgets/button_widget.dart';
-import 'package:lingo_manage/shared/widgets/text_widget.dart';
+import 'package:lingo_manage/shared/widgets/buttons/button_widget.dart';
+import 'package:lingo_manage/shared/widgets/cards/fee_card.dart';
+import 'package:lingo_manage/shared/widgets/items/row_detail_data.dart';
+import 'package:lingo_manage/shared/widgets/text/text_widget.dart';
 
 class EnrollmentDetailPage extends ConsumerWidget {
   final String courseName;
@@ -18,22 +21,6 @@ class EnrollmentDetailPage extends ConsumerWidget {
     required this.programModel,
     required this.enrollmentModel,
   });
-
-  String _formatRupiah(int value) {
-    final text = value.toString();
-
-    final buffer = StringBuffer();
-
-    for (int i = 0; i < text.length; i++) {
-      if (i > 0 && (text.length - i) % 3 == 0) {
-        buffer.write('.');
-      }
-
-      buffer.write(text[i]);
-    }
-
-    return 'Rp ${buffer.toString()}';
-  }
 
   Color _statusColor() {
     switch (enrollmentModel.status.toLowerCase()) {
@@ -187,9 +174,6 @@ class EnrollmentDetailPage extends ConsumerWidget {
 
               const SizedBox(height: 28),
 
-              // ============================================================
-              // COURSE
-              // ============================================================
               textBaloo2(
                 'Course Information',
                 fontSize: 20,
@@ -215,7 +199,7 @@ class EnrollmentDetailPage extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    _DetailRow(
+                    DetailRow(
                       icon: Icons.school_outlined,
                       title: 'Course',
                       value: courseName,
@@ -223,7 +207,7 @@ class EnrollmentDetailPage extends ConsumerWidget {
 
                     const SizedBox(height: 16),
 
-                    _DetailRow(
+                    DetailRow(
                       icon: Icons.menu_book_outlined,
                       title: 'Program',
                       value: programModel.name,
@@ -234,9 +218,6 @@ class EnrollmentDetailPage extends ConsumerWidget {
 
               const SizedBox(height: 28),
 
-              // ============================================================
-              // FEE
-              // ============================================================
               textBaloo2(
                 'Fee Information',
                 fontSize: 20,
@@ -248,20 +229,20 @@ class EnrollmentDetailPage extends ConsumerWidget {
               Row(
                 children: [
                   Expanded(
-                    child: _FeeCard(
+                    child: FeeCard(
                       icon: Icons.receipt_long_outlined,
                       title: 'Registration',
-                      value: _formatRupiah(programModel.registrationFee),
+                      value: formatRupiah(programModel.registrationFee),
                     ),
                   ),
 
                   const SizedBox(width: 12),
 
                   Expanded(
-                    child: _FeeCard(
+                    child: FeeCard(
                       icon: Icons.calendar_month_outlined,
                       title: 'Monthly',
-                      value: _formatRupiah(programModel.monthlyFee),
+                      value: formatRupiah(programModel.monthlyFee),
                     ),
                   ),
                 ],
@@ -269,9 +250,6 @@ class EnrollmentDetailPage extends ConsumerWidget {
 
               const SizedBox(height: 28),
 
-              // ============================================================
-              // STUDENT INFORMATION
-              // ============================================================
               textBaloo2(
                 'Student Information',
                 fontSize: 20,
@@ -296,7 +274,7 @@ class EnrollmentDetailPage extends ConsumerWidget {
 
                 child: Column(
                   children: [
-                    _DetailRow(
+                    DetailRow(
                       icon: Icons.person_outline,
                       title: 'Full Name',
                       value: enrollmentModel.studentFullName,
@@ -304,7 +282,7 @@ class EnrollmentDetailPage extends ConsumerWidget {
 
                     const SizedBox(height: 16),
 
-                    _DetailRow(
+                    DetailRow(
                       icon: Icons.phone_outlined,
                       title: 'Phone Number',
                       value: enrollmentModel.studentPhoneNumber,
@@ -312,7 +290,7 @@ class EnrollmentDetailPage extends ConsumerWidget {
 
                     const SizedBox(height: 16),
 
-                    _DetailRow(
+                    DetailRow(
                       icon: Icons.school_outlined,
                       title: 'Education',
                       value: enrollmentModel.studentEducationLevel,
@@ -320,7 +298,7 @@ class EnrollmentDetailPage extends ConsumerWidget {
 
                     const SizedBox(height: 16),
 
-                    _DetailRow(
+                    DetailRow(
                       icon: Icons.business_outlined,
                       title: 'School / Institution',
                       value: enrollmentModel.studentSchoolName,
@@ -328,7 +306,7 @@ class EnrollmentDetailPage extends ConsumerWidget {
 
                     const SizedBox(height: 16),
 
-                    _DetailRow(
+                    DetailRow(
                       icon: Icons.location_on_outlined,
                       title: 'Address',
                       value: enrollmentModel.studentAddress,
@@ -339,9 +317,6 @@ class EnrollmentDetailPage extends ConsumerWidget {
 
               const SizedBox(height: 28),
 
-              // ============================================================
-              // ENROLLMENT ID
-              // ============================================================
               textBaloo2(
                 'Enrollment Information',
                 fontSize: 20,
@@ -466,102 +441,5 @@ class EnrollmentDetailPage extends ConsumerWidget {
       default:
         return Icons.hourglass_empty;
     }
-  }
-}
-
-// ==========================================================================
-// DETAIL ROW
-// ==========================================================================
-
-class _DetailRow extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String value;
-
-  const _DetailRow({
-    required this.icon,
-    required this.title,
-    required this.value,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          width: 38,
-          height: 38,
-
-          decoration: BoxDecoration(
-            color: AppColors.primary.withValues(alpha: 0.08),
-            borderRadius: BorderRadius.circular(10),
-          ),
-
-          child: Icon(icon, color: AppColors.primary, size: 20),
-        ),
-
-        const SizedBox(width: 12),
-
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              textPoppins(title, fontSize: 10, color: AppColors.mutedText),
-
-              const SizedBox(height: 3),
-
-              textPoppins(
-                value.isEmpty ? '-' : value,
-                fontSize: 13,
-                fontWeight: FontWeight.w600,
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _FeeCard extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String value;
-
-  const _FeeCard({
-    required this.icon,
-    required this.title,
-    required this.value,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(14),
-
-      decoration: BoxDecoration(
-        color: AppColors.lightText,
-
-        borderRadius: BorderRadius.circular(14),
-
-        border: Border.all(color: AppColors.mutedText.withValues(alpha: 0.15)),
-      ),
-
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(icon, color: AppColors.primary, size: 21),
-
-          const SizedBox(height: 10),
-
-          textPoppins(title, fontSize: 10, color: AppColors.mutedText),
-
-          const SizedBox(height: 3),
-
-          textPoppins(value, fontSize: 13, fontWeight: FontWeight.w700),
-        ],
-      ),
-    );
   }
 }

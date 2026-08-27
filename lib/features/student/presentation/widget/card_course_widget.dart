@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:lingo_manage/core/constants/app_colors.dart';
 import 'package:lingo_manage/core/utils/media_query_helper.dart';
 import 'package:lingo_manage/features/course/models/course_model.dart';
-import 'package:lingo_manage/shared/widgets/button_widget.dart';
-import 'package:lingo_manage/shared/widgets/text_widget.dart';
+import 'package:lingo_manage/shared/widgets/buttons/button_widget.dart';
+import 'package:lingo_manage/shared/widgets/text/text_widget.dart';
 
 class CardCourseWidgetStudent extends StatelessWidget {
   final Color maincolor;

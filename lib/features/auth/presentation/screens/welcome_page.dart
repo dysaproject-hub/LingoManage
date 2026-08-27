@@ -5,8 +5,8 @@ import 'package:lingo_manage/core/utils/media_query_helper.dart';
 import 'package:lingo_manage/features/auth/presentation/screens/login_page.dart';
 import 'package:lingo_manage/features/auth/presentation/screens/register_admin.dart';
 import 'package:lingo_manage/features/auth/presentation/screens/register_student.dart';
-import 'package:lingo_manage/shared/widgets/button_widget.dart';
-import 'package:lingo_manage/shared/widgets/text_widget.dart';
+import 'package:lingo_manage/shared/widgets/buttons/button_widget.dart';
+import 'package:lingo_manage/shared/widgets/text/text_widget.dart';
 
 class WelcomePage extends StatefulWidget {
   final bool? onRegisterPage;

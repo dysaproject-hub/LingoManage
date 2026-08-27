@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:lingo_manage/core/constants/app_colors.dart';
 import 'package:lingo_manage/core/utils/currency_formatters.dart';
 import 'package:lingo_manage/features/course/models/course_program_model.dart';
-import 'package:lingo_manage/shared/widgets/text_widget.dart';
+import 'package:lingo_manage/shared/widgets/cards/card_info_widget.dart';
+import 'package:lingo_manage/shared/widgets/cards/fee_card.dart';
+import 'package:lingo_manage/shared/widgets/text/text_widget.dart';
 
 class ProgramCard extends StatelessWidget {
   final CourseProgramModel program;
@@ -124,9 +126,9 @@ class ProgramCard extends StatelessWidget {
               Row(
                 children: [
                   Expanded(
-                    child: _ProgramInfo(
+                    child: FeeCard(
                       icon: Icons.payments_outlined,
-                      label: 'RegistrationFee',
+                      title: 'RegistrationFee',
                       value: registrationFee,
                     ),
                   ),
@@ -134,9 +136,9 @@ class ProgramCard extends StatelessWidget {
                   const SizedBox(width: 12),
 
                   Expanded(
-                    child: _ProgramInfo(
+                    child: FeeCard(
                       icon: Icons.payments_outlined,
-                      label: 'MonthlyFee',
+                      title: 'MonthlyFee',
                       value: monthlyFee,
                     ),
                   ),
@@ -160,56 +162,6 @@ class ProgramCard extends StatelessWidget {
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _ProgramInfo extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final String value;
-
-  const _ProgramInfo({
-    required this.icon,
-    required this.label,
-    required this.value,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(10),
-      decoration: BoxDecoration(
-        color: AppColors.mutedText.withValues(alpha: 0.06),
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Row(
-        children: [
-          Icon(icon, size: 18, color: AppColors.accent),
-
-          const SizedBox(width: 8),
-
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                textPoppins(label, fontSize: 10, color: AppColors.mutedText),
-
-                const SizedBox(height: 2),
-
-                textPoppins(
-                  value,
-                  fontSize: 12,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.black,
-                  maxLines: 1,
-                  textOverflow: TextOverflow.ellipsis
-                ),
-              ],
-            ),
-          ),
-        ],
       ),
     );
   }

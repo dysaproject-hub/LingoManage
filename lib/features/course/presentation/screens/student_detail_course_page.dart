@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lingo_manage/core/constants/app_colors.dart';
 import 'package:lingo_manage/core/routes/routes.dart';
+import 'package:lingo_manage/core/utils/currency_formatters.dart';
 import 'package:lingo_manage/features/course/models/course_model.dart';
 import 'package:lingo_manage/features/course/presentation/providers/course_program_provider.dart';
-import 'package:lingo_manage/shared/widgets/loading_widget.dart';
-import 'package:lingo_manage/shared/widgets/text_widget.dart';
+import 'package:lingo_manage/shared/widgets/cards/fee_card.dart';
+import 'package:lingo_manage/shared/widgets/items/information_item.dart';
+import 'package:lingo_manage/shared/widgets/loadings/loading_widget.dart';
+import 'package:lingo_manage/shared/widgets/text/text_widget.dart';
 
 class StudentDetailCoursePage extends ConsumerStatefulWidget {
   final CourseModel course;
@@ -101,9 +104,6 @@ class _StudentDetailCoursePageState
 
               const SizedBox(height: 28),
 
-              // 
-              // ABOUT COURSE
-              // 
               textBaloo2(
                 'About Course',
                 fontSize: 20,
@@ -123,9 +123,6 @@ class _StudentDetailCoursePageState
 
               const SizedBox(height: 28),
 
-              // 
-              // PROGRAM SECTION
-              // 
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -161,6 +158,13 @@ class _StudentDetailCoursePageState
 
               courseProgramDataList.when(
                 data: (data) {
+                  if (data.isEmpty) {
+                    return textPoppins(
+                      "This course doesn't have any program yet",
+                      color: AppColors.mutedText,
+                      textAlign: TextAlign.center,
+                    );
+                  }
                   return ListView.separated(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
@@ -193,9 +197,6 @@ class _StudentDetailCoursePageState
 
               const SizedBox(height: 28),
 
-              // 
-              // INFORMATION
-              // 
               textBaloo2(
                 'Important Information',
                 fontSize: 20,
@@ -205,7 +206,7 @@ class _StudentDetailCoursePageState
 
               const SizedBox(height: 12),
 
-              _InformationItem(
+              InformationItem(
                 icon: Icons.info_outline,
                 title: 'Registration',
                 description:
@@ -214,7 +215,7 @@ class _StudentDetailCoursePageState
 
               const SizedBox(height: 10),
 
-              _InformationItem(
+              InformationItem(
                 icon: Icons.calendar_month_outlined,
                 title: 'Class Schedule',
                 description:
@@ -223,7 +224,7 @@ class _StudentDetailCoursePageState
 
               const SizedBox(height: 10),
 
-              _InformationItem(
+              InformationItem(
                 icon: Icons.people_outline,
                 title: 'Class',
                 description:
@@ -232,9 +233,6 @@ class _StudentDetailCoursePageState
 
               const SizedBox(height: 30),
 
-              // 
-              // BOTTOM INFORMATION
-              // 
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(16),
@@ -289,22 +287,6 @@ class _ProgramCard extends StatelessWidget {
     required this.onPressed,
   });
 
-  String formatRupiah(int value) {
-    final text = value.toString();
-
-    final buffer = StringBuffer();
-
-    for (int i = 0; i < text.length; i++) {
-      if (i > 0 && (text.length - i) % 3 == 0) {
-        buffer.write('.');
-      }
-
-      buffer.write(text[i]);
-    }
-
-    return 'Rp ${buffer.toString()}';
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -358,7 +340,7 @@ class _ProgramCard extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: _FeeItem(
+                child: FeeCard(
                   title: 'Registration',
                   value: formatRupiah(registrationFee),
                 ),
@@ -367,7 +349,7 @@ class _ProgramCard extends StatelessWidget {
               const SizedBox(width: 12),
 
               Expanded(
-                child: _FeeItem(
+                child: FeeCard(
                   title: 'Monthly',
                   value: formatRupiah(monthlyFee),
                 ),
@@ -404,105 +386,6 @@ class _ProgramCard extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-
-// FEE ITEM
-
-
-class _FeeItem extends StatelessWidget {
-  final String title;
-  final String value;
-
-  const _FeeItem({required this.title, required this.value});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(10),
-
-      decoration: BoxDecoration(
-        color: AppColors.mutedText.withValues(alpha: 0.05),
-        borderRadius: BorderRadius.circular(10),
-      ),
-
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          textPoppins(title, fontSize: 10, color: AppColors.mutedText),
-
-          const SizedBox(height: 3),
-
-          textPoppins(
-            value,
-            fontSize: 12,
-            fontWeight: FontWeight.w700,
-            color: AppColors.black,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-
-// INFORMATION ITEM
-
-
-class _InformationItem extends StatelessWidget {
-  final IconData icon;
-  final String title;
-  final String description;
-
-  const _InformationItem({
-    required this.icon,
-    required this.title,
-    required this.description,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          width: 40,
-          height: 40,
-
-          decoration: BoxDecoration(
-            color: AppColors.primary.withValues(alpha: 0.08),
-            borderRadius: BorderRadius.circular(10),
-          ),
-
-          child: Icon(icon, size: 20, color: AppColors.primary),
-        ),
-
-        const SizedBox(width: 12),
-
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              textPoppins(
-                title,
-                fontSize: 13,
-                fontWeight: FontWeight.w700,
-                color: AppColors.black,
-              ),
-
-              const SizedBox(height: 3),
-
-              textPoppins(
-                description,
-                fontSize: 11,
-                color: AppColors.mutedText,
-              ),
-            ],
-          ),
-        ),
-      ],
     );
   }
 }
