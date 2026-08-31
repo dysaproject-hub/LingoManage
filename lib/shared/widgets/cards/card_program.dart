@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:lingo_manage/core/constants/app_colors.dart';
 import 'package:lingo_manage/core/utils/currency_formatters.dart';
 import 'package:lingo_manage/features/course/models/course_program_model.dart';
-import 'package:lingo_manage/shared/widgets/cards/card_info_widget.dart';
 import 'package:lingo_manage/shared/widgets/cards/fee_card.dart';
 import 'package:lingo_manage/shared/widgets/text/text_widget.dart';
 

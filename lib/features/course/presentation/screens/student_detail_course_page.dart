@@ -7,6 +7,7 @@ import 'package:lingo_manage/features/course/models/course_model.dart';
 import 'package:lingo_manage/features/course/presentation/providers/course_program_provider.dart';
 import 'package:lingo_manage/shared/widgets/cards/fee_card.dart';
 import 'package:lingo_manage/shared/widgets/items/information_item.dart';
+import 'package:lingo_manage/shared/widgets/items/little_badge.dart';
 import 'package:lingo_manage/shared/widgets/loadings/loading_widget.dart';
 import 'package:lingo_manage/shared/widgets/text/text_widget.dart';
 
@@ -133,24 +134,7 @@ class _StudentDetailCoursePageState
                     color: AppColors.black,
                   ),
 
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 5,
-                    ),
-
-                    decoration: BoxDecoration(
-                      color: AppColors.accent.withValues(alpha: 0.10),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-
-                    child: textPoppins(
-                      'Programs',
-                      fontSize: 10,
-                      fontWeight: FontWeight.w600,
-                      color: AppColors.accent,
-                    ),
-                  ),
+                  LittleBadge(text: 'Programs', color: AppColors.accent),
                 ],
               ),
 

@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:lingo_manage/core/constants/firestore_collections.dart';
+import 'package:lingo_manage/core/utils/exceptions/enrollments_exception.dart';
+import 'package:lingo_manage/core/utils/status_enrollments_enum.dart';
 import 'package:lingo_manage/features/enrollments/models/enrollment_model.dart';
 
 class EnrollmentDatasources {
@@ -18,6 +20,15 @@ class EnrollmentDatasources {
     required String programId,
     required String status,
   }) async {
+    final existingEnrollment = await getActiveEnrollment(
+      studentId: studentId,
+      courseId: courseId,
+    );
+
+    if (existingEnrollment != null) {
+      throw EnrollmentException.alreadyExists();
+    }
+
     final enrollmentRef = _db
         .collection(FirestoreCollection.enrollmentsCollection)
         .doc();
@@ -43,6 +54,13 @@ class EnrollmentDatasources {
       'createdAt': DateTime.now(),
       'updatedAt': DateTime.now(),
     });
+  }
+
+  Future<void> deleteEnrollment({required String enrollmentId}) async {
+    await _db
+        .collection(FirestoreCollection.enrollmentsCollection)
+        .doc(enrollmentId)
+        .delete();
   }
 
   Future<EnrollmentModel> getEnrollmentById({
@@ -71,5 +89,29 @@ class EnrollmentDatasources {
     return snapshot.docs
         .map((doc) => EnrollmentModel.fromMap(doc.id, doc.data()))
         .toList();
+  }
+
+  Future<EnrollmentModel?> getActiveEnrollment({
+    required String studentId,
+    required String courseId,
+  }) async {
+    final String pending = StatusEnrollments.pending.label;
+    final String approved = StatusEnrollments.approved.label;
+
+    final snapshot = await _db
+        .collection(FirestoreCollection.enrollmentsCollection)
+        .where('studentId', isEqualTo: studentId)
+        .where('courseId', isEqualTo: courseId)
+        .where('status', whereIn: [pending, approved])
+        .limit(1)
+        .get();
+
+    if (snapshot.docs.isEmpty) {
+      return null;
+    }
+
+    final doc = snapshot.docs.first;
+
+    return EnrollmentModel.fromMap(doc.id, doc.data());
   }
 }

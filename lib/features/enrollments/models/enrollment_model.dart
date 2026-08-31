@@ -13,6 +13,7 @@ class EnrollmentModel {
   final String status;
   final DateTime? createdAt;
   final DateTime? updatedAt;
+  final DateTime? enrolledAt;
 
   EnrollmentModel({
     required this.id,
@@ -27,6 +28,7 @@ class EnrollmentModel {
     required this.status,
     this.createdAt,
     this.updatedAt,
+    this.enrolledAt,
   });
 
   factory EnrollmentModel.fromMap(String id, Map<String, dynamic> data) {
@@ -48,6 +50,10 @@ class EnrollmentModel {
       updatedAt: data['updatedAt'] is Timestamp
           ? (data['updatedAt'] as Timestamp).toDate()
           : data['updatedAt'] as DateTime?,
+
+      enrolledAt: data['enrolledAt'] is Timestamp
+          ? (data['enrolledAt'] as Timestamp).toDate()
+          : data['enrolledAt'] as DateTime?,
     );
   }
 }

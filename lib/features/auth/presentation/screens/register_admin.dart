@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lingo_manage/core/constants/app_colors.dart';
 import 'package:lingo_manage/core/constants/regex.dart';
-import 'package:lingo_manage/core/utils/firebase_exceptions_message.dart';
+import 'package:lingo_manage/core/utils/exceptions/firebase_exceptions_message.dart';
 import 'package:lingo_manage/core/utils/media_query_helper.dart';
 import 'package:lingo_manage/features/auth/presentation/providers/auth_controller.dart';
 import 'package:lingo_manage/features/auth/presentation/providers/auth_provider.dart';

@@ -5,6 +5,7 @@ import 'package:lingo_manage/core/providers/app_users_provider.dart';
 import 'package:lingo_manage/core/routes/routes.dart';
 import 'package:lingo_manage/core/utils/currency_formatters.dart';
 import 'package:lingo_manage/core/utils/education_level_enum.dart';
+import 'package:lingo_manage/core/utils/exceptions/enrollments_exception.dart';
 import 'package:lingo_manage/core/utils/status_enrollments_enum.dart';
 import 'package:lingo_manage/features/course/models/course_model.dart';
 import 'package:lingo_manage/features/course/models/course_program_model.dart';
@@ -191,44 +192,59 @@ class _EnrollmentPageState extends ConsumerState<EnrollmentPage> {
                     fontWeight: FontWeight.w700,
                     borderRadius: BorderRadius.circular(12),
                     onPressed: () async {
-                      final enrollment = await ref
-                          .read(enrollmentControllerProvider.notifier)
-                          .addEnrollment(
-                            studentId: studentId,
-                            studentFullName: studentFullName,
-                            studentPhoneNumber: studentPhoneNumber,
-                            studentEducationLevel: studentEducationLevel,
-                            studentSchoolName: studentSchoolName,
-                            studentAddress: studentAddress,
-                            courseId: courseId,
-                            programId: programId,
-                            status: status,
+                      try {
+                        final enrollment = await ref
+                            .read(enrollmentControllerProvider.notifier)
+                            .addEnrollment(
+                              studentId: studentId,
+                              studentFullName: studentFullName,
+                              studentPhoneNumber: studentPhoneNumber,
+                              studentEducationLevel: studentEducationLevel,
+                              studentSchoolName: studentSchoolName,
+                              studentAddress: studentAddress,
+                              courseId: courseId,
+                              programId: programId,
+                              status: status,
+                            );
+
+                        ref.invalidate(getStudentCourseProvider);
+
+                        if (!context.mounted) return;
+
+                        if (enrollment == null) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Failed to create enrollment'),
+                            ),
                           );
+                          return;
+                        }
 
-                      ref.invalidate(getStudentCourseProvider);
+                        Navigator.pop(context); // tutup bottom sheet
 
-                      if (!context.mounted) return;
-
-                      if (enrollment == null) {
+                        Navigator.pushReplacementNamed(
+                          context,
+                          AppRoutes.enrollmentDetailPage,
+                          arguments: {
+                            'courseName': widget.course.name,
+                            'programModel': widget.programModel,
+                            'enrollmentModel': enrollment,
+                          },
+                        );
+                      } on EnrollmentException catch (e) {
+                        Navigator.pop(context);
+                        ScaffoldMessenger.of(
+                          context,
+                        ).showSnackBar(SnackBar(content: Text(e.message)));
+                      } catch (e) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                            content: Text('Failed to create enrollment'),
+                            content: Text(
+                              'Terjadi kesalahan. Silakan coba lagi.',
+                            ),
                           ),
                         );
-                        return;
                       }
-
-                      Navigator.pop(context); // tutup bottom sheet
-
-                      Navigator.pushReplacementNamed(
-                        context,
-                        AppRoutes.enrollmentDetailPage,
-                        arguments: {
-                          'courseName': widget.course.name,
-                          'programModel': widget.programModel,
-                          'enrollmentModel': enrollment,
-                        },
-                      );
                     },
                   ),
                 ),

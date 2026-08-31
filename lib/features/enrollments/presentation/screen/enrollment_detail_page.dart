@@ -2,11 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lingo_manage/core/constants/app_colors.dart';
 import 'package:lingo_manage/core/utils/currency_formatters.dart';
+import 'package:lingo_manage/core/utils/status_enrollments_enum.dart';
 import 'package:lingo_manage/features/course/models/course_program_model.dart';
 import 'package:lingo_manage/features/enrollments/models/enrollment_model.dart';
+import 'package:lingo_manage/features/enrollments/presentation/providers/enrollment_provider.dart';
+import 'package:lingo_manage/features/student/presentation/provider/student_course_provider.dart';
 import 'package:lingo_manage/shared/widgets/buttons/button_widget.dart';
 import 'package:lingo_manage/shared/widgets/cards/fee_card.dart';
 import 'package:lingo_manage/shared/widgets/items/row_detail_data.dart';
+import 'package:lingo_manage/shared/widgets/popups/enrollment_section/enrollment_popup.dart';
 import 'package:lingo_manage/shared/widgets/text/text_widget.dart';
 
 class EnrollmentDetailPage extends ConsumerWidget {
@@ -21,23 +25,6 @@ class EnrollmentDetailPage extends ConsumerWidget {
     required this.programModel,
     required this.enrollmentModel,
   });
-
-  Color _statusColor() {
-    switch (enrollmentModel.status.toLowerCase()) {
-      case 'approved':
-        return AppColors.success;
-
-      case 'rejected':
-        return Colors.red;
-
-      case 'active':
-        return AppColors.primary;
-
-      case 'pending':
-      default:
-        return Colors.orange;
-    }
-  }
 
   String _statusTitle() {
     switch (enrollmentModel.status.toLowerCase()) {
@@ -75,7 +62,9 @@ class EnrollmentDetailPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final statusColor = _statusColor();
+    final statusColor = StatusEnrollmentsExtension.statusColor(
+      enrollmentModel: enrollmentModel,
+    );
 
     return Scaffold(
       backgroundColor: AppColors.lightText,
@@ -419,6 +408,51 @@ class EnrollmentDetailPage extends ConsumerWidget {
                 ),
 
               const SizedBox(height: 30),
+
+              SizedBox(
+                width: MediaQuery.sizeOf(context).width,
+                child: Button(
+                  text: 'Cancel Enrollment',
+                  textColor: AppColors.lightText,
+                  bgColor: AppColors.red,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w700,
+                  borderRadius: BorderRadius.circular(12),
+                  onPressed: () {
+                    EnrollmentPopup.cancelEnrollmentAlert(
+                      context,
+                      courseName,
+                      programModel,
+                      () async {
+                        try {
+                          Navigator.pop(context);
+                          await ref
+                              .read(enrollmentControllerProvider.notifier)
+                              .deleteEnrollment(
+                                enrollmentId: enrollmentModel.id,
+                              );
+
+                          ref.invalidate(getStudentCourseProvider);
+
+                          if (!context.mounted) return;
+
+                          Navigator.pop(context);
+                        } catch (e) {
+                          if (!context.mounted) return;
+
+                          Navigator.pop(context);
+
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Gagal membatalkan enrollment'),
+                            ),
+                          );
+                        }
+                      },
+                    );
+                  },
+                ),
+              ),
             ],
           ),
         ),

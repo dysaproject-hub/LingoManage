@@ -57,4 +57,16 @@ class EnrollmentController extends AsyncNotifier<EnrollmentModel?> {
 
     return result.value;
   }
+
+  Future<void> deleteEnrollment({required String enrollmentId}) async {
+    state = const AsyncLoading();
+
+    final result = await AsyncValue.guard(() async {
+      await ref
+          .read(enrollmentRepositoryProvider)
+          .deleteEnrollment(enrollmentId: enrollmentId);
+    });
+
+    state = result;
+  }
 }

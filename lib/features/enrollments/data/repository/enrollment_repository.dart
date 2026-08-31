@@ -30,6 +30,10 @@ class EnrollmentRepository {
     );
   }
 
+  Future<void> deleteEnrollment({required String enrollmentId}) async {
+    await _datasources.deleteEnrollment(enrollmentId: enrollmentId);
+  }
+
   Future<EnrollmentModel> getEnrollmentById({
     required String enrollmentId,
   }) async {

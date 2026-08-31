@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lingo_manage/core/constants/app_colors.dart';
 import 'package:lingo_manage/core/providers/app_users_provider.dart';
 import 'package:lingo_manage/core/routes/routes.dart';
+import 'package:lingo_manage/core/utils/status_enrollments_enum.dart';
 import 'package:lingo_manage/features/course/presentation/providers/course_provider.dart';
 import 'package:lingo_manage/features/student/presentation/provider/student_course_provider.dart';
 import 'package:lingo_manage/features/student/presentation/widget/card_course_widget.dart';
@@ -70,7 +71,7 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
 
                     data: (courses) {
                       if (courses.isEmpty) {
-                        return textPoppins('No courses yet');
+                        return textPoppins('No courses yet', color: AppColors.mutedText);
                       }
 
                       return ListView.separated(
@@ -87,6 +88,8 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
                             courseData: studentCourse.course,
                             jumlahsiswa: '--',
                             buttoncolor: AppColors.lightText,
+                            status: studentCourse.enrollment.status,
+                            statusColor: StatusEnrollmentsExtension.statusColor(enrollmentModel: studentCourse.enrollment),
                             onTapCek: () {
                               Navigator.pushNamed(
                                 context,

@@ -38,6 +38,7 @@ class Button extends StatelessWidget {
           ),
           child: textPoppins(
             text,
+            textAlign: TextAlign.center,
             fontSize: fontSize,
             fontWeight: fontWeight,
             color: textColor,

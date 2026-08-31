@@ -3,6 +3,7 @@ import 'package:lingo_manage/core/constants/app_colors.dart';
 import 'package:lingo_manage/core/utils/media_query_helper.dart';
 import 'package:lingo_manage/features/course/models/course_model.dart';
 import 'package:lingo_manage/shared/widgets/buttons/button_widget.dart';
+import 'package:lingo_manage/shared/widgets/items/little_badge.dart';
 import 'package:lingo_manage/shared/widgets/text/text_widget.dart';
 
 class CardCourseWidgetStudent extends StatelessWidget {
@@ -13,6 +14,8 @@ class CardCourseWidgetStudent extends StatelessWidget {
   final Color buttoncolor;
   final VoidCallback onTapCek;
   final EdgeInsets margin;
+  final String? status;
+  final Color? statusColor;
 
   const CardCourseWidgetStudent({
     super.key,
@@ -23,6 +26,8 @@ class CardCourseWidgetStudent extends StatelessWidget {
     required this.buttoncolor,
     required this.onTapCek,
     this.margin = const EdgeInsets.all(0),
+    this.status,
+    this.statusColor,
   });
 
   @override
@@ -43,22 +48,37 @@ class CardCourseWidgetStudent extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Column(
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              textBaloo2(
-                courseData.name,
-                fontSize: 24,
-                fontWeight: FontWeight.w700,
-                color: AppColors.lightText,
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  textBaloo2(
+                    courseData.name,
+                    fontSize: 24,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.lightText,
+                  ),
+                  const SizedBox(width: 16),
+                  textPoppins(
+                    courseData.description ?? "-",
+                    fontSize: 12,
+                    fontWeight: FontWeight.w400,
+                    color: AppColors.lightText,
+                  ),
+                ],
               ),
+
               const SizedBox(width: 16),
-              textPoppins(
-                courseData.description ?? "-",
-                fontSize: 12,
-                fontWeight: FontWeight.w400,
-                color: AppColors.lightText,
-              ),
+
+              status == null
+                  ? SizedBox.shrink()
+                  : LittleBadge(
+                      text: status ?? '-',
+                      color: statusColor ?? AppColors.lightText,
+                    ),
             ],
           ),
           const SizedBox(height: 16),
