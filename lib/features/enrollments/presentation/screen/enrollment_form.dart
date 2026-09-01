@@ -10,7 +10,7 @@ import 'package:lingo_manage/core/utils/status_enrollments_enum.dart';
 import 'package:lingo_manage/features/course/models/course_model.dart';
 import 'package:lingo_manage/features/course/models/course_program_model.dart';
 import 'package:lingo_manage/features/enrollments/presentation/providers/enrollment_provider.dart';
-import 'package:lingo_manage/features/student/presentation/provider/student_course_provider.dart';
+import 'package:lingo_manage/features/student/presentation/provider/student_provider.dart';
 import 'package:lingo_manage/shared/widgets/buttons/button_widget.dart';
 import 'package:lingo_manage/shared/widgets/cards/fee_card.dart';
 import 'package:lingo_manage/shared/widgets/loadings/loading_widget.dart';

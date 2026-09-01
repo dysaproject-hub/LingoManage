@@ -6,6 +6,7 @@ import 'package:lingo_manage/features/admin/presentation/providers/admin_course_
 import 'package:lingo_manage/features/course/models/course_model.dart';
 import 'package:lingo_manage/features/course/presentation/providers/course_program_provider.dart';
 import 'package:lingo_manage/features/course/presentation/providers/course_provider.dart';
+import 'package:lingo_manage/features/student/presentation/provider/student_provider.dart';
 import 'package:lingo_manage/shared/widgets/buttons/button_widget.dart';
 import 'package:lingo_manage/shared/widgets/cards/card_program.dart';
 import 'package:lingo_manage/shared/widgets/cards/empty_card.dart';
@@ -27,6 +28,10 @@ class AdminDetailCoursePage extends ConsumerWidget {
     final courseAsync = ref.watch(courseDetailProvider(courseModel.id));
     final courseProgramDataList = ref.watch(
       getAllCourseProgramProvider(courseModel.id),
+    );
+
+    final approvedStudentByCourseId = ref.watch(
+      approvedStudentByCourseProvider(courseModel.id),
     );
 
     Future<void> refreshPage() async {
@@ -150,7 +155,13 @@ class AdminDetailCoursePage extends ConsumerWidget {
                       child: StatisticCard(
                         icon: Icons.people_alt_outlined,
                         title: 'Students',
-                        value: '--',
+                        value: approvedStudentByCourseId.when(
+                          data: (data) {
+                            return "${data.length}";
+                          },
+                          error: (error, s) => '-',
+                          loading: () => '...',
+                        ),
                       ),
                     ),
 
@@ -360,7 +371,26 @@ class AdminDetailCoursePage extends ConsumerWidget {
                   title: 'Manage Students',
                   description: 'View students enrolled in this course.',
                   onPressed: () {
-                    // TODO: Student Management
+                    Navigator.pushNamed(
+                      context,
+                      AppRoutes.manageStudent,
+                      arguments: {'courseModel': courseModel},
+                    );
+                  },
+                ),
+
+                const SizedBox(height: 10),
+
+                ManagementButton(
+                  icon: Icons.people_outline,
+                  title: 'Manage Enrollments',
+                  description: 'View enrollments request in this course.',
+                  onPressed: () {
+                    Navigator.pushNamed(
+                      context,
+                      AppRoutes.manageEnrollment,
+                      arguments: {'courseModel': courseModel},
+                    );
                   },
                 ),
 

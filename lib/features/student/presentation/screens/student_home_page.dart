@@ -5,7 +5,7 @@ import 'package:lingo_manage/core/providers/app_users_provider.dart';
 import 'package:lingo_manage/core/routes/routes.dart';
 import 'package:lingo_manage/core/utils/status_enrollments_enum.dart';
 import 'package:lingo_manage/features/course/presentation/providers/course_provider.dart';
-import 'package:lingo_manage/features/student/presentation/provider/student_course_provider.dart';
+import 'package:lingo_manage/features/student/presentation/provider/student_provider.dart';
 import 'package:lingo_manage/features/student/presentation/widget/card_course_widget.dart';
 import 'package:lingo_manage/features/student/presentation/widget/course_carousel_widget.dart';
 import 'package:lingo_manage/shared/widgets/app_bar/appbar_widget.dart';

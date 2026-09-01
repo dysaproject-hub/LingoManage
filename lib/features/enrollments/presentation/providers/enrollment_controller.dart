@@ -69,4 +69,22 @@ class EnrollmentController extends AsyncNotifier<EnrollmentModel?> {
 
     state = result;
   }
+
+  Future<void> updateStatusEnrollment({
+    required String enrollmentId,
+    required String statusEnrollment,
+  }) async {
+    state = const AsyncLoading();
+
+    final result = await AsyncValue.guard(() async {
+      await ref
+          .read(enrollmentRepositoryProvider)
+          .updateStatusEnrollment(
+            enrollmentId: enrollmentId,
+            statusEnrollment: statusEnrollment,
+          );
+    });
+
+    state = result;
+  }
 }

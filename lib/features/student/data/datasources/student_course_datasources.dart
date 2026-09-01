@@ -1,17 +1,24 @@
-// import 'package:cloud_firestore/cloud_firestore.dart';
-// import 'package:lingo_manage/features/course/models/course_model.dart';
-// import 'package:lingo_manage/features/course/models/course_program_model.dart';
-// import 'package:lingo_manage/features/enrollments/models/enrollment_model.dart';
-// import 'package:lingo_manage/features/student/models/student_course_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:lingo_manage/core/constants/firestore_collections.dart';
+import 'package:lingo_manage/core/utils/status_enrollments_enum.dart';
+import 'package:lingo_manage/features/enrollments/models/enrollment_model.dart';
 
-// class StudentCourseDatasources {
-//   final FirebaseFirestore _db = FirebaseFirestore.instance;
+class StudentCourseDatasources {
+  final FirebaseFirestore _db;
 
-//   Future<StudentCourseData> getStudentCourseData() async {
-//     return StudentCourseData(
-//       course: course,
-//       enrollment: enrollment,
-//       programs: programs,
-//     );
-//   }
-// }
+  StudentCourseDatasources(this._db);
+
+  Future<List<EnrollmentModel>> approvedStudentByCourseId({
+    required String courseId,
+  }) async {
+    final studentRef = await _db
+        .collection(FirestoreCollection.enrollmentsCollection)
+        .where('courseId', isEqualTo: courseId)
+        .where('status', isEqualTo: StatusEnrollments.approved.label)
+        .get();
+
+    return studentRef.docs.map((doc) {
+      return EnrollmentModel.fromMap(doc.id, doc.data());
+    }).toList();
+  }
+}

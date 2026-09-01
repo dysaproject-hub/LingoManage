@@ -3,6 +3,7 @@ import 'package:lingo_manage/core/constants/app_colors.dart';
 import 'package:lingo_manage/core/routes/routes.dart';
 import 'package:lingo_manage/features/admin/presentation/screen/admin_dashboard_page.dart';
 import 'package:lingo_manage/features/admin/presentation/screen/manage_admin_page.dart';
+import 'package:lingo_manage/features/admin/presentation/screen/manage_enrollment_page.dart';
 import 'package:lingo_manage/features/auth/presentation/screens/auth_gate.dart';
 import 'package:lingo_manage/features/course/presentation/screens/admin_detail_course_page.dart';
 import 'package:lingo_manage/features/course/presentation/screens/course_form.dart';
@@ -10,6 +11,7 @@ import 'package:lingo_manage/features/course/presentation/screens/detail_course_
 import 'package:lingo_manage/features/course/presentation/screens/student_detail_course_page.dart';
 import 'package:lingo_manage/features/enrollments/presentation/screen/enrollment_detail_page.dart';
 import 'package:lingo_manage/features/enrollments/presentation/screen/enrollment_form.dart';
+import 'package:lingo_manage/features/student/presentation/screens/manage_student_page.dart';
 import 'package:lingo_manage/features/student/presentation/screens/student_home_page.dart';
 import 'package:lingo_manage/shared/screens/pofile_user.dart';
 import 'package:lingo_manage/shared/widgets/text/text_widget.dart';
@@ -80,6 +82,18 @@ class AppRouter {
             programModel: programModel,
             enrollmentModel: enrollmentModel,
           ),
+        );
+
+      case AppRoutes.manageEnrollment:
+        final courseModel = args['courseModel'];
+        return MaterialPageRoute(
+          builder: (_) => ManageEnrollmentPage(courseModel: courseModel),
+        );
+
+      case AppRoutes.manageStudent:
+        final courseModel = args['courseModel'];
+        return MaterialPageRoute(
+          builder: (_) => ManageStudentPage(courseModel: courseModel),
         );
 
       default:

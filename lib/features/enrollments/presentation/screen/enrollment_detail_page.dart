@@ -6,7 +6,7 @@ import 'package:lingo_manage/core/utils/status_enrollments_enum.dart';
 import 'package:lingo_manage/features/course/models/course_program_model.dart';
 import 'package:lingo_manage/features/enrollments/models/enrollment_model.dart';
 import 'package:lingo_manage/features/enrollments/presentation/providers/enrollment_provider.dart';
-import 'package:lingo_manage/features/student/presentation/provider/student_course_provider.dart';
+import 'package:lingo_manage/features/student/presentation/provider/student_provider.dart';
 import 'package:lingo_manage/shared/widgets/buttons/button_widget.dart';
 import 'package:lingo_manage/shared/widgets/cards/fee_card.dart';
 import 'package:lingo_manage/shared/widgets/items/row_detail_data.dart';
@@ -26,39 +26,6 @@ class EnrollmentDetailPage extends ConsumerWidget {
     required this.enrollmentModel,
   });
 
-  String _statusTitle() {
-    switch (enrollmentModel.status.toLowerCase()) {
-      case 'approved':
-        return 'Enrollment Approved';
-
-      case 'rejected':
-        return 'Enrollment Rejected';
-
-      case 'active':
-        return 'Enrollment Active';
-
-      case 'pending':
-      default:
-        return 'Waiting for Approval';
-    }
-  }
-
-  String _statusDescription() {
-    switch (enrollmentModel.status.toLowerCase()) {
-      case 'approved':
-        return 'Your enrollment has been approved by the course administrator.';
-
-      case 'rejected':
-        return 'Unfortunately, your enrollment was rejected by the course administrator.';
-
-      case 'active':
-        return 'You are now an active student in this course.';
-
-      case 'pending':
-      default:
-        return 'Your enrollment has been submitted and is waiting for the course administrator to review.';
-    }
-  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -122,7 +89,7 @@ class EnrollmentDetailPage extends ConsumerWidget {
                     const SizedBox(height: 14),
 
                     textBaloo2(
-                      _statusTitle(),
+                      StatusEnrollmentsExtension.statusTitle(enrollmentModel: enrollmentModel),
                       fontSize: 21,
                       fontWeight: FontWeight.w800,
                       textAlign: TextAlign.center,
@@ -131,7 +98,7 @@ class EnrollmentDetailPage extends ConsumerWidget {
                     const SizedBox(height: 6),
 
                     textPoppins(
-                      _statusDescription(),
+                      StatusEnrollmentsExtension.statusDescription(enrollmentModel: enrollmentModel),
                       fontSize: 12,
                       color: AppColors.mutedText,
                       textAlign: TextAlign.center,

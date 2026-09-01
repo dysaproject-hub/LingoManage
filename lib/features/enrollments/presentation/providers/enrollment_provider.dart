@@ -17,16 +17,23 @@ final enrollmentRepositoryProvider = Provider<EnrollmentRepository>((ref) {
 });
 
 final enrollmentControllerProvider =
-    AsyncNotifierProvider<EnrollmentController, EnrollmentModel?>(EnrollmentController.new);
-
+    AsyncNotifierProvider<EnrollmentController, EnrollmentModel?>(
+      EnrollmentController.new,
+    );
 
 final studentEnrollmentsProvider =
-    FutureProvider.family<List<EnrollmentModel>, String>(
-  (ref, studentId) async {
-    return ref
-        .read(enrollmentRepositoryProvider)
-        .getEnrollmentByStudentId(
-          studentId: studentId,
-        );
-  },
-);
+    FutureProvider.family<List<EnrollmentModel>, String>((
+      ref,
+      studentId,
+    ) async {
+      return ref
+          .read(enrollmentRepositoryProvider)
+          .getEnrollmentByStudentId(studentId: studentId);
+    });
+
+final getEnrollmentByCourseIdAndStatusPending =
+    FutureProvider.family<List<EnrollmentModel>, String>((ref, courseId) async {
+      return ref
+          .read(enrollmentRepositoryProvider)
+          .getEnrollmentByCourseIdAndStatusPending(courseId: courseId);
+    });

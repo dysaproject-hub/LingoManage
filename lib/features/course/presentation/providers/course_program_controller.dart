@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lingo_manage/features/course/models/course_program_model.dart';
 import 'package:lingo_manage/features/course/presentation/providers/course_program_provider.dart';
 
 class CourseProgramController extends AsyncNotifier<void> {
@@ -60,12 +61,18 @@ class CourseProgramController extends AsyncNotifier<void> {
     });
   }
 
-  Future<void> getProgramById({required String programId}) async {
+  Future<CourseProgramModel?> getProgramById({
+    required String programId,
+  }) async {
     state = const AsyncLoading();
-    state = await AsyncValue.guard(() async {
-      await ref
+    final result = await AsyncValue.guard(() async {
+      return await ref
           .watch(courseProgramRepositoryProvider)
           .getProgramById(programId: programId);
     });
+
+    state = result;
+
+    return result.value;
   }
 }

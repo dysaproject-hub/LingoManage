@@ -34,6 +34,16 @@ class EnrollmentRepository {
     await _datasources.deleteEnrollment(enrollmentId: enrollmentId);
   }
 
+  Future<void> updateStatusEnrollment({
+    required String enrollmentId,
+    required String statusEnrollment,
+  }) async {
+    await _datasources.updateStatusEnrollment(
+      enrollmentId: enrollmentId,
+      statusEnrollment: statusEnrollment,
+    );
+  }
+
   Future<EnrollmentModel> getEnrollmentById({
     required String enrollmentId,
   }) async {
@@ -44,5 +54,13 @@ class EnrollmentRepository {
     required String studentId,
   }) async {
     return await _datasources.getEnrollmentsByStudentId(studentId: studentId);
+  }
+
+  Future<List<EnrollmentModel>> getEnrollmentByCourseIdAndStatusPending({
+    required String courseId,
+  }) async {
+    return await _datasources.getEnrollmentsByCourseIdAndStatusPending(
+      courseId: courseId,
+    );
   }
 }

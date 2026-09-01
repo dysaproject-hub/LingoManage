@@ -45,6 +45,7 @@ class EnrollmentDatasources {
       'status': status,
       'createdAt': FieldValue.serverTimestamp(),
       'updatedAt': FieldValue.serverTimestamp(),
+      'enrolledAt': null,
     };
 
     await enrollmentRef.set(data);
@@ -61,6 +62,22 @@ class EnrollmentDatasources {
         .collection(FirestoreCollection.enrollmentsCollection)
         .doc(enrollmentId)
         .delete();
+  }
+
+  Future<void> updateStatusEnrollment({
+    required String enrollmentId,
+    required String statusEnrollment,
+  }) async {
+    final reference = _db
+        .collection(FirestoreCollection.enrollmentsCollection)
+        .doc(enrollmentId);
+
+    return statusEnrollment == StatusEnrollments.approved.label
+        ? await reference.update({
+            'status': statusEnrollment,
+            'enrolledAt': DateTime.now(),
+          })
+        : await reference.update({'status': statusEnrollment});
   }
 
   Future<EnrollmentModel> getEnrollmentById({
@@ -84,6 +101,20 @@ class EnrollmentDatasources {
     final snapshot = await _db
         .collection(FirestoreCollection.enrollmentsCollection)
         .where('studentId', isEqualTo: studentId)
+        .get();
+
+    return snapshot.docs
+        .map((doc) => EnrollmentModel.fromMap(doc.id, doc.data()))
+        .toList();
+  }
+
+  Future<List<EnrollmentModel>> getEnrollmentsByCourseIdAndStatusPending({
+    required String courseId,
+  }) async {
+    final snapshot = await _db
+        .collection(FirestoreCollection.enrollmentsCollection)
+        .where('courseId', isEqualTo: courseId)
+        .where('status', isEqualTo: StatusEnrollments.pending.label)
         .get();
 
     return snapshot.docs
