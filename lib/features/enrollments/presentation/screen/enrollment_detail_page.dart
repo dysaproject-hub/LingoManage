@@ -376,6 +376,7 @@ class EnrollmentDetailPage extends ConsumerWidget {
 
               const SizedBox(height: 30),
 
+              if (enrollmentModel.status.toLowerCase() == 'pending')
               SizedBox(
                 width: MediaQuery.sizeOf(context).width,
                 child: Button(
