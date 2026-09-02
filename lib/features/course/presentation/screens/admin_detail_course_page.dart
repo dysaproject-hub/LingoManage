@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lingo_manage/core/constants/app_colors.dart';
 import 'package:lingo_manage/core/routes/routes.dart';
+import 'package:lingo_manage/core/utils/exceptions/app_error_mapper.dart';
 import 'package:lingo_manage/features/admin/presentation/providers/admin_course_provider.dart';
 import 'package:lingo_manage/features/course/models/course_model.dart';
 import 'package:lingo_manage/features/course/presentation/providers/course_program_provider.dart';
@@ -10,6 +11,7 @@ import 'package:lingo_manage/features/student/presentation/provider/student_prov
 import 'package:lingo_manage/shared/widgets/buttons/button_widget.dart';
 import 'package:lingo_manage/shared/widgets/cards/card_program.dart';
 import 'package:lingo_manage/shared/widgets/cards/empty_card.dart';
+import 'package:lingo_manage/shared/widgets/errors/error_widget.dart';
 import 'package:lingo_manage/shared/widgets/loadings/loading_widget.dart';
 import 'package:lingo_manage/shared/widgets/buttons/management_button_widget.dart';
 import 'package:lingo_manage/shared/widgets/cards/statistic_card.dart';
@@ -134,7 +136,11 @@ class AdminDetailCoursePage extends ConsumerWidget {
                         ],
                       );
                     },
-                    error: (e, s) => textBaloo2('Sorry, something went wrong'),
+                    error: (e, s) {
+                      final err = ErrorMapper.map(e);
+
+                      return CustomErrorWidget(message: err.message, title: "Can't load course data",);
+                    },
                     loading: () => LoadingWidget(),
                   ),
                 ),
@@ -297,7 +303,11 @@ class AdminDetailCoursePage extends ConsumerWidget {
                             },
                           );
                   },
-                  error: (e, s) => textPoppins('Sorry, something went wrong!'),
+                  error: (e, s) {
+                    final err = ErrorMapper.map(e);
+
+                    return CustomErrorWidget(message: err.message, icon: Icons.error_outline_outlined, title: "Can't load course program data",);
+                  },
                   loading: () => LoadingWidget(),
                 ),
 

@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -7,8 +6,10 @@ import 'package:lingo_manage/core/constants/app_colors.dart';
 import 'package:lingo_manage/core/constants/user_role.dart';
 import 'package:lingo_manage/core/providers/app_users_provider.dart';
 import 'package:lingo_manage/core/utils/education_level_enum.dart';
+import 'package:lingo_manage/core/utils/exceptions/app_error_mapper.dart';
 import 'package:lingo_manage/features/auth/presentation/providers/auth_controller.dart';
 import 'package:lingo_manage/shared/widgets/buttons/button_widget.dart';
+import 'package:lingo_manage/shared/widgets/errors/error_widget.dart';
 import 'package:lingo_manage/shared/widgets/loadings/loading_widget.dart';
 import 'package:lingo_manage/shared/widgets/popups/auth_section/auth_popup.dart';
 import 'package:lingo_manage/shared/widgets/text/text_field_widget.dart';
@@ -254,8 +255,13 @@ class _ProfileUserState extends ConsumerState<ProfileUser> {
                     }
 
                     if (originalEducationLevel == null && !isEditing) {
-                      originalEducationLevel = EducationLevelExtension.fromLabel(data.educationLevel);
-                      selectedValue = EducationLevelExtension.fromLabel(data.educationLevel);
+                      originalEducationLevel =
+                          EducationLevelExtension.fromLabel(
+                            data.educationLevel,
+                          );
+                      selectedValue = EducationLevelExtension.fromLabel(
+                        data.educationLevel,
+                      );
                     }
 
                     return Column(
@@ -385,10 +391,17 @@ class _ProfileUserState extends ConsumerState<ProfileUser> {
                       ],
                     );
                   },
-                  error: (error, stackTrace) => textPoppins(
-                    "Sorry, Something Went Wrong!",
-                    color: AppColors.black,
-                  ),
+                  error: (error, stackTrace) {
+                    final appError = ErrorMapper.map(error);
+
+                    return CustomErrorWidget(
+                      message: appError.message,
+                      icon: Icons.person_off_rounded,
+                      onRetry: () {
+                        ref.invalidate(appUserControllerProvider);
+                      },
+                    );
+                  },
                   loading: () => const LoadingWidget(),
                 ),
               ],

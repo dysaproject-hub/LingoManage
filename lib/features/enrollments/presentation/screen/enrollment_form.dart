@@ -274,8 +274,6 @@ class _EnrollmentPageState extends ConsumerState<EnrollmentPage> {
 
   @override
   Widget build(BuildContext context) {
-    final userDataProvider = ref.watch(appUserControllerProvider);
-
     return Scaffold(
       backgroundColor: AppColors.lightText,
 
@@ -414,169 +412,160 @@ class _EnrollmentPageState extends ConsumerState<EnrollmentPage> {
 
                 const SizedBox(height: 18),
 
-                userDataProvider.when(
-                  data: (data) {
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // FULLNAME
-                        textPoppins(
-                          'Full Name',
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // FULLNAME
+                    textPoppins(
+                      'Full Name',
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+
+                    const SizedBox(height: 6),
+
+                    textFieldWidget(
+                      labelText: 'Enter your full name',
+                      controller: _fullnameController,
+                      keyboardType: TextInputType.name,
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    // PHONE
+                    textPoppins(
+                      'Phone Number',
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+
+                    const SizedBox(height: 6),
+
+                    textFieldWidget(
+                      labelText: 'Enter your phone number',
+                      controller: _phoneController,
+                      keyboardType: TextInputType.phone,
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    // EDUCATION
+                    textPoppins(
+                      'Education Level',
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+
+                    const SizedBox(height: 6),
+
+                    DropdownButtonFormField<String>(
+                      initialValue: _educationLevel?.label,
+
+                      decoration: InputDecoration(
+                        hintText: 'Select education level',
+
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
                         ),
 
-                        const SizedBox(height: 6),
-
-                        textFieldWidget(
-                          labelText: 'Enter your full name',
-                          controller: _fullnameController,
-                          keyboardType: TextInputType.name,
-                        ),
-
-                        const SizedBox(height: 16),
-
-                        // PHONE
-                        textPoppins(
-                          'Phone Number',
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                        ),
-
-                        const SizedBox(height: 6),
-
-                        textFieldWidget(
-                          labelText: 'Enter your phone number',
-                          controller: _phoneController,
-                          keyboardType: TextInputType.phone,
-                        ),
-
-                        const SizedBox(height: 16),
-
-                        // EDUCATION
-                        textPoppins(
-                          'Education Level',
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                        ),
-
-                        const SizedBox(height: 6),
-
-                        DropdownButtonFormField<String>(
-                          initialValue: _educationLevel?.label,
-
-                          decoration: InputDecoration(
-                            hintText: 'Select education level',
-
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(
-                                color: AppColors.mutedText.withValues(
-                                  alpha: 0.25,
-                                ),
-                              ),
-                            ),
-
-                            filled: true,
-                            fillColor: AppColors.lightText,
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color: AppColors.mutedText.withValues(alpha: 0.25),
                           ),
-
-                          items: EducationLevel.values.map((level) {
-                            return DropdownMenuItem<String>(
-                              value: level.label,
-                              child: textPoppins(level.label),
-                            );
-                          }).toList(),
-
-                          onChanged: (value) {
-                            if (value == null) return;
-
-                            setState(() {
-                              _educationLevel =
-                                  EducationLevelExtension.fromLabel(value);
-                            });
-                          },
-
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Education level is required';
-                            }
-
-                            return null;
-                          },
                         ),
 
-                        const SizedBox(height: 16),
+                        filled: true,
+                        fillColor: AppColors.lightText,
+                      ),
 
-                        // SCHOOL
-                        textPoppins(
-                          'School / Institution',
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
+                      items: EducationLevel.values.map((level) {
+                        return DropdownMenuItem<String>(
+                          value: level.label,
+                          child: textPoppins(level.label),
+                        );
+                      }).toList(),
+
+                      onChanged: (value) {
+                        if (value == null) return;
+
+                        setState(() {
+                          _educationLevel = EducationLevelExtension.fromLabel(
+                            value,
+                          );
+                        });
+                      },
+
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Education level is required';
+                        }
+
+                        return null;
+                      },
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    // SCHOOL
+                    textPoppins(
+                      'School / Institution',
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+
+                    const SizedBox(height: 6),
+
+                    textFieldWidget(
+                      labelText: 'Enter school or institution',
+                      controller: _schoolController,
+                      keyboardType: TextInputType.text,
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    // ADDRESS
+                    textPoppins(
+                      'Address',
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                    ),
+
+                    const SizedBox(height: 6),
+
+                    TextFormField(
+                      controller: _addressController,
+                      keyboardType: TextInputType.streetAddress,
+                      maxLines: 4,
+
+                      decoration: InputDecoration(
+                        hintText: 'Enter your address',
+
+                        alignLabelWithHint: true,
+
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
                         ),
 
-                        const SizedBox(height: 6),
-
-                        textFieldWidget(
-                          labelText: 'Enter school or institution',
-                          controller: _schoolController,
-                          keyboardType: TextInputType.text,
-                        ),
-
-                        const SizedBox(height: 16),
-
-                        // ADDRESS
-                        textPoppins(
-                          'Address',
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                        ),
-
-                        const SizedBox(height: 6),
-
-                        TextFormField(
-                          controller: _addressController,
-                          keyboardType: TextInputType.streetAddress,
-                          maxLines: 4,
-
-                          decoration: InputDecoration(
-                            hintText: 'Enter your address',
-
-                            alignLabelWithHint: true,
-
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(
-                                color: AppColors.mutedText.withValues(
-                                  alpha: 0.25,
-                                ),
-                              ),
-                            ),
-                            filled: true,
-                            fillColor: AppColors.lightText,
+                        enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide(
+                            color: AppColors.mutedText.withValues(alpha: 0.25),
                           ),
-
-                          validator: (value) {
-                            if (value == null || value.trim().isEmpty) {
-                              return 'Address is required';
-                            }
-
-                            return null;
-                          },
                         ),
-                      ],
-                    );
-                  },
-                  error: (e, s) => textPoppins("Sorry, something went wrong"),
-                  loading: () => LoadingWidget(),
+                        filled: true,
+                        fillColor: AppColors.lightText,
+                      ),
+
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Address is required';
+                        }
+
+                        return null;
+                      },
+                    ),
+                  ],
                 ),
 
                 const SizedBox(height: 30),

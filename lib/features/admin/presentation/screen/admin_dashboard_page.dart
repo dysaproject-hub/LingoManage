@@ -3,11 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lingo_manage/core/constants/app_colors.dart';
 import 'package:lingo_manage/core/providers/app_users_provider.dart';
 import 'package:lingo_manage/core/routes/routes.dart';
+import 'package:lingo_manage/core/utils/exceptions/app_error_mapper.dart';
 import 'package:lingo_manage/features/admin/presentation/widget/card_course_widget.dart';
 import 'package:lingo_manage/features/course/presentation/providers/course_provider.dart';
 import 'package:lingo_manage/shared/widgets/app_bar/appbar_widget.dart';
 import 'package:lingo_manage/shared/widgets/buttons/button_widget.dart';
 import 'package:lingo_manage/shared/widgets/cards/card_widget.dart';
+import 'package:lingo_manage/shared/widgets/errors/error_widget.dart';
 import 'package:lingo_manage/shared/widgets/loadings/loading_widget.dart';
 import 'package:lingo_manage/shared/widgets/popups/course_section/course_popup.dart';
 import 'package:lingo_manage/shared/widgets/text/text_widget.dart';
@@ -147,8 +149,8 @@ class _AdminDashboardPageState extends ConsumerState<AdminDashboardPage> {
                       );
                     },
                     error: (e, s) {
-                      debugPrint('$e');
-                      return textPoppins("Sorry, Something Went Wrong!");
+                      final error = ErrorMapper.map(e);
+                      return CustomErrorWidget(message: error.message, icon: Icons.error_outline, title: "Can't load course data!",);
                     },
                     loading: () => Center(child: LoadingWidget()),
                   ),

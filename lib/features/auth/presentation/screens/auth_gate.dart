@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lingo_manage/core/constants/app_colors.dart';
 import 'package:lingo_manage/core/constants/user_role.dart';
+import 'package:lingo_manage/core/utils/exceptions/app_error_mapper.dart';
 import 'package:lingo_manage/features/admin/presentation/screen/admin_dashboard_page.dart';
 import 'package:lingo_manage/features/auth/presentation/providers/auth_provider.dart';
 import 'package:lingo_manage/features/auth/presentation/screens/welcome_page.dart';
 import 'package:lingo_manage/features/student/presentation/screens/student_home_page.dart';
+import 'package:lingo_manage/shared/screens/error_page.dart';
 import 'package:lingo_manage/shared/widgets/loadings/loading_widget.dart';
 import 'package:lingo_manage/shared/widgets/text/text_widget.dart';
 
@@ -39,15 +41,8 @@ class AuthGate extends ConsumerWidget {
       },
       loading: () => _buildSplashScreen(context),
       error: (error, stack) {
-        debugPrint('AuthGate error: $error');
-        return Scaffold(
-          body: Center(
-            child: textPoppins(
-              "Sorry, Something Went Wrong!",
-              color: AppColors.black,
-            ),
-          ),
-        );
+        final err = ErrorMapper.map(error);
+        return ErrorPage(message: err.message);
       },
     );
   }

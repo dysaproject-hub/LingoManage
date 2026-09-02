@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lingo_manage/core/constants/app_colors.dart';
 import 'package:lingo_manage/core/models/app_users.dart';
+import 'package:lingo_manage/core/utils/exceptions/app_error_mapper.dart';
 import 'package:lingo_manage/features/admin/presentation/providers/admin_course_provider.dart';
 import 'package:lingo_manage/features/admin/presentation/widget/admin_card_widget.dart';
 import 'package:lingo_manage/features/admin/presentation/widget/admin_search_result_widget.dart';
 import 'package:lingo_manage/features/course/models/course_model.dart';
+import 'package:lingo_manage/shared/widgets/errors/error_widget.dart';
 import 'package:lingo_manage/shared/widgets/loadings/loading_widget.dart';
 import 'package:lingo_manage/shared/widgets/popups/admin_section/admin_popup.dart';
 import 'package:lingo_manage/shared/widgets/text/text_field_widget.dart';
@@ -48,16 +50,26 @@ class _ManageAdminPageState extends ConsumerState<ManageAdminPage> {
     final email = _emailController.text.trim();
 
     if (email.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: textPoppins('Enter the email first', color: AppColors.lightText)));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: textPoppins(
+            'Enter the email first',
+            color: AppColors.lightText,
+          ),
+        ),
+      );
 
       return;
     }
 
     if (!isCurrentUserOwner) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: textPoppins('Just owner who can add the admin', color: AppColors.lightText)),
+        SnackBar(
+          content: textPoppins(
+            'Just owner who can add the admin',
+            color: AppColors.lightText,
+          ),
+        ),
       );
 
       return;
@@ -80,9 +92,11 @@ class _ManageAdminPageState extends ConsumerState<ManageAdminPage> {
     });
 
     if (admin == null) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: textPoppins('Admin not found.', color: AppColors.lightText)));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: textPoppins('Admin not found.', color: AppColors.lightText),
+        ),
+      );
 
       return;
     }
@@ -93,7 +107,12 @@ class _ManageAdminPageState extends ConsumerState<ManageAdminPage> {
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: textPoppins('You already be an owner in this course', color: AppColors.lightText)),
+        SnackBar(
+          content: textPoppins(
+            'You already be an owner in this course',
+            color: AppColors.lightText,
+          ),
+        ),
       );
 
       return;
@@ -114,9 +133,14 @@ class _ManageAdminPageState extends ConsumerState<ManageAdminPage> {
     final state = ref.read(adminCourseControllerProvider);
 
     if (state.hasError) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: textPoppins(state.error.toString(), color: AppColors.lightText)));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: textPoppins(
+            state.error.toString(),
+            color: AppColors.lightText,
+          ),
+        ),
+      );
 
       return;
     }
@@ -131,7 +155,12 @@ class _ManageAdminPageState extends ConsumerState<ManageAdminPage> {
     ref.invalidate(courseAdminsProvider(widget.courseModel.id));
 
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: textPoppins('Admin added in this course successfully', color: AppColors.lightText)),
+      SnackBar(
+        content: textPoppins(
+          'Admin added in this course successfully',
+          color: AppColors.lightText,
+        ),
+      ),
     );
   }
 
@@ -148,15 +177,25 @@ class _ManageAdminPageState extends ConsumerState<ManageAdminPage> {
     final state = ref.read(adminCourseControllerProvider);
 
     if (state.hasError) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: textPoppins(state.error.toString(), color: AppColors.lightText)));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: textPoppins(
+            state.error.toString(),
+            color: AppColors.lightText,
+          ),
+        ),
+      );
 
       return;
     }
 
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: textPoppins('${admin.fullname} removed from this course', color: AppColors.lightText)),
+      SnackBar(
+        content: textPoppins(
+          '${admin.fullname} removed from this course',
+          color: AppColors.lightText,
+        ),
+      ),
     );
 
     ref.invalidate(courseAdminsProvider(widget.courseModel.id));
@@ -212,50 +251,49 @@ class _ManageAdminPageState extends ConsumerState<ManageAdminPage> {
                 fontSize: 24,
                 fontWeight: FontWeight.w800,
               ),
-        
+
               textPoppins(
                 'Manage users who have access to this course.',
                 fontSize: 13,
                 color: AppColors.mutedText,
               ),
-        
+
               const SizedBox(height: 24),
-        
+
               textBaloo2(
                 'Course Admins',
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
               ),
-        
+
               const SizedBox(height: 8),
-        
+
               Expanded(
                 child: adminsAsync.when(
                   loading: () {
                     return const Center(child: LoadingWidget());
                   },
-        
+
                   error: (error, stack) {
-                    debugPrint('Get course admins error: $error');
-        
-                    return Center(child: textPoppins('Failed to load admins.'));
+                    final err = ErrorMapper.map(error);
+                    return CustomErrorWidget(message: err.message, icon: Icons.person_off_rounded, title: "Can't load admin data",);
                   },
-        
+
                   data: (admins) {
                     if (admins.isEmpty) {
                       return Center(child: textPoppins('No admins found.'));
                     }
-        
+
                     final currentId = currentUserId;
-        
+
                     final currentUserAdmins = admins
                         .where((admin) => admin.uid == currentId)
                         .toList();
-        
+
                     final otherAdmins = admins
                         .where((admin) => admin.uid != currentId)
                         .toList();
-        
+
                     return ListView(
                       children: [
                         if (currentUserAdmins.isNotEmpty) ...[
@@ -265,9 +303,9 @@ class _ManageAdminPageState extends ConsumerState<ManageAdminPage> {
                             fontWeight: FontWeight.w600,
                             color: AppColors.mutedText,
                           ),
-        
+
                           const SizedBox(height: 8),
-        
+
                           _buildAdminCard(
                             admin: currentUserAdmins.first,
                             isCurrentUser: true,
@@ -277,11 +315,11 @@ class _ManageAdminPageState extends ConsumerState<ManageAdminPage> {
                             context: context,
                           ),
                         ],
-        
+
                         if (currentUserAdmins.isNotEmpty &&
                             otherAdmins.isNotEmpty)
                           const SizedBox(height: 24),
-        
+
                         if (otherAdmins.isNotEmpty) ...[
                           textPoppins(
                             'Other Admins',
@@ -289,13 +327,13 @@ class _ManageAdminPageState extends ConsumerState<ManageAdminPage> {
                             fontWeight: FontWeight.w600,
                             color: AppColors.mutedText,
                           ),
-        
+
                           const SizedBox(height: 8),
-        
+
                           ...otherAdmins.map((admin) {
                             final isOwner =
                                 admin.uid == widget.courseModel.ownerId;
-        
+
                             return Padding(
                               padding: const EdgeInsets.only(bottom: 8),
                               child: _buildAdminCard(
@@ -312,18 +350,18 @@ class _ManageAdminPageState extends ConsumerState<ManageAdminPage> {
                   },
                 ),
               ),
-        
+
               if (isCurrentUserOwner) ...[
                 const SizedBox(height: 16),
-        
+
                 textBaloo2(
                   'Add Admin',
                   fontSize: 18,
                   fontWeight: FontWeight.w700,
                 ),
-        
+
                 const SizedBox(height: 12),
-        
+
                 Row(
                   children: [
                     Expanded(
@@ -334,9 +372,9 @@ class _ManageAdminPageState extends ConsumerState<ManageAdminPage> {
                         keyboardType: TextInputType.emailAddress,
                       ),
                     ),
-        
+
                     const SizedBox(width: 8),
-        
+
                     IconButton(
                       onPressed: _isSearching ? null : _searchAdmin,
                       icon: _isSearching
@@ -349,9 +387,9 @@ class _ManageAdminPageState extends ConsumerState<ManageAdminPage> {
                     ),
                   ],
                 ),
-        
+
                 const SizedBox(height: 12),
-        
+
                 if (_foundAdmin != null)
                   AdminSearchResult(
                     admin: _foundAdmin!,

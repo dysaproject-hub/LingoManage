@@ -3,9 +3,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lingo_manage/core/constants/app_colors.dart';
 import 'package:lingo_manage/core/routes/routes.dart';
 import 'package:lingo_manage/core/utils/currency_formatters.dart';
+import 'package:lingo_manage/core/utils/exceptions/app_error_mapper.dart';
 import 'package:lingo_manage/features/course/models/course_model.dart';
 import 'package:lingo_manage/features/course/presentation/providers/course_program_provider.dart';
 import 'package:lingo_manage/shared/widgets/cards/fee_card.dart';
+import 'package:lingo_manage/shared/widgets/errors/error_widget.dart';
 import 'package:lingo_manage/shared/widgets/items/information_item.dart';
 import 'package:lingo_manage/shared/widgets/items/little_badge.dart';
 import 'package:lingo_manage/shared/widgets/loadings/loading_widget.dart';
@@ -175,7 +177,13 @@ class _StudentDetailCoursePageState
                     },
                   );
                 },
-                error: (e, s) => textPoppins("Sorry, something went wrong!"),
+                error: (e, s) {
+                  final err = ErrorMapper.map(e);
+                  return CustomErrorWidget(
+                    message: err.message,
+                    title: "Can't load course program data",
+                  );
+                },
                 loading: () => LoadingWidget(),
               ),
 

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lingo_manage/core/constants/app_colors.dart';
 import 'package:lingo_manage/core/providers/app_users_provider.dart';
 import 'package:lingo_manage/core/routes/routes.dart';
+import 'package:lingo_manage/core/utils/exceptions/app_error_mapper.dart';
 import 'package:lingo_manage/core/utils/status_enrollments_enum.dart';
 import 'package:lingo_manage/features/course/presentation/providers/course_provider.dart';
 import 'package:lingo_manage/features/student/presentation/provider/student_provider.dart';
@@ -10,6 +11,7 @@ import 'package:lingo_manage/features/student/presentation/widget/card_course_wi
 import 'package:lingo_manage/features/student/presentation/widget/course_carousel_widget.dart';
 import 'package:lingo_manage/shared/widgets/app_bar/appbar_widget.dart';
 import 'package:lingo_manage/shared/widgets/cards/card_widget.dart';
+import 'package:lingo_manage/shared/widgets/errors/error_widget.dart';
 import 'package:lingo_manage/shared/widgets/loadings/loading_widget.dart';
 import 'package:lingo_manage/shared/widgets/text/text_widget.dart';
 
@@ -66,12 +68,20 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
                     loading: () => const LoadingWidget(),
 
                     error: (error, stackTrace) {
-                      return textPoppins('Failed to load your courses');
+                      final err = ErrorMapper.map(error);
+
+                      return CustomErrorWidget(
+                        message: err.message,
+                        title: "Failed to load your courses",
+                      );
                     },
 
                     data: (courses) {
                       if (courses.isEmpty) {
-                        return textPoppins('No courses yet', color: AppColors.mutedText);
+                        return textPoppins(
+                          'No courses yet',
+                          color: AppColors.mutedText,
+                        );
                       }
 
                       return ListView.separated(
@@ -89,7 +99,9 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
                             jumlahsiswa: '--',
                             buttoncolor: AppColors.lightText,
                             status: studentCourse.enrollment.status,
-                            statusColor: StatusEnrollmentsExtension.statusColor(enrollmentModel: studentCourse.enrollment),
+                            statusColor: StatusEnrollmentsExtension.statusColor(
+                              enrollmentModel: studentCourse.enrollment,
+                            ),
                             onTapCek: () {
                               Navigator.pushNamed(
                                 context,
@@ -118,8 +130,14 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
                     data: (data) {
                       return CourseCarouselWidget(data: data);
                     },
-                    error: (error, s) =>
-                        textPoppins("Sorry, something went wrong"),
+                    error: (error, s) {
+                      final err = ErrorMapper.map(error);
+
+                      return CustomErrorWidget(
+                        message: err.message,
+                        title: 'Failed to load data',
+                      );
+                    },
                     loading: () => const LoadingWidget(),
                   ),
                 ],

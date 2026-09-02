@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lingo_manage/core/constants/app_colors.dart';
+import 'package:lingo_manage/core/utils/exceptions/app_error_mapper.dart';
 import 'package:lingo_manage/features/course/models/course_model.dart';
 import 'package:lingo_manage/features/student/presentation/provider/student_provider.dart';
 import 'package:lingo_manage/shared/widgets/cards/card_student.dart';
+import 'package:lingo_manage/shared/widgets/errors/error_widget.dart';
 import 'package:lingo_manage/shared/widgets/loadings/loading_widget.dart';
 import 'package:lingo_manage/shared/widgets/text/text_widget.dart';
 
 class ManageStudentPage extends ConsumerStatefulWidget {
   final CourseModel courseModel;
-  const ManageStudentPage({
-    super.key,
-    required this.courseModel,
-  });
+  const ManageStudentPage({super.key, required this.courseModel});
 
   @override
   ConsumerState<ManageStudentPage> createState() => _ManageStudentPageState();
@@ -70,13 +69,18 @@ class _ManageStudentPageState extends ConsumerState<ManageStudentPage> {
                     return ListView.builder(
                       itemCount: enrollments.length,
                       itemBuilder: (context, index) {
-                        return StudentCard(
-                          enrollmentModel: enrollments[index],
-                        );
+                        return StudentCard(enrollmentModel: enrollments[index]);
                       },
                     );
                   },
-                  error: (e, s) => textPoppins("Sorry, something went wrong!"),
+                  error: (e, s) {
+                    final err = ErrorMapper.map(e);
+
+                    return CustomErrorWidget(
+                      message: err.message,
+                      title: "Can't load student data",
+                    );
+                  },
                   loading: () => const LoadingWidget(),
                 ),
               ),
