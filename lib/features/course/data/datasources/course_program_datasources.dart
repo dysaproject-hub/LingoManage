@@ -1,9 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:lingo_manage/core/constants/firestore_collections.dart';
+import 'package:lingo_manage/core/constants/database_table_name.dart';
 import 'package:lingo_manage/features/course/models/course_program_model.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class CourseProgramDatasources {
-  final FirebaseFirestore _db;
+  final SupabaseClient _db;
 
   CourseProgramDatasources(this._db);
 
@@ -15,34 +15,27 @@ class CourseProgramDatasources {
     required int registrationFee,
     required int monthlyFee,
   }) async {
-    final programRef = _db
-        .collection(FirestoreCollection.programsCollection)
-        .doc();
-
     final data = {
-      'courseId': courseId,
+      'course_id': courseId,
       'name': name,
       'description': description,
-      'registrationFee': registrationFee,
-      'monthlyFee': monthlyFee,
-      'createdAt': FieldValue.serverTimestamp(),
-      'updatedAt': FieldValue.serverTimestamp(),
+      'registration_fee': registrationFee,
+      'monthly_fee': monthlyFee,
     };
 
-    await programRef.set(data);
+    final programRef = await _db
+        .from(DatabaseTableName.programsCollection)
+        .insert(data)
+        .single();
 
-    return CourseProgramModel.fromMap(programRef.id, {
-      ...data,
-      'createdAt': DateTime.now(),
-      'updatedAt': DateTime.now(),
-    });
+    return CourseProgramModel.fromMap(programRef['id'] as String, data);
   }
 
   Future<void> deleteCourseProgram({required String programId}) async {
     await _db
-        .collection(FirestoreCollection.programsCollection)
-        .doc(programId)
-        .delete();
+        .from(DatabaseTableName.programsCollection)
+        .delete()
+        .eq('id', programId);
   }
 
   Future<void> updateProgram({
@@ -53,41 +46,40 @@ class CourseProgramDatasources {
     required int monthlyFee,
   }) async {
     await _db
-        .collection(FirestoreCollection.programsCollection)
-        .doc(programId)
+        .from(DatabaseTableName.programsCollection)
         .update({
           'name': programName,
           'description': description,
-          'registrationFee': registrationFee,
-          'monthlyFee': monthlyFee,
-          'updatedAt': FieldValue.serverTimestamp(),
-        });
+          'registration_fee': registrationFee,
+          'monthly_fee': monthlyFee,
+        })
+        .eq('id', programId);
   }
 
   Future<List<CourseProgramModel>> getAllCourseProgram({
     required String courseId,
   }) async {
     final snapshot = await _db
-        .collection(FirestoreCollection.programsCollection)
-        .where('courseId', isEqualTo: courseId)
-        .get();
+        .from(DatabaseTableName.programsCollection)
+        .select()
+        .eq('course_id', courseId);
 
-    return snapshot.docs.map((doc) {
-      final data = doc.data();
-      return CourseProgramModel.fromMap(doc.id, data);
+    return snapshot.map((data) {
+      return CourseProgramModel.fromMap(data['id'] as String, data);
     }).toList();
   }
 
   Future<CourseProgramModel> getProgramById({required String programId}) async {
     final doc = await _db
-        .collection(FirestoreCollection.programsCollection)
-        .doc(programId)
-        .get();
+        .from(DatabaseTableName.programsCollection)
+        .select()
+        .eq('id', programId)
+        .maybeSingle();
 
-    if (!doc.exists || doc.data() == null) {
+    if (doc == null) {
       throw Exception("Program doesn't found!");
     }
 
-    return CourseProgramModel.fromMap(doc.id, doc.data()!);
+    return CourseProgramModel.fromMap(doc['id'] as String, doc);
   }
 }

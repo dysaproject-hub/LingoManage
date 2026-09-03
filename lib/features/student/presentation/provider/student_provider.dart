@@ -11,9 +11,9 @@ import 'package:lingo_manage/features/student/data/repository/student_course_rep
 final studentCourseDataSourcesProvider = Provider<StudentCourseDatasources>((
   ref,
 ) {
-  final db = ref.watch(firebaseFirestoreProvider);
+  final client = ref.watch(supabaseProvider);
 
-  return StudentCourseDatasources(db);
+  return StudentCourseDatasources(client);
 });
 
 final studentCourseRepositoryProvider = Provider<StudentCourseRepository>((

@@ -1,23 +1,18 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lingo_manage/core/constants/database_table_name.dart';
 import 'package:lingo_manage/core/models/app_users.dart';
 import 'package:lingo_manage/features/auth/data/datasources/auth_datasources.dart';
 import 'package:lingo_manage/features/auth/data/repository/auth_repository.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
-final firebaseAuthProvider = Provider<FirebaseAuth>(
-  (ref) => FirebaseAuth.instance,
-);
-
-final firebaseFirestoreProvider = Provider<FirebaseFirestore>(
-  (ref) => FirebaseFirestore.instance,
+final supabaseProvider = Provider<SupabaseClient>(
+  (ref) => Supabase.instance.client,
 );
 
 final authDatasourcesProvider = Provider<AuthDatasources>((ref) {
-  final auth = ref.watch(firebaseAuthProvider);
-  final db = ref.watch(firebaseFirestoreProvider);
-  return AuthDatasources(db, auth);
+  final client = ref.watch(supabaseProvider);
+  return AuthDatasources(client);
 });
 
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
@@ -26,26 +21,29 @@ final authRepositoryProvider = Provider<AuthRepository>((ref) {
 });
 
 final authStateProvider = StreamProvider<AppUser?>((ref) {
-  final auth = FirebaseAuth.instance;
-  final db = FirebaseFirestore.instance;
+  final client = Supabase.instance.client;
 
-  return auth.authStateChanges().asyncMap((firebaseUser) async {
-    debugPrint("Firebase user: ${firebaseUser?.uid}");
+  return client.auth.onAuthStateChange.asyncMap((authState) async {
+    final user = authState.session?.user;
 
-    if (firebaseUser == null) {
+    if (user == null) {
       return null;
     }
 
-    final doc = await db.collection('users').doc(firebaseUser.uid).get();
+    debugPrint("Supabase user: $user");
 
-    debugPrint("Firestore exists: ${doc.exists}");
+    final doc = await client
+        .from(DatabaseTableName.usersCollection)
+        .select()
+        .eq('id', user.id)
+        .maybeSingle();
 
-    if (!doc.exists || doc.data() == null) {
+    if (doc == null) {
       return null;
     }
 
     debugPrint("Emit AppUser");
 
-    return AppUser.fromMap(firebaseUser.uid, doc.data()!);
+    return AppUser.fromMap(user.id, doc);
   });
 });

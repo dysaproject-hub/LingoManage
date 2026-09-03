@@ -1,11 +1,11 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:lingo_manage/core/constants/firestore_collections.dart';
+import 'package:lingo_manage/core/constants/database_table_name.dart';
 import 'package:lingo_manage/core/utils/exceptions/enrollments_exception.dart';
 import 'package:lingo_manage/core/utils/status_enrollments_enum.dart';
 import 'package:lingo_manage/features/enrollments/models/enrollment_model.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class EnrollmentDatasources {
-  final FirebaseFirestore _db;
+  final SupabaseClient _db;
 
   EnrollmentDatasources(this._db);
 
@@ -29,53 +29,43 @@ class EnrollmentDatasources {
       throw EnrollmentException.alreadyExists();
     }
 
-    final enrollmentRef = _db
-        .collection(FirestoreCollection.enrollmentsCollection)
-        .doc();
-
     final data = {
-      'studentId': studentId,
-      'studentFullname': studentFullName,
-      'studentPhoneNumber': studentPhoneNumber,
-      'studentEducationLevel': studentEducationLevel,
-      'studentSchoolName': studentSchoolName,
-      'studentAddress': studentAddress,
-      'courseId': courseId,
-      'programId': programId,
+      'student_id': studentId,
+      'fullname': studentFullName,
+      'phone': studentPhoneNumber,
+      'education_level': studentEducationLevel,
+      'school_name': studentSchoolName,
+      'address': studentAddress,
+      'course_id': courseId,
+      'program_id': programId,
       'status': status,
-      'createdAt': FieldValue.serverTimestamp(),
-      'updatedAt': FieldValue.serverTimestamp(),
-      'enrolledAt': null,
+      'enrolled_at': null,
     };
 
-    await enrollmentRef.set(data);
+    final enrollmentRef = await _db
+        .from(DatabaseTableName.enrollmentsCollection)
+        .insert(data);
 
-    return EnrollmentModel.fromMap(enrollmentRef.id, {
-      ...data,
-      'createdAt': DateTime.now(),
-      'updatedAt': DateTime.now(),
-    });
+    return EnrollmentModel.fromMap(enrollmentRef['id'], data);
   }
 
   Future<void> deleteEnrollment({required String enrollmentId}) async {
     await _db
-        .collection(FirestoreCollection.enrollmentsCollection)
-        .doc(enrollmentId)
-        .delete();
+        .from(DatabaseTableName.enrollmentsCollection)
+        .delete()
+        .eq('id', enrollmentId);
   }
 
   Future<void> updateStatusEnrollment({
     required String enrollmentId,
     required String statusEnrollment,
   }) async {
-    final reference = _db
-        .collection(FirestoreCollection.enrollmentsCollection)
-        .doc(enrollmentId);
+    final reference = _db.from(DatabaseTableName.enrollmentsCollection);
 
     return statusEnrollment == StatusEnrollments.approved.label
         ? await reference.update({
             'status': statusEnrollment,
-            'enrolledAt': DateTime.now(),
+            'enrolled_at': DateTime.now(),
           })
         : await reference.update({'status': statusEnrollment});
   }
@@ -84,27 +74,28 @@ class EnrollmentDatasources {
     required String enrollmentId,
   }) async {
     final doc = await _db
-        .collection(FirestoreCollection.enrollmentsCollection)
-        .doc(enrollmentId)
-        .get();
+        .from(DatabaseTableName.enrollmentsCollection)
+        .select()
+        .eq('id', enrollmentId)
+        .maybeSingle();
 
-    if (!doc.exists || doc.data() == null) {
+    if (doc == null) {
       throw Exception("Enrollment data doesn't found");
     }
 
-    return EnrollmentModel.fromMap(doc.id, doc.data()!);
+    return EnrollmentModel.fromMap(doc['id'] as String, doc);
   }
 
   Future<List<EnrollmentModel>> getEnrollmentsByStudentId({
     required String studentId,
   }) async {
     final snapshot = await _db
-        .collection(FirestoreCollection.enrollmentsCollection)
-        .where('studentId', isEqualTo: studentId)
-        .get();
+        .from(DatabaseTableName.enrollmentsCollection)
+        .select()
+        .eq('student_id', studentId);
 
-    return snapshot.docs
-        .map((doc) => EnrollmentModel.fromMap(doc.id, doc.data()))
+    return snapshot
+        .map((doc) => EnrollmentModel.fromMap(doc['id'] as String, doc))
         .toList();
   }
 
@@ -112,13 +103,13 @@ class EnrollmentDatasources {
     required String courseId,
   }) async {
     final snapshot = await _db
-        .collection(FirestoreCollection.enrollmentsCollection)
-        .where('courseId', isEqualTo: courseId)
-        .where('status', isEqualTo: StatusEnrollments.pending.label)
-        .get();
+        .from(DatabaseTableName.enrollmentsCollection)
+        .select()
+        .eq('course_id', courseId)
+        .eq('status', StatusEnrollments.pending.label);
 
-    return snapshot.docs
-        .map((doc) => EnrollmentModel.fromMap(doc.id, doc.data()))
+    return snapshot
+        .map((doc) => EnrollmentModel.fromMap(doc['id'] as String, doc))
         .toList();
   }
 
@@ -130,19 +121,18 @@ class EnrollmentDatasources {
     final String approved = StatusEnrollments.approved.label;
 
     final snapshot = await _db
-        .collection(FirestoreCollection.enrollmentsCollection)
-        .where('studentId', isEqualTo: studentId)
-        .where('courseId', isEqualTo: courseId)
-        .where('status', whereIn: [pending, approved])
-        .limit(1)
-        .get();
+        .from(DatabaseTableName.enrollmentsCollection)
+        .select()
+        .eq('student_id', studentId)
+        .eq('course_id', courseId)
+        .contains('status', [pending, approved]);
 
-    if (snapshot.docs.isEmpty) {
+    if (snapshot.isEmpty) {
       return null;
     }
 
-    final doc = snapshot.docs.first;
+    final doc = snapshot.first;
 
-    return EnrollmentModel.fromMap(doc.id, doc.data());
+    return EnrollmentModel.fromMap(doc['id'] as String, doc);
   }
 }

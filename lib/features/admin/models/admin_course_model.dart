@@ -17,16 +17,16 @@ class AdminCourseModel {
   ) {
     return AdminCourseModel(
       id: id,
-      courseId: data['courseId'] ?? '',
-      adminId: data['adminId'] ?? '',
+      courseId: data['course_id'] ?? '',
+      adminId: data['admin_id'] ?? '',
       role: data['role'] ?? 'admin',
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
-      'courseId': courseId,
-      'adminId': adminId,
+      'course_id': courseId,
+      'admin_id': adminId,
       'role': role,
     };
   }

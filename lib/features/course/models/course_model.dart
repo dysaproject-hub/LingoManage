@@ -1,3 +1,5 @@
+import 'package:lingo_manage/core/utils/parse_date_helper.dart';
+
 class CourseModel {
   final String id;
   final String ownerId;
@@ -25,20 +27,21 @@ class CourseModel {
   ) {
     return CourseModel(
       id: id,
-      ownerId: data['ownerId'] ?? '',
+      ownerId: data['owner_id'] ?? '',
       name: data['name'] ?? '',
       address: data['address'] ?? '',
       description: data['description'] ?? '',
-      createdAt: data['createdAt']?.toDate(),
-      updatedAt: data['updatedAt']?.toDate(),
+      createdAt: parseDateTime(data['created_at']),
+      updatedAt: parseDateTime(data['updated_at']),
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
-      'ownerId': ownerId,
+      'owner_id': ownerId,
       'name': name,
       'description': description,
+      'address': address,
     };
   }
 }

@@ -17,8 +17,14 @@ class UserRepository {
     String? phone,
     String? address,
     String? schoolName,
-    String? educationLevel
+    String? educationLevel,
   }) async {
-    return await _datasources.updateDataUser(uid: uid, fullname: fullname, nickname: nickname, phone: phone, address: address, schoolName: schoolName, educationLevel: educationLevel);
+    return await _datasources.updateDataUser(
+      uid: uid,
+      fullname: fullname,
+      nickname: nickname,
+      phone: phone,
+      address: address,
+    );
   }
 }

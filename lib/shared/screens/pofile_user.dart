@@ -1,9 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:lingo_manage/core/constants/app_colors.dart';
-import 'package:lingo_manage/core/constants/user_role.dart';
 import 'package:lingo_manage/core/providers/app_users_provider.dart';
 import 'package:lingo_manage/core/utils/education_level_enum.dart';
 import 'package:lingo_manage/core/utils/exceptions/app_error_mapper.dart';
@@ -244,26 +242,6 @@ class _ProfileUserState extends ConsumerState<ProfileUser> {
                       _phoneController.text = data.phone;
                     }
 
-                    if (originalAddress.isEmpty) {
-                      originalAddress = data.address ?? "-";
-                      _addressController.text = data.address ?? "-";
-                    }
-
-                    if (originalSchoolName.isEmpty) {
-                      originalSchoolName = data.schoolName ?? "-";
-                      _schoolNameController.text = data.schoolName ?? "-";
-                    }
-
-                    if (originalEducationLevel == null && !isEditing) {
-                      originalEducationLevel =
-                          EducationLevelExtension.fromLabel(
-                            data.educationLevel,
-                          );
-                      selectedValue = EducationLevelExtension.fromLabel(
-                        data.educationLevel,
-                      );
-                    }
-
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
@@ -297,67 +275,6 @@ class _ProfileUserState extends ConsumerState<ProfileUser> {
                             startEditing();
                           },
                         ),
-                        if (data.role == UserRole.student) ...[
-                          const SizedBox(height: 12),
-                          buildTextField(
-                            controller: _addressController,
-                            label: "Address",
-                            icon: Icons.location_on,
-                            isEdit: isEditing,
-                            onChanged: (_) {
-                              startEditing();
-                            },
-                          ),
-                          const SizedBox(height: 12),
-                          buildTextField(
-                            controller: _schoolNameController,
-                            label: "School Name",
-                            icon: Icons.school,
-                            isEdit: isEditing,
-                            onChanged: (_) {
-                              startEditing();
-                            },
-                          ),
-                          const SizedBox(height: 12),
-                          DropdownButtonFormField<EducationLevel>(
-                            dropdownColor: AppColors.lightText,
-                            initialValue: selectedValue,
-                            decoration: InputDecoration(
-                              labelText: 'Educational Level',
-                              labelStyle: GoogleFonts.poppins(
-                                color: AppColors.black.withAlpha(100),
-                                fontSize: 14,
-                                fontWeight: FontWeight.w300,
-                              ),
-                              enabledBorder: const UnderlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: AppColors.primary,
-                                  width: 1.5,
-                                ),
-                              ),
-                              focusedBorder: const UnderlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: AppColors.primary,
-                                  width: 2.0,
-                                ),
-                              ),
-                            ),
-                            items: EducationLevel.values.map((
-                              EducationLevel level,
-                            ) {
-                              return DropdownMenuItem<EducationLevel>(
-                                value: level,
-                                child: textPoppins(level.label),
-                              );
-                            }).toList(),
-                            onChanged: (EducationLevel? newValue) {
-                              setState(() {
-                                selectedValue = newValue;
-                                isEditing = true;
-                              });
-                            },
-                          ),
-                        ],
                         const SizedBox(height: 20),
                         if (isEditing)
                           Row(

@@ -6,8 +6,8 @@ import 'package:lingo_manage/features/admin/presentation/providers/admin_course_
 import 'package:lingo_manage/features/auth/presentation/providers/auth_provider.dart';
 
 final adminCourseDatasourcesProvider = Provider((ref) {
-  final db = ref.watch(firebaseFirestoreProvider);
-  return AdminCourseDatasources(db);
+  final client = ref.watch(supabaseProvider);
+  return AdminCourseDatasources(client);
 });
 
 final adminCourseRepositoryProvider = Provider((ref) {

@@ -6,6 +6,6 @@ enum AppErrorType {
   validation,
   conflict,
   server,
-  firebase,
+  supabase,
   unknown,
 }

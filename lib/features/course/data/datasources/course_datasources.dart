@@ -1,17 +1,15 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:lingo_manage/core/constants/firestore_collections.dart';
+import 'package:lingo_manage/core/constants/database_table_name.dart';
 import 'package:lingo_manage/features/course/models/course_model.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class CourseDatasources {
-  final FirebaseFirestore _db;
-  final FirebaseAuth _auth;
+  final SupabaseClient _client;
 
-  CourseDatasources(this._db, this._auth);
+  CourseDatasources(this._client);
 
   /// GET CURRENT USER ID
   String get _currentUserId {
-    final uid = _auth.currentUser?.uid;
+    final uid = _client.auth.currentUser?.id;
 
     if (uid == null) {
       throw Exception('User is not logged in');
@@ -24,28 +22,26 @@ class CourseDatasources {
   Future<List<CourseModel>> getMyCourses() async {
     final uid = _currentUserId;
 
-    final snapshot = await _db
-        .collection(FirestoreCollection.courseAdminsCollection)
-        .where('adminId', isEqualTo: uid)
-        .orderBy('createdAt', descending: true)
-        .get();
+    final snapshot = await _client
+        .from(DatabaseTableName.courseAdminsCollection)
+        .select()
+        .eq('admin_id', uid)
+        .order('created_at', ascending: false);
 
-    final courseIds = snapshot.docs
-        .map((doc) => doc.data()['courseId'] as String)
-        .toList();
+    final courseIds = snapshot.map((doc) => doc['courseId'] as String).toList();
 
     final courses = await Future.wait(
       courseIds.map((courseId) async {
-        final courseDoc = await _db
-            .collection(FirestoreCollection.coursesCollection)
-            .doc(courseId)
-            .get();
+        final courseDoc = await _client
+            .from(DatabaseTableName.coursesCollection)
+            .select()
+            .eq('course_id', courseId).maybeSingle();
 
-        if (!courseDoc.exists || courseDoc.data() == null) {
+        if (courseDoc == null) {
           return null;
         }
 
-        return CourseModel.fromMap(courseDoc.id, courseDoc.data()!);
+        return CourseModel.fromMap(courseDoc['id'], courseDoc);
       }),
     );
 
@@ -54,26 +50,27 @@ class CourseDatasources {
 
   /// GET COURSE BY ID
   Future<CourseModel> getCourseById(String courseId) async {
-    final doc = await _db
-        .collection(FirestoreCollection.coursesCollection)
-        .doc(courseId)
-        .get();
+    final doc = await _client
+        .from(DatabaseTableName.coursesCollection)
+        .select()
+        .eq('id', courseId)
+        .select()
+        .maybeSingle();
 
-    if (!doc.exists || doc.data() == null) {
+    if (doc == null) {
       throw Exception("Course doesn't found");
     }
 
-    return CourseModel.fromMap(doc.id, doc.data()!);
+    return CourseModel.fromMap(doc['id'] as String, doc);
   }
 
   Future<List<CourseModel>> getAllCourses() async {
-    final snapshot = await _db
-        .collection(FirestoreCollection.coursesCollection)
-        .get();
+    final snapshot = await _client
+        .from(DatabaseTableName.coursesCollection)
+        .select();
 
-    return snapshot.docs.map((doc) {
-      final data = doc.data();
-      return CourseModel.fromMap(doc.id, data);
+    return snapshot.map((doc) {
+      return CourseModel.fromMap(doc['id'] as String, doc);
     }).toList();
   }
 
@@ -85,33 +82,24 @@ class CourseDatasources {
   }) async {
     final uid = _currentUserId;
 
-    final courseRef = _db
-        .collection(FirestoreCollection.coursesCollection)
-        .doc();
+    final courseRow = await _client
+        .from(DatabaseTableName.coursesCollection)
+        .insert({
+          'owner_id': uid,
+          'name': name,
+          'description': description,
+          'address': address,
+        })
+        .select()
+        .single();
 
-    final data = {
-      'ownerId': uid,
-      'name': name,
-      'description': description,
-      'address': address,
-      'createdAt': FieldValue.serverTimestamp(),
-      'updatedAt': FieldValue.serverTimestamp(),
-    };
-
-    await courseRef.set(data);
-
-    await _db.collection(FirestoreCollection.courseAdminsCollection).add({
-      'courseId': courseRef.id,
-      'adminId': uid,
+    await _client.from(DatabaseTableName.courseAdminsCollection).insert({
+      'course_id': courseRow['id'],
+      'admin_id': uid,
       'role': 'owner',
-      'createdAt': FieldValue.serverTimestamp(),
     });
 
-    return CourseModel.fromMap(courseRef.id, {
-      ...data,
-      'createdAt': DateTime.now(),
-      'updatedAt': DateTime.now(),
-    });
+    return CourseModel.fromMap(courseRow['id'] as String, courseRow);
   }
 
   /// UPDATE COURSE
@@ -121,45 +109,30 @@ class CourseDatasources {
     required String description,
     required String address,
   }) async {
-    await _db
-        .collection(FirestoreCollection.coursesCollection)
-        .doc(courseId)
+    await _client
+        .from(DatabaseTableName.coursesCollection)
         .update({
           'name': name,
           'description': description,
           'address': address,
-          'updatedAt': FieldValue.serverTimestamp(),
         });
   }
 
   /// DELETE COURSE
   Future<void> deleteCourse(String courseId) async {
-    final courseRef = _db
-        .collection(FirestoreCollection.coursesCollection)
-        .doc(courseId);
+  await _client
+      .from(DatabaseTableName.courseAdminsCollection)
+      .delete()
+      .eq('course_id', courseId);
 
-    final adminSnapshot = await _db
-        .collection(FirestoreCollection.courseAdminsCollection)
-        .where('courseId', isEqualTo: courseId)
-        .get();
+  await _client
+      .from(DatabaseTableName.programsCollection)
+      .delete()
+      .eq('course_id', courseId);
 
-    final courseProgramSnapshot = await _db
-        .collection(FirestoreCollection.programsCollection)
-        .where('courseId', isEqualTo: courseId)
-        .get();
-
-    final batch = _db.batch();
-
-    for (final doc in adminSnapshot.docs) {
-      batch.delete(doc.reference);
-    }
-
-    for (final doc in courseProgramSnapshot.docs) {
-      batch.delete(doc.reference);
-    }
-
-    batch.delete(courseRef);
-
-    batch.commit();
-  }
+  await _client
+      .from(DatabaseTableName.coursesCollection)
+      .delete()
+      .eq('id', courseId);
+}
 }

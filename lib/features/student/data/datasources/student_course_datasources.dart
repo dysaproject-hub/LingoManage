@@ -1,10 +1,10 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:lingo_manage/core/constants/firestore_collections.dart';
+import 'package:lingo_manage/core/constants/database_table_name.dart';
 import 'package:lingo_manage/core/utils/status_enrollments_enum.dart';
 import 'package:lingo_manage/features/enrollments/models/enrollment_model.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class StudentCourseDatasources {
-  final FirebaseFirestore _db;
+  final SupabaseClient _db;
 
   StudentCourseDatasources(this._db);
 
@@ -12,13 +12,13 @@ class StudentCourseDatasources {
     required String courseId,
   }) async {
     final studentRef = await _db
-        .collection(FirestoreCollection.enrollmentsCollection)
-        .where('courseId', isEqualTo: courseId)
-        .where('status', isEqualTo: StatusEnrollments.approved.label)
-        .get();
+        .from(DatabaseTableName.enrollmentsCollection)
+        .select()
+        .eq('course_id', courseId)
+        .eq('status', StatusEnrollments.approved.label);
 
-    return studentRef.docs.map((doc) {
-      return EnrollmentModel.fromMap(doc.id, doc.data());
+    return studentRef.map((doc) {
+      return EnrollmentModel.fromMap(doc['id'] as String, doc);
     }).toList();
   }
 }

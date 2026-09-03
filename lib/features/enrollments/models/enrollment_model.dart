@@ -1,4 +1,4 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:lingo_manage/core/utils/parse_date_helper.dart';
 
 class EnrollmentModel {
   final String id;
@@ -34,26 +34,18 @@ class EnrollmentModel {
   factory EnrollmentModel.fromMap(String id, Map<String, dynamic> data) {
     return EnrollmentModel(
       id: id,
-      studentId: data['studentId'],
-      studentFullName: data['studentFullname'],
-      studentPhoneNumber: data['studentPhoneNumber'],
-      studentEducationLevel: data['studentEducationLevel'],
-      studentSchoolName: data['studentSchoolName'],
-      studentAddress: data['studentAddress'],
-      courseId: data['courseId'],
-      programId: data['programId'],
+      studentId: data['student_id'],
+      studentFullName: data['fullname'],
+      studentPhoneNumber: data['phone'],
+      studentEducationLevel: data['education_level'],
+      studentSchoolName: data['school_name'],
+      studentAddress: data['address'],
+      courseId: data['course_id'],
+      programId: data['program_id'],
       status: data['status'],
-      createdAt: data['createdAt'] is Timestamp
-          ? (data['createdAt'] as Timestamp).toDate()
-          : data['createdAt'] as DateTime?,
-
-      updatedAt: data['updatedAt'] is Timestamp
-          ? (data['updatedAt'] as Timestamp).toDate()
-          : data['updatedAt'] as DateTime?,
-
-      enrolledAt: data['enrolledAt'] is Timestamp
-          ? (data['enrolledAt'] as Timestamp).toDate()
-          : data['enrolledAt'] as DateTime?,
+      createdAt: parseDateTime(data['created_at']),
+      updatedAt: parseDateTime(data['updated_at']),
+      enrolledAt: parseDateTime(data['enrolled_at']),
     );
   }
 }

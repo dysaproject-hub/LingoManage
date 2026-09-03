@@ -1,14 +1,20 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lingo_manage/core/constants/app_colors.dart';
 import 'package:lingo_manage/core/routes/router.dart';
 import 'package:lingo_manage/features/auth/presentation/screens/auth_gate.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await Firebase.initializeApp();
+  await dotenv.load(fileName: ".env");
+
+  await Supabase.initialize(
+    url: dotenv.get('SUPABASE_INITIALIZE_URL', fallback: ''),
+    publishableKey: dotenv.get('SUPABASE_PUBLISHABLE_KEY', fallback: ''),
+  );
 
   runApp(const ProviderScope(child: MyApp()));
 }

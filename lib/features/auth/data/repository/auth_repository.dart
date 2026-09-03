@@ -1,7 +1,6 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:lingo_manage/core/models/app_users.dart';
-import 'package:lingo_manage/core/utils/education_level_enum.dart';
 import 'package:lingo_manage/features/auth/data/datasources/auth_datasources.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthRepository {
   final AuthDatasources _datasource;
@@ -16,7 +15,11 @@ class AuthRepository {
     required String email,
     required String password,
   }) async {
-      return await _datasource.signIn(email, password);
+    return await _datasource.signIn(email, password);
+  }
+
+  Future<void> resendVerificationEmail(String email) async {
+    return await _datasource.resendVerificationEmail(email);
   }
 
   // REGISTER Admin
@@ -27,15 +30,17 @@ class AuthRepository {
     required String nickname,
     required String phone,
   }) async {
-      return await _datasource.registerAdmin(
-        email: email,
-        password: password,
-        fullname: fullname,
-        nickname: nickname,
-        phone: phone,
-        subscriptionStatus: 'free',
-        studentLimit: 15,
-      );
+    return await _datasource.registerAdmin(
+      email: email,
+      password: password,
+      fullname: fullname,
+      nickname: nickname,
+      phone: phone,
+
+      //TODO: sesuaikan nanti
+      subscriptionStatus: 'free',
+      studentLimit: 15,
+    );
   }
 
   // REGISTER STUDENT
@@ -46,20 +51,15 @@ class AuthRepository {
     required String nickname,
     required String phone,
     required String address,
-    required String schoolName,
-    required EducationLevel educationalLevel,
   }) async {
-
-      return await _datasource.registerStudent(
-        email: email,
-        password: password,
-        fullname: fullname,
-        nickname: nickname,
-        phone: phone,
-        address: address,
-        schoolName: schoolName,
-        educationLevel: educationalLevel.label
-      );
+    return await _datasource.registerStudent(
+      email: email,
+      password: password,
+      fullname: fullname,
+      nickname: nickname,
+      phone: phone,
+      address: address,
+    );
   }
 
   // LOGOUT
@@ -70,6 +70,4 @@ class AuthRepository {
   Future<AppUser> getCurrentUser(String uid) async {
     return await _datasource.getCurrentUser(uid);
   }
-
-  
 }

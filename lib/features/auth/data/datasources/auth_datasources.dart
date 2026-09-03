@@ -1,38 +1,51 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:lingo_manage/core/constants/firestore_collections.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:lingo_manage/core/constants/database_table_name.dart';
 import 'package:lingo_manage/core/constants/user_role.dart';
 import 'package:lingo_manage/core/models/app_users.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthDatasources {
-  final FirebaseFirestore _db;
-  final FirebaseAuth _auth;
+  final SupabaseClient _client;
 
-  AuthDatasources(this._db, this._auth);
+  AuthDatasources(this._client);
 
   //AUTH STATE
-  Stream<User?> get authStateChanges => _auth.authStateChanges();
+  Stream<User?> get authStateChanges =>
+      _client.auth.onAuthStateChange.map((event) => event.session?.user);
 
   //SIGNIN METHOD
   Future<AppUser> signIn(String email, String password) async {
-    final userCredential = await _auth.signInWithEmailAndPassword(
+    final userCredential = await _client.auth.signInWithPassword(
       email: email,
       password: password,
     );
 
-    final uid = userCredential.user?.uid;
+    final uid = userCredential.user?.id;
 
     if (uid == null) {
       throw Exception("Failed to retrieve user UID.");
     }
 
-    final doc = await _db
-        .collection(FirestoreCollection.usersCollection)
-        .doc(uid)
-        .get();
+    final row = await _client
+        .from(DatabaseTableName.usersCollection)
+        .select()
+        .eq("id", uid)
+        .maybeSingle();
 
-    return AppUser.fromMap(uid, doc.data()!);
+    if (row == null) {
+      throw Exception('User profile not found.');
+    }
+
+    return AppUser.fromMap(uid, row);
   }
+
+  //RESEND VERIFICATION METHOD
+  Future<void> resendVerificationEmail(String email) async {
+  await _client.auth.resend(
+    type: OtpType.signup,
+    email: email,
+  );
+}
 
   //REGISTER METHOD FOR ADMIN
   Future<AppUser> registerAdmin({
@@ -44,40 +57,55 @@ class AuthDatasources {
     required String subscriptionStatus,
     required int studentLimit,
   }) async {
-    final userCredential = await _auth.createUserWithEmailAndPassword(
+    final userCredential = await _client.auth.signUp(
       email: email,
       password: password,
+      emailRedirectTo: 'lingomanage-dev://login-callback/'
     );
 
-    final uid = userCredential.user?.uid;
+    final user = userCredential.user;
+
+    if (user == null) {
+      throw Exception('Failed to create account.');
+    }
+
+    if (userCredential.session == null) {
+      debugPrint('Registration successful, email verification required.');
+    }
+
+//     if (userCredential.user != null && userCredential.session == null) {
+//   // Email confirmation aktif
+//   // Arahkan ke halaman "Verifikasi Email"
+  
+// }
+
+    debugPrint('User: ${userCredential.user}');
+    debugPrint('Session: ${userCredential.session}');
+
+    final uid = userCredential.user?.id;
 
     if (uid == null) {
       throw Exception("Failed to retrieve user UID.");
     }
 
     final data = {
-      'uid': uid,
+      'id': uid,
       'email': email,
       'fullname': fullname,
       'nickname': nickname,
       'phone': phone,
       'role': UserRole.admin,
-      'subscriptionStatus': subscriptionStatus,
-      'studentLimit': studentLimit,
-      'createdAt': FieldValue.serverTimestamp(),
-      'updatedAt': FieldValue.serverTimestamp(),
+      'subscription_status': subscriptionStatus,
+      'student_limit': studentLimit,
     };
 
-    await _db
-        .collection(FirestoreCollection.usersCollection)
-        .doc(uid)
-        .set(data);
+    final row = await _client
+        .from(DatabaseTableName.usersCollection)
+        .insert(data)
+        .select()
+        .single();
 
-    return AppUser.fromMap(uid, {
-      ...data,
-      'createdAt': DateTime.now(),
-      'updatedAt': DateTime.now(),
-    });
+    return AppUser.fromMap(uid, row);
   }
 
   //REGISTER METHOD FOR STUDENT
@@ -88,61 +116,53 @@ class AuthDatasources {
     required String nickname,
     required String phone,
     required String address,
-    required String schoolName,
-    required String educationLevel,
   }) async {
-    final userCredential = await _auth.createUserWithEmailAndPassword(
+    final userCredential = await _client.auth.signUp(
       email: email,
       password: password,
     );
 
-    final uid = userCredential.user?.uid;
+    final uid = userCredential.user?.id;
 
     if (uid == null) {
       throw Exception("Failed to retrieve user UID.");
     }
 
     final data = {
-      'uid': uid,
+      'id': uid,
       'email': email,
       'fullname': fullname,
       'nickname': nickname,
       'phone': phone,
       'address': address,
-      'schoolName': schoolName,
-      'educationLevel': educationLevel,
       'role': UserRole.student,
-      'createdAt': FieldValue.serverTimestamp(),
-      'updatedAt': FieldValue.serverTimestamp(),
     };
 
-    await _db
-        .collection(FirestoreCollection.usersCollection)
-        .doc(uid)
-        .set(data);
+    final row = await _client
+        .from(DatabaseTableName.usersCollection)
+        .insert(data)
+        .select()
+        .single();
 
-    return AppUser.fromMap(uid, {
-      ...data,
-      'createdAt': DateTime.now(),
-      'updatedAt': DateTime.now(),
-    });
+    return AppUser.fromMap(uid, row);
   }
 
   //SIGNOUT METHOD
   Future<void> signOut() async {
-    return await _auth.signOut();
+    return await _client.auth.signOut();
   }
 
   Future<AppUser> getCurrentUser(String uid) async {
-    final doc = await _db
-        .collection(FirestoreCollection.usersCollection)
-        .doc(uid)
-        .get();
+    final doc = await _client
+        .from(DatabaseTableName.usersCollection)
+        .select()
+        .eq('id', uid)
+        .maybeSingle();
 
-    if (!doc.exists || doc.data() == null) {
-      throw Exception('User data not found.');
+    if (doc == null) {
+      throw Exception('User profile not found.');
     }
 
-    return AppUser.fromMap(uid, doc.data()!);
+    return AppUser.fromMap(uid, doc);
   }
 }

@@ -1,10 +1,10 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:lingo_manage/core/constants/firestore_collections.dart';
+import 'package:lingo_manage/core/constants/database_table_name.dart';
 import 'package:lingo_manage/core/constants/user_role.dart';
 import 'package:lingo_manage/core/models/app_users.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AdminCourseDatasources {
-  final FirebaseFirestore _db;
+  final SupabaseClient _db;
 
   AdminCourseDatasources(this._db);
 
@@ -13,70 +13,61 @@ class AdminCourseDatasources {
     required String adminId,
   }) async {
     final existing = await _db
-        .collection(FirestoreCollection.courseAdminsCollection)
-        .where('courseId', isEqualTo: courseId)
-        .where('adminId', isEqualTo: adminId)
-        .limit(1)
-        .get();
+        .from(DatabaseTableName.courseAdminsCollection)
+        .select()
+        .eq('course_id', courseId)
+        .eq('admin_id', adminId);
 
-    if (existing.docs.isNotEmpty) {
+    if (existing.isNotEmpty) {
       throw Exception('Admin has been added in this course');
     }
 
     final data = {
-      'courseId': courseId,
-      'adminId': adminId,
+      'course_id': courseId,
+      'admin_id': adminId,
       'role': UserRole.admin,
-      'createdAt': FieldValue.serverTimestamp(),
     };
 
-    await _db.collection(FirestoreCollection.courseAdminsCollection).add(data);
+    await _db.from(DatabaseTableName.courseAdminsCollection).insert(data);
   }
 
   Future<AppUser?> findAdminByEmail(String email) async {
     final snapshot = await _db
-        .collection(FirestoreCollection.usersCollection)
-        .where('email', isEqualTo: email)
-        .where('role', isEqualTo: UserRole.admin)
-        .limit(1)
-        .get();
+        .from(DatabaseTableName.usersCollection)
+        .select()
+        .eq('email', email)
+        .eq('role', UserRole.admin)
+        .single();
 
-    if (snapshot.docs.isEmpty) {
+    if (snapshot.isEmpty) {
       return null;
     }
 
-    final doc = snapshot.docs.first;
-
-    return AppUser.fromMap(doc.id, doc.data());
+    return AppUser.fromMap(snapshot['id'] as String, snapshot);
   }
 
   Future<List<AppUser>> getCourseAdmins({required String courseId}) async {
     final snapshot = await _db
-        .collection(FirestoreCollection.courseAdminsCollection)
-        .where('courseId', isEqualTo: courseId)
-        .get();
+        .from(DatabaseTableName.courseAdminsCollection)
+        .select()
+        .eq('course_id', courseId);
 
     final List<AppUser> admins = [];
 
-    for (final doc in snapshot.docs) {
-      final data = doc.data();
-
-      final adminId = data['adminId'];
-
-      if (adminId == null) {
-        continue;
-      }
+    for (final data in snapshot) {
+      final adminId = data['admin_id'] as String;
 
       final userDoc = await _db
-          .collection(FirestoreCollection.usersCollection)
-          .doc(adminId)
-          .get();
+          .from(DatabaseTableName.usersCollection)
+          .select()
+          .eq('id', adminId)
+          .maybeSingle();
 
-      if (!userDoc.exists || userDoc.data() == null) {
+      if (userDoc == null) {
         continue;
       }
 
-      final user = AppUser.fromMap(userDoc.id, userDoc.data()!);
+      final user = AppUser.fromMap(userDoc['id'] as String, userDoc);
 
       if (user.role == UserRole.admin) {
         admins.add(user);
@@ -90,19 +81,10 @@ class AdminCourseDatasources {
     required String courseId,
     required String adminId,
   }) async {
-    final snapshot = await _db
-        .collection(FirestoreCollection.courseAdminsCollection)
-        .where('courseId', isEqualTo: courseId)
-        .where('adminId', isEqualTo: adminId)
-        .limit(1)
-        .get();
-
-    if (snapshot.docs.isEmpty) {
-      throw Exception('Admin tidak ditemukan di course ini.');
-    }
-
-    final doc = snapshot.docs.first;
-
-    await doc.reference.delete();
+    await _db
+        .from(DatabaseTableName.courseAdminsCollection)
+        .delete()
+        .eq('course_id', courseId)
+        .eq('admin_id', adminId);
   }
 }

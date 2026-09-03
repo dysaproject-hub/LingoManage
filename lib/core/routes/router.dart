@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:lingo_manage/core/constants/app_colors.dart';
 import 'package:lingo_manage/core/routes/routes.dart';
 import 'package:lingo_manage/features/admin/presentation/screen/admin_dashboard_page.dart';
 import 'package:lingo_manage/features/admin/presentation/screen/manage_admin_page.dart';
 import 'package:lingo_manage/features/admin/presentation/screen/manage_enrollment_page.dart';
 import 'package:lingo_manage/features/auth/presentation/screens/auth_gate.dart';
+import 'package:lingo_manage/features/auth/presentation/screens/verifikasi_email.dart';
 import 'package:lingo_manage/features/course/presentation/screens/admin_detail_course_page.dart';
 import 'package:lingo_manage/features/course/presentation/screens/course_form.dart';
 import 'package:lingo_manage/features/course/presentation/screens/detail_course_page.dart';
@@ -13,12 +13,22 @@ import 'package:lingo_manage/features/enrollments/presentation/screen/enrollment
 import 'package:lingo_manage/features/enrollments/presentation/screen/enrollment_form.dart';
 import 'package:lingo_manage/features/student/presentation/screens/manage_student_page.dart';
 import 'package:lingo_manage/features/student/presentation/screens/student_home_page.dart';
+import 'package:lingo_manage/shared/screens/error_page.dart';
 import 'package:lingo_manage/shared/screens/pofile_user.dart';
-import 'package:lingo_manage/shared/widgets/text/text_widget.dart';
 
 class AppRouter {
   static Route<dynamic>? generate(RouteSettings settings) {
+    debugPrint('================================');
+    debugPrint('ROUTE NAME: ${settings.name}');
+    debugPrint('ROUTE ARGUMENTS: ${settings.arguments}');
+    debugPrint('================================');
+
     final args = settings.arguments as Map<String, dynamic>? ?? {};
+
+    if (settings.name?.startsWith('/') == true &&
+        settings.name!.contains('error=')) {
+      return MaterialPageRoute(builder: (_) => const AuthGate());
+    }
 
     switch (settings.name) {
       case AppRoutes.studentHomePage:
@@ -66,10 +76,8 @@ class AppRouter {
         final courseModel = args['courseModel'];
         final programModel = args['programModel'];
         return MaterialPageRoute(
-          builder: (_) => EnrollmentPage(
-            course: courseModel,
-            programModel: programModel,
-          ),
+          builder: (_) =>
+              EnrollmentPage(course: courseModel, programModel: programModel),
         );
 
       case AppRoutes.enrollmentDetailPage:
@@ -96,14 +104,15 @@ class AppRouter {
           builder: (_) => ManageStudentPage(courseModel: courseModel),
         );
 
+      case AppRoutes.emailVerificationPage:
+        final email = args['email'];
+        return MaterialPageRoute(
+          builder: (_) => EmailVerificationPage(email: email),
+        );
+
       default:
         return MaterialPageRoute(
-          builder: (_) => Scaffold(
-            backgroundColor: AppColors.darkBackground,
-            body: Center(
-              child: textPoppins("Page Not Found", color: AppColors.lightText),
-            ),
-          ),
+          builder: (_) => ErrorPage(message: "Page Not Found"),
         );
     }
   }

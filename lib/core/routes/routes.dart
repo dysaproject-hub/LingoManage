@@ -12,4 +12,6 @@ class AppRoutes {
   static const String enrollmentDetailPage = '/enrollmentDetailPage';
   static const String manageEnrollment = '/manageEnrollment';
   static const String manageStudent = '/manageStudent';
+
+  static const String emailVerificationPage = '/emailVerificationPage';
 }

@@ -7,10 +7,9 @@ import 'package:lingo_manage/features/auth/presentation/providers/auth_provider.
 
 /// DATASOURCE
 final courseDatasourceProvider = Provider<CourseDatasources>((ref) {
-  final db = ref.watch(firebaseFirestoreProvider);
-  final auth = ref.watch(firebaseAuthProvider);
+  final client = ref.watch(supabaseProvider);
 
-  return CourseDatasources(db, auth);
+  return CourseDatasources(client);
 });
 
 /// REPOSITORY

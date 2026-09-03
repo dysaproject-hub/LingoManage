@@ -1,23 +1,24 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:lingo_manage/core/constants/firestore_collections.dart';
+import 'package:lingo_manage/core/constants/database_table_name.dart';
 import 'package:lingo_manage/core/models/app_users.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class UserDatasources {
-  final FirebaseFirestore _firestore;
+  final SupabaseClient _client;
 
-  UserDatasources(this._firestore);
+  UserDatasources(this._client);
 
   Future<AppUser> getDataUser(String uid) async {
-    final docSnapshot = await _firestore
-        .collection(FirestoreCollection.usersCollection)
-        .doc(uid)
-        .get();
+    final docSnapshot = await _client
+        .from(DatabaseTableName.usersCollection)
+        .select()
+        .eq('id', uid)
+        .maybeSingle();
 
-    if (!docSnapshot.exists || docSnapshot.data() == null) {
+    if (docSnapshot == null) {
       throw Exception("User data not found.");
     }
 
-    return AppUser.fromMap(uid, docSnapshot.data()!);
+    return AppUser.fromMap(uid, docSnapshot);
   }
 
   Future<void> updateDataUser({
@@ -26,8 +27,6 @@ class UserDatasources {
     String? nickname,
     String? phone,
     String? address,
-    String? schoolName,
-    String? educationLevel,
   }) async {
     final Map<String, dynamic> data = {};
 
@@ -47,19 +46,12 @@ class UserDatasources {
       data["address"] = address;
     }
 
-    if (schoolName != null) {
-      data["schoolName"] = schoolName;
-    }
-
-    if (schoolName != null) {
-      data["educationLevel"] = educationLevel;
-    }
-
     if (data.isEmpty) return;
 
-    await _firestore
-        .collection(FirestoreCollection.usersCollection)
-        .doc(uid)
-        .update(data);
+    await _client
+        .from(DatabaseTableName.usersCollection)
+        .update(data)
+        .select()
+        .single();
   }
 }

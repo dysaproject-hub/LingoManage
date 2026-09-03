@@ -8,8 +8,8 @@ import 'package:lingo_manage/features/course/presentation/providers/course_progr
 final courseProgramDatasourcesProvider = Provider<CourseProgramDatasources>((
   ref,
 ) {
-  final db = ref.watch(firebaseFirestoreProvider);
-  return CourseProgramDatasources(db);
+  final client = ref.watch(supabaseProvider);
+  return CourseProgramDatasources(client);
 });
 
 final courseProgramRepositoryProvider = Provider<CourseProgramRepository>((

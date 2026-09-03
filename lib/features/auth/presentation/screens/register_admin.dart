@@ -1,9 +1,9 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lingo_manage/core/constants/app_colors.dart';
 import 'package:lingo_manage/core/constants/regex.dart';
-import 'package:lingo_manage/core/utils/exceptions/firebase_exceptions_message.dart';
+import 'package:lingo_manage/core/routes/routes.dart';
+import 'package:lingo_manage/core/utils/exceptions/supabase_exceptions_message.dart';
 import 'package:lingo_manage/core/utils/media_query_helper.dart';
 import 'package:lingo_manage/features/auth/presentation/providers/auth_controller.dart';
 import 'package:lingo_manage/features/auth/presentation/providers/auth_provider.dart';
@@ -11,6 +11,7 @@ import 'package:lingo_manage/shared/widgets/buttons/button_widget.dart';
 import 'package:lingo_manage/shared/widgets/loadings/loading_widget.dart';
 import 'package:lingo_manage/shared/widgets/text/text_field_widget.dart';
 import 'package:lingo_manage/shared/widgets/text/text_widget.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class RegisterAdmin extends ConsumerStatefulWidget {
   final VoidCallback onBack;
@@ -48,8 +49,8 @@ class _RegisterAdminState extends ConsumerState<RegisterAdmin> {
     ref.listen(authController, (previous, next) {
       next.whenOrNull(
         error: (error, stackTrace) {
-          if (error is FirebaseAuthException) {
-            final message = FirebaseExceptionMessage.auth(error);
+          if (error is AuthException) {
+            final message = SupabaseExceptionMessage.auth(error);
 
             ScaffoldMessenger.of(
               context,
@@ -221,6 +222,16 @@ class _RegisterAdminState extends ConsumerState<RegisterAdmin> {
                             fullname: _fullnameController.text,
                             nickname: _nicknameController.text,
                             phone: _phoneController.text,
+                          );
+
+                          if (!context.mounted) return;
+
+                          Navigator.pushNamed(
+                            context,
+                            AppRoutes.emailVerificationPage,
+                            arguments: {
+                              'email' : _emailController.text,
+                            }
                           );
 
                           ref.invalidate(authStateProvider);

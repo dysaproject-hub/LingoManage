@@ -6,9 +6,9 @@ import 'package:lingo_manage/features/enrollments/models/enrollment_model.dart';
 import 'package:lingo_manage/features/enrollments/presentation/providers/enrollment_controller.dart';
 
 final enrollmentDatasourcesProvider = Provider<EnrollmentDatasources>((ref) {
-  final db = ref.watch(firebaseFirestoreProvider);
+  final client = ref.watch(supabaseProvider);
 
-  return EnrollmentDatasources(db);
+  return EnrollmentDatasources(client);
 });
 
 final enrollmentRepositoryProvider = Provider<EnrollmentRepository>((ref) {

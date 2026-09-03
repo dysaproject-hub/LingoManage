@@ -1,20 +1,20 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:lingo_manage/core/constants/firebase_exceptions.dart';
+import 'package:lingo_manage/core/constants/supabase_exceptions.dart';
 import 'package:lingo_manage/core/utils/exceptions/app_error.dart';
 import 'package:lingo_manage/core/utils/exceptions/app_error_type.dart';
 import 'package:lingo_manage/core/utils/exceptions/enrollments_exception.dart';
-import 'package:lingo_manage/core/utils/exceptions/firebase_exceptions_message.dart';
+import 'package:lingo_manage/core/utils/exceptions/supabase_exceptions_message.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ErrorMapper {
   static AppError map(Object error) {
-    // Firebase Authentication
-    if (error is FirebaseAuthException) {
-      return _mapFirebaseAuth(error);
+    // Supabase Authentication
+    if (error is AuthException) {
+      return _mapSupabaseAuth(error);
     }
 
-    // Firestore
-    if (error is FirebaseException) {
-      return _mapFirebase(error);
+    // Supabase Postgrest
+    if (error is PostgrestException) {
+      return _mapSupabase(error);
     }
 
     // Enrollment business exception
@@ -30,61 +30,61 @@ class ErrorMapper {
     );
   }
 
-  static AppError _mapFirebaseAuth(FirebaseAuthException error) {
-    final message = FirebaseExceptionMessage.auth(error);
+  static AppError _mapSupabaseAuth(AuthException error) {
+    final message = SupabaseExceptionMessage.auth(error);
 
     switch (error.code) {
-      case FirebaseAuthExceptionCode.userNotFound:
-      case FirebaseAuthExceptionCode.invalidCredential:
+      case SupabaseAuthExceptionCode.userNotFound:
+      case SupabaseAuthExceptionCode.invalidCredential:
         return AppError(
           type: AppErrorType.unauthorized,
-          code: error.code,
+          code: error.code ?? '',
           message: message,
         );
 
-      case FirebaseAuthExceptionCode.emailAlreadyInUse:
+      case SupabaseAuthExceptionCode.emailAlreadyRegistered:
         return AppError(
           type: AppErrorType.conflict,
-          code: error.code,
+          code: error.code ?? '',
           message: message,
         );
 
-      case FirebaseAuthExceptionCode.networkRequestFailed:
+      case SupabaseAuthExceptionCode.networkError:
         return AppError(
           type: AppErrorType.network,
-          code: error.code,
+          code: error.code ?? '',
           message: message,
         );
 
       default:
         return AppError(
-          type: AppErrorType.firebase,
-          code: error.code,
+          type: AppErrorType.supabase,
+          code: error.code ?? '',
           message: message,
         );
     }
   }
 
-  static AppError _mapFirebase(FirebaseException error) {
+  static AppError _mapSupabase(PostgrestException error) {
     switch (error.code) {
       case 'permission-denied':
         return AppError(
           type: AppErrorType.forbidden,
-          code: error.code,
+          code: error.code ?? '',
           message: 'You do not have permission to perform this action.',
         );
 
       case 'unauthenticated':
         return AppError(
           type: AppErrorType.unauthorized,
-          code: error.code,
+          code: error.code ?? '',
           message: 'Your session has expired. Please log in again.',
         );
 
       case 'not-found':
         return AppError(
           type: AppErrorType.notFound,
-          code: error.code,
+          code: error.code ?? '',
           message: 'The requested data could not be found.',
         );
 
@@ -92,21 +92,21 @@ class ErrorMapper {
       case 'network-request-failed':
         return AppError(
           type: AppErrorType.network,
-          code: error.code,
+          code: error.code ?? '',
           message: 'Unable to connect to the server.',
         );
 
       case 'deadline-exceeded':
         return AppError(
           type: AppErrorType.network,
-          code: error.code,
+          code: error.code ?? '',
           message: 'The request took too long to respond. Please try again.',
         );
 
       default:
         return AppError(
-          type: AppErrorType.firebase,
-          code: error.code,
+          type: AppErrorType.supabase,
+          code: error.code ?? '',
           message: 'A service error occurred. Please try again later.',
         );
     }

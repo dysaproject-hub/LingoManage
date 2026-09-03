@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lingo_manage/core/constants/app_colors.dart';
@@ -13,6 +12,7 @@ import 'package:lingo_manage/shared/widgets/loadings/loading_widget.dart';
 import 'package:lingo_manage/shared/widgets/popups/admin_section/admin_popup.dart';
 import 'package:lingo_manage/shared/widgets/text/text_field_widget.dart';
 import 'package:lingo_manage/shared/widgets/text/text_widget.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class ManageAdminPage extends ConsumerStatefulWidget {
   final CourseModel courseModel;
@@ -39,7 +39,7 @@ class _ManageAdminPageState extends ConsumerState<ManageAdminPage> {
   }
 
   String? get currentUserId {
-    return FirebaseAuth.instance.currentUser?.uid;
+    return Supabase.instance.client.auth.currentUser?.id;
   }
 
   bool get isCurrentUserOwner {
