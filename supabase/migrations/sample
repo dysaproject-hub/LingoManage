@@ -1,0 +1,350 @@
+
+
+-- COURSE TABLE
+create table public.courses (
+  id uuid primary key default gen_random_uuid(),
+
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+
+  name text not null,
+  description text,
+  address text,
+
+  owner_id uuid not null
+    references public.users(id)
+    on delete restrict
+);
+
+
+-- COURSE ADMINS TABLE
+create table public.course_admins (
+  id uuid primary key default gen_random_uuid(),
+
+  admin_id uuid not null
+    references public.users(id)
+    on delete cascade,
+
+  course_id uuid not null
+    references public.courses(id)
+    on delete cascade,
+
+  role text not null default 'admin'
+    check (role = 'admin'),
+
+  created_at timestamptz not null default now(),
+
+  unique (admin_id, course_id)
+);
+
+
+-- COURSE PROGRAM TABLE
+create table public.programs (
+  id uuid primary key default gen_random_uuid(),
+
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+
+  course_id uuid not null
+    references public.courses(id)
+    on delete cascade,
+
+  name text not null,
+  description text,
+
+  monthly_fee numeric(12,2) not null default 0,
+  registration_fee numeric(12,2) not null default 0
+);
+
+
+-- ENROLLMENT TABLE 
+create table public.enrollments (
+  id uuid primary key default gen_random_uuid(),
+
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now(),
+  enrolled_at timestamptz,
+
+  course_id uuid not null
+    references public.courses(id)
+    on delete cascade,
+
+  program_id uuid not null
+    references public.programs(id)
+    on delete restrict,
+
+  student_id uuid not null
+    references public.users(id)
+    on delete cascade,
+
+  status text not null default 'pending'
+    check (
+      status in (
+        'pending',
+        'approved',
+        'rejected',
+        'cancelled'
+      )
+    ),
+
+  fullname text not null,
+  address text,
+  education_level text
+);
+
+
+-- INDEX 
+create index idx_courses_owner_id
+on public.courses(owner_id);
+
+create index idx_course_admins_admin_id
+on public.course_admins(admin_id);
+
+create index idx_course_admins_course_id
+on public.course_admins(course_id);
+
+create index idx_programs_course_id
+on public.programs(course_id);
+
+create index idx_enrollments_student_id
+on public.enrollments(student_id);
+
+create index idx_enrollments_course_id
+on public.enrollments(course_id);
+
+create index idx_enrollments_program_id
+on public.enrollments(program_id);
+
+create index idx_enrollments_status
+on public.enrollments(status);
+
+
+-- ENROLLMENT ACTIVE CHECK 
+create unique index unique_active_enrollment
+on public.enrollments(student_id, course_id)
+where status in ('pending', 'approved');
+
+
+-- FUNCTION TO DEFINE COURSE ADMINS 
+create or replace function public.is_course_admin(
+  target_course_id uuid
+)
+returns boolean
+language sql
+security definer
+set search_path = public
+stable
+as $$
+  select exists (
+    select 1
+    from public.courses c
+    where c.id = target_course_id
+      and c.owner_id = auth.uid()
+  )
+  or exists (
+    select 1
+    from public.course_admins ca
+    where ca.course_id = target_course_id
+      and ca.admin_id = auth.uid()
+  );
+$$;
+
+
+-- RLS
+alter table public.users enable row level security;
+alter table public.courses enable row level security;
+alter table public.course_admins enable row level security;
+alter table public.programs enable row level security;
+alter table public.enrollments enable row level security;
+
+
+-- USERS POLICY 
+create policy "Users can view own profile"
+on public.users
+for select
+to authenticated
+using (
+  id = auth.uid()
+);
+
+
+-- COURSES POLICY
+create policy "Authenticated users can view courses"
+on public.courses
+for select
+to authenticated
+using (true);
+
+create policy "Instructors can create courses"
+on public.courses
+for insert
+to authenticated
+with check (
+  owner_id = auth.uid()
+  and exists (
+    select 1
+    from public.users
+    where id = auth.uid()
+      and role in ('instructor', 'platform_admin')
+  )
+);
+
+create policy "Course admins can update courses"
+on public.courses
+for update
+to authenticated
+using (
+  public.is_course_admin(id)
+)
+with check (
+  public.is_course_admin(id)
+);
+
+create policy "Course admins can delete courses"
+on public.courses
+for delete
+to authenticated
+using (
+  public.is_course_admin(id)
+);
+
+
+-- COURSE ADMINS POLICY
+create policy "Course admins can view course admins"
+on public.course_admins
+for select
+to authenticated
+using (
+  public.is_course_admin(course_id)
+);
+
+create policy "Course owners can add course admins"
+on public.course_admins
+for insert
+to authenticated
+with check (
+  exists (
+    select 1
+    from public.courses
+    where courses.id = course_id
+      and courses.owner_id = auth.uid()
+  )
+);
+
+create policy "Course owners can remove course admins"
+on public.course_admins
+for delete
+to authenticated
+using (
+  exists (
+    select 1
+    from public.courses
+    where courses.id = course_id
+      and courses.owner_id = auth.uid()
+  )
+);
+
+
+-- COURSE PROGRAMS POLICY 
+create policy "Authenticated users can view programs"
+on public.programs
+for select
+to authenticated
+using (true);
+
+create policy "Course admins can create programs"
+on public.programs
+for insert
+to authenticated
+with check (
+  public.is_course_admin(course_id)
+);
+
+create policy "Course admins can update programs"
+on public.programs
+for update
+to authenticated
+using (
+  public.is_course_admin(course_id)
+)
+with check (
+  public.is_course_admin(course_id)
+);
+
+create policy "Course admins can delete programs"
+on public.programs
+for delete
+to authenticated
+using (
+  public.is_course_admin(course_id)
+);
+
+
+-- ENROLLMENT POLICY
+create policy "Students can view own enrollments"
+on public.enrollments
+for select
+to authenticated
+using (
+  student_id = auth.uid()
+);
+
+create policy "Course admins can view enrollments"
+on public.enrollments
+for select
+to authenticated
+using (
+  public.is_course_admin(course_id)
+);
+
+create policy "Students can create own enrollments"
+on public.enrollments
+for insert
+to authenticated
+with check (
+  student_id = auth.uid()
+  and status = 'pending'
+);
+
+create policy "Course admins can update enrollments"
+on public.enrollments
+for update
+to authenticated
+using (
+  public.is_course_admin(course_id)
+)
+with check (
+  public.is_course_admin(course_id)
+);
+
+
+-- UPDATED AT AUTOMATIC
+create or replace function public.set_updated_at()
+returns trigger
+language plpgsql
+as $$
+begin
+  new.updated_at = now();
+  return new;
+end;
+$$;
+
+create trigger users_set_updated_at
+before update on public.users
+for each row
+execute function public.set_updated_at();
+
+create trigger courses_set_updated_at
+before update on public.courses
+for each row
+execute function public.set_updated_at();
+
+create trigger programs_set_updated_at
+before update on public.programs
+for each row
+execute function public.set_updated_at();
+
+create trigger enrollments_set_updated_at
+before update on public.enrollments
+for each row
+execute function public.set_updated_at();

@@ -248,7 +248,7 @@ class _WelcomeScreenState extends State<WelcomePage> {
                                       ),
                                       const SizedBox(height: 8),
                                       FlexibleButton(
-                                        text: "Register as an admin",
+                                        text: "Register as Instructor",
                                         textColor: AppColors.lightText,
                                         bgColor: AppColors.black,
                                         fontSize: 16,

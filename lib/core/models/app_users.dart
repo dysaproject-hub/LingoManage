@@ -1,4 +1,3 @@
-import 'package:lingo_manage/core/constants/user_role.dart';
 
 class AppUser {
   final String uid;
@@ -24,7 +23,7 @@ class AppUser {
       nickname: data['nickname'] ?? '',
       email: data['email'] ?? '',
       phone: data['phone'] ?? '',
-      role: data['role'] ?? UserRole.student,
+      role: data['role'],
     );
   }
 

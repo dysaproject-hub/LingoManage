@@ -23,10 +23,19 @@ class AppRouter {
     debugPrint('ROUTE ARGUMENTS: ${settings.arguments}');
     debugPrint('================================');
 
+    final routeName = settings.name ?? '';
+
+    // Supabase auth callback
+    if (routeName.contains('code=') ||
+        routeName.contains('access_token=') ||
+        routeName.contains('refresh_token=')) {
+      return MaterialPageRoute(builder: (_) => const AuthGate());
+    }
+
     final args = settings.arguments as Map<String, dynamic>? ?? {};
 
-    if (settings.name?.startsWith('/') == true &&
-        settings.name!.contains('error=')) {
+    // Error callback
+    if (routeName.startsWith('/') && routeName.contains('error=')) {
       return MaterialPageRoute(builder: (_) => const AuthGate());
     }
 

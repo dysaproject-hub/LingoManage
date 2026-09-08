@@ -298,13 +298,13 @@ class _RegisterStudentState extends ConsumerState<RegisterStudent> {
                             return;
                           }
 
-                          await notifier.registerStudent(
+                          //Student Register
+                          await notifier.signUp(
                             email: _emailController.text,
                             password: _passwordController.text,
                             fullname: _fullnameController.text,
                             nickname: _nicknameController.text,
                             phone: _phoneController.text,
-                            address: _addressController.text,
                           );
 
                           ref.invalidate(authStateProvider);

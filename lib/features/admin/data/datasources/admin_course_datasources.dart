@@ -25,7 +25,7 @@ class AdminCourseDatasources {
     final data = {
       'course_id': courseId,
       'admin_id': adminId,
-      'role': UserRole.admin,
+      'role': UserRole.instructor,
     };
 
     await _db.from(DatabaseTableName.courseAdminsCollection).insert(data);
@@ -36,7 +36,7 @@ class AdminCourseDatasources {
         .from(DatabaseTableName.usersCollection)
         .select()
         .eq('email', email)
-        .eq('role', UserRole.admin)
+        .eq('role', UserRole.instructor)
         .single();
 
     if (snapshot.isEmpty) {
@@ -69,7 +69,7 @@ class AdminCourseDatasources {
 
       final user = AppUser.fromMap(userDoc['id'] as String, userDoc);
 
-      if (user.role == UserRole.admin) {
+      if (user.role == UserRole.instructor) {
         admins.add(user);
       }
     }

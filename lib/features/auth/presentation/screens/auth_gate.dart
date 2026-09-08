@@ -20,8 +20,15 @@ class AuthGate extends ConsumerWidget {
 
     final authState = ref.watch(authStateProvider);
 
+    debugPrint('========== AUTH GATE ==========');
+    debugPrint('AUTH STATE: $authState');
+    debugPrint('================================');
+
     return authState.when(
       data: (user) {
+        debugPrint('AUTH USER: $user');
+        debugPrint('AUTH ROLE: ${user?.role}');
+
         if (user == null) {
           return const WelcomePage();
         }
@@ -29,7 +36,7 @@ class AuthGate extends ConsumerWidget {
         switch (user.role) {
           case UserRole.student:
             return const StudentHomePage();
-          case UserRole.admin:
+          case UserRole.instructor:
             return const AdminDashboardPage();
           default:
             return Scaffold(

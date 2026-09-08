@@ -3,71 +3,68 @@ import 'package:lingo_manage/features/auth/data/datasources/auth_datasources.dar
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthRepository {
-  final AuthDatasources _datasource;
+  final AuthDatasource _datasource;
+  final SupabaseClient _supabase;
 
-  AuthRepository(this._datasource);
+  AuthRepository(
+    this._datasource,
+    this._supabase,
+  );
 
-  // AUTH STATE
-  Stream<User?> get authStateChanges => _datasource.authStateChanges;
-
-  // LOGIN
-  Future<AppUser> signIn({
-    required String email,
-    required String password,
-  }) async {
-    return await _datasource.signIn(email, password);
-  }
-
-  Future<void> resendVerificationEmail(String email) async {
-    return await _datasource.resendVerificationEmail(email);
-  }
-
-  // REGISTER Admin
-  Future<AppUser> registerAdmin({
+  Future<AuthResponse> signUp({
     required String email,
     required String password,
     required String fullname,
-    required String nickname,
-    required String phone,
-  }) async {
-    return await _datasource.registerAdmin(
+    String? nickname,
+    String? phone,
+  }) {
+    return _datasource.signUp(
       email: email,
       password: password,
       fullname: fullname,
       nickname: nickname,
       phone: phone,
-
-      //TODO: sesuaikan nanti
-      subscriptionStatus: 'free',
-      studentLimit: 15,
     );
   }
 
-  // REGISTER STUDENT
-  Future<AppUser> registerStudent({
+  Future<void> becomeInstructor() async {
+  await _datasource.becomeInstructor();
+}
+
+  Future<AuthResponse> signIn({
     required String email,
     required String password,
-    required String fullname,
-    required String nickname,
-    required String phone,
-    required String address,
-  }) async {
-    return await _datasource.registerStudent(
+  }) {
+    return _datasource.signIn(
       email: email,
       password: password,
-      fullname: fullname,
-      nickname: nickname,
-      phone: phone,
-      address: address,
     );
   }
 
-  // LOGOUT
-  Future<void> signOut() async {
-    await _datasource.signOut();
+  Future<void> signOut() {
+    return _datasource.signOut();
   }
 
-  Future<AppUser> getCurrentUser(String uid) async {
-    return await _datasource.getCurrentUser(uid);
+  Future<void> resendVerificationEmail(String email) {
+    return _datasource.resendVerificationEmail(email);
+  }
+
+  User? get currentUser => _datasource.currentUser;
+
+  Stream<AuthState> get authStateChanges =>
+      _datasource.authStateChanges;
+
+  Future<AppUser?> getCurrentUser(String uid) async {
+    final response = await _supabase
+        .from('users')
+        .select()
+        .eq('id', uid)
+        .maybeSingle();
+
+    if (response == null) {
+      return null;
+    }
+
+    return AppUser.fromMap(uid, response);
   }
 }

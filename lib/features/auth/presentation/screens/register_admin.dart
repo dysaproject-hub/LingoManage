@@ -216,7 +216,7 @@ class _RegisterAdminState extends ConsumerState<RegisterAdmin> {
                             return;
                           }
 
-                          await notifier.registerAdmin(
+                          await notifier.signUpAsInstructor(
                             email: _emailController.text,
                             password: _passwordController.text,
                             fullname: _fullnameController.text,
@@ -229,9 +229,7 @@ class _RegisterAdminState extends ConsumerState<RegisterAdmin> {
                           Navigator.pushNamed(
                             context,
                             AppRoutes.emailVerificationPage,
-                            arguments: {
-                              'email' : _emailController.text,
-                            }
+                            arguments: {'email': _emailController.text},
                           );
 
                           ref.invalidate(authStateProvider);

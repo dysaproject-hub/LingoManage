@@ -10,14 +10,19 @@ final supabaseProvider = Provider<SupabaseClient>(
   (ref) => Supabase.instance.client,
 );
 
-final authDatasourcesProvider = Provider<AuthDatasources>((ref) {
+final authDatasourcesProvider = Provider<AuthDatasource>((ref) {
   final client = ref.watch(supabaseProvider);
-  return AuthDatasources(client);
+  return AuthDatasource(client);
 });
 
 final authRepositoryProvider = Provider<AuthRepository>((ref) {
-  final authDataSources = ref.watch(authDatasourcesProvider);
-  return AuthRepository(authDataSources);
+  final datasource = ref.watch(authDatasourcesProvider);
+  final supabase = ref.watch(supabaseProvider);
+
+  return AuthRepository(
+    datasource,
+    supabase,
+  );
 });
 
 final authStateProvider = StreamProvider<AppUser?>((ref) {
