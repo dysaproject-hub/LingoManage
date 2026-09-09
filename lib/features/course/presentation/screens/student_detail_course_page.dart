@@ -267,8 +267,8 @@ class _StudentDetailCoursePageState
 class _ProgramCard extends StatelessWidget {
   final String programName;
   final String description;
-  final int registrationFee;
-  final int monthlyFee;
+  final double registrationFee;
+  final double monthlyFee;
   final VoidCallback onPressed;
 
   const _ProgramCard({

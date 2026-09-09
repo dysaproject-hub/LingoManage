@@ -237,6 +237,8 @@ class _EnrollmentPageState extends ConsumerState<EnrollmentPage> {
                           context,
                         ).showSnackBar(SnackBar(content: Text(e.message)));
                       } catch (e) {
+                        Navigator.pop(context);
+                        debugPrint('$e');
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
                             content: Text(

@@ -26,7 +26,6 @@ class EnrollmentDetailPage extends ConsumerWidget {
     required this.enrollmentModel,
   });
 
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final statusColor = StatusEnrollmentsExtension.statusColor(
@@ -89,7 +88,9 @@ class EnrollmentDetailPage extends ConsumerWidget {
                     const SizedBox(height: 14),
 
                     textBaloo2(
-                      StatusEnrollmentsExtension.statusTitle(enrollmentModel: enrollmentModel),
+                      StatusEnrollmentsExtension.statusTitle(
+                        enrollmentModel: enrollmentModel,
+                      ),
                       fontSize: 21,
                       fontWeight: FontWeight.w800,
                       textAlign: TextAlign.center,
@@ -98,7 +99,9 @@ class EnrollmentDetailPage extends ConsumerWidget {
                     const SizedBox(height: 6),
 
                     textPoppins(
-                      StatusEnrollmentsExtension.statusDescription(enrollmentModel: enrollmentModel),
+                      StatusEnrollmentsExtension.statusDescription(
+                        enrollmentModel: enrollmentModel,
+                      ),
                       fontSize: 12,
                       color: AppColors.mutedText,
                       textAlign: TextAlign.center,
@@ -377,50 +380,50 @@ class EnrollmentDetailPage extends ConsumerWidget {
               const SizedBox(height: 30),
 
               if (enrollmentModel.status.toLowerCase() == 'pending')
-              SizedBox(
-                width: MediaQuery.sizeOf(context).width,
-                child: Button(
-                  text: 'Cancel Enrollment',
-                  textColor: AppColors.lightText,
-                  bgColor: AppColors.red,
-                  fontSize: 14,
-                  fontWeight: FontWeight.w700,
-                  borderRadius: BorderRadius.circular(12),
-                  onPressed: () {
-                    EnrollmentPopup.cancelEnrollmentAlert(
-                      context,
-                      courseName,
-                      programModel,
-                      () async {
-                        try {
-                          Navigator.pop(context);
-                          await ref
-                              .read(enrollmentControllerProvider.notifier)
-                              .deleteEnrollment(
-                                enrollmentId: enrollmentModel.id,
-                              );
+                SizedBox(
+                  width: MediaQuery.sizeOf(context).width,
+                  child: Button(
+                    text: 'Cancel Enrollment',
+                    textColor: AppColors.lightText,
+                    bgColor: AppColors.red,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    borderRadius: BorderRadius.circular(12),
+                    onPressed: () {
+                      EnrollmentPopup.cancelEnrollmentAlert(
+                        context,
+                        courseName,
+                        programModel,
+                        () async {
+                          try {
+                            Navigator.pop(context);
+                            await ref
+                                .read(enrollmentControllerProvider.notifier)
+                                .deleteEnrollment(
+                                  enrollmentId: enrollmentModel.id,
+                                );
 
-                          ref.invalidate(getStudentCourseProvider);
+                            ref.invalidate(getStudentCourseProvider);
 
-                          if (!context.mounted) return;
+                            if (!context.mounted) return;
 
-                          Navigator.pop(context);
-                        } catch (e) {
-                          if (!context.mounted) return;
+                            Navigator.pop(context);
+                          } catch (e) {
+                            if (!context.mounted) return;
 
-                          Navigator.pop(context);
+                            Navigator.pop(context);
 
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Gagal membatalkan enrollment'),
-                            ),
-                          );
-                        }
-                      },
-                    );
-                  },
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Gagal membatalkan enrollment'),
+                              ),
+                            );
+                          }
+                        },
+                      );
+                    },
+                  ),
                 ),
-              ),
             ],
           ),
         ),

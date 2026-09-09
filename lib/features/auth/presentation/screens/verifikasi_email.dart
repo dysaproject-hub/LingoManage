@@ -106,83 +106,86 @@ class _EmailVerificationPageState extends State<EmailVerificationPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: textBaloo2('Verifikasi Email', fontSize: 24, fontWeight: FontWeight.bold),
         centerTitle: true,
       ),
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(
-                Icons.mark_email_unread_outlined,
-                size: 80,
-                color: Colors.teal,
-              ),
-
-              const SizedBox(height: 32),
-
-              textBaloo2(
-                'Verifikasi Email Kamu',
-                textAlign: TextAlign.center,
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
-
-              const SizedBox(height: 16),
-
-              textPoppins(
-                'Kami telah mengirimkan link verifikasi '
-                'ke alamat email:',
-                textAlign: TextAlign.center,
-              ),
-
-              const SizedBox(height: 8),
-
-              textPoppins(
-                widget.email,
-                textAlign: TextAlign.center,
-                fontWeight: FontWeight.bold
-              ),
-
-              const SizedBox(height: 16),
-
-              textPoppins(
-                'Silakan buka email tersebut dan klik '
-                'link verifikasi untuk mengaktifkan akun kamu.',
-                textAlign: TextAlign.center,
-              ),
-
-              const SizedBox(height: 32),
-
-              SizedBox(
-                width: double.infinity,
-                child: OutlinedButton(
-                  onPressed: _canResend
-                      ? _resendVerificationEmail
-                      : null,
-                  child: textPoppins(
-                    _canResend
-                        ? 'Kirim Ulang Email'
-                        : 'Kirim ulang dalam $_remainingSeconds detik',
+      body: SingleChildScrollView(
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(
+                  Icons.mark_email_unread_outlined,
+                  size: 80,
+                  color: Colors.teal,
+                ),
+        
+                const SizedBox(height: 32),
+        
+                textBaloo2(
+                  'Verifikasi Email Kamu',
+                  textAlign: TextAlign.center,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+        
+                const SizedBox(height: 16),
+        
+                textPoppins(
+                  'Kami telah mengirimkan link verifikasi '
+                  'ke alamat email:',
+                  textAlign: TextAlign.center,
+                ),
+        
+                const SizedBox(height: 8),
+        
+                textPoppins(
+                  widget.email,
+                  textAlign: TextAlign.center,
+                  fontWeight: FontWeight.bold
+                ),
+        
+                const SizedBox(height: 16),
+        
+                textPoppins(
+                  'Silakan buka email tersebut dan klik '
+                  'link verifikasi untuk mengaktifkan akun kamu.',
+                  textAlign: TextAlign.center,
+                ),
+        
+                const SizedBox(height: 32),
+        
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton(
+                    onPressed: _canResend
+                        ? _resendVerificationEmail
+                        : null,
+                    child: textPoppins(
+                      _canResend
+                          ? 'Kirim Ulang Email'
+                          : 'Kirim ulang dalam $_remainingSeconds detik',
+                    ),
                   ),
                 ),
-              ),
-
-              const SizedBox(height: 12),
-
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: textPoppins('Kembali'),
+        
+                const SizedBox(height: 12),
+        
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: textPoppins('Kembali'),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

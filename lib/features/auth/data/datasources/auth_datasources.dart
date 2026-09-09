@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthDatasource {
@@ -12,37 +11,14 @@ class AuthDatasource {
     required String fullname,
     String? nickname,
     String? phone,
+    required String role,
   }) async {
     return await _supabase.auth.signUp(
       email: email,
       password: password,
       emailRedirectTo: 'io.supabase.flutterquickstart://login-callback/',
-      data: {'fullname': fullname, 'nickname': nickname, 'phone': phone},
+      data: {'fullname': fullname, 'nickname': nickname, 'phone': phone, 'role' : role},
     );
-  }
-
-  Future<void> becomeInstructor() async {
-    try {
-      debugPrint('================================');
-      debugPrint('CALLING BECOME INSTRUCTOR RPC');
-      debugPrint('UID: ${_supabase.auth.currentUser?.id}');
-      debugPrint('EMAIL: ${_supabase.auth.currentUser?.email}');
-      debugPrint('================================');
-
-      await _supabase.rpc('become_instructor');
-
-      debugPrint('================================');
-      debugPrint('BECOME INSTRUCTOR RPC SUCCESS');
-      debugPrint('================================');
-    } catch (e, stackTrace) {
-      debugPrint('================================');
-      debugPrint('BECOME INSTRUCTOR RPC ERROR');
-      debugPrint('ERROR: $e');
-      debugPrint('STACK: $stackTrace');
-      debugPrint('================================');
-
-      rethrow;
-    }
   }
 
   Future<AuthResponse> signIn({

@@ -1,5 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lingo_manage/core/constants/user_role.dart';
 import 'package:lingo_manage/core/models/app_users.dart';
 import 'package:lingo_manage/features/auth/presentation/providers/auth_provider.dart';
 
@@ -39,7 +39,7 @@ class AuthController extends AsyncNotifier<AppUser?> {
     });
   }
 
-  Future<void> signUp({
+  Future<void> signUpAsStudent({
     required String email,
     required String password,
     required String fullname,
@@ -57,6 +57,7 @@ class AuthController extends AsyncNotifier<AppUser?> {
             fullname: fullname,
             nickname: nickname,
             phone: phone,
+            role: UserRole.student
           );
 
       final user = response.user;
@@ -65,8 +66,6 @@ class AuthController extends AsyncNotifier<AppUser?> {
         return null;
       }
 
-      // Jika email confirmation aktif,
-      // user mungkin belum memiliki session.
       final session = response.session;
 
       if (session == null) {
@@ -87,44 +86,30 @@ class AuthController extends AsyncNotifier<AppUser?> {
     state = const AsyncLoading();
 
     state = await AsyncValue.guard(() async {
-      final repo = ref.read(authRepositoryProvider);
-
-      debugPrint('===== SIGN UP INSTRUCTOR START =====');
-
-      final response = await repo.signUp(
-        email: email,
-        password: password,
-        fullname: fullname,
-        nickname: nickname,
-        phone: phone,
-      );
-
-      debugPrint('SIGN UP SUCCESS');
-      debugPrint('USER: ${response.user?.id}');
-      debugPrint('SESSION: ${response.session != null}');
+      final response = await ref
+          .read(authRepositoryProvider)
+          .signUp(
+            email: email,
+            password: password,
+            fullname: fullname,
+            nickname: nickname,
+            phone: phone,
+            role: UserRole.instructor
+          );
 
       final user = response.user;
 
       if (user == null) {
-        throw Exception('User registration failed');
+        return null;
       }
 
-      if (response.session == null) {
-        debugPrint('NO SESSION AFTER SIGN UP');
-        throw Exception('Session not available');
+      final session = response.session;
+
+      if (session == null) {
+        return null;
       }
 
-      debugPrint('CALLING BECOME INSTRUCTOR...');
-
-      await repo.becomeInstructor();
-
-      debugPrint('BECOME INSTRUCTOR FINISHED');
-
-      final updatedUser = await repo.getCurrentUser(user.id);
-
-      debugPrint('ROLE AFTER RPC: ${updatedUser?.role}');
-
-      return updatedUser;
+      return await ref.read(authRepositoryProvider).getCurrentUser(user.id);
     });
   }
 

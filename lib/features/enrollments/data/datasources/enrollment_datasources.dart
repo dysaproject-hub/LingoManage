@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:lingo_manage/core/constants/database_table_name.dart';
 import 'package:lingo_manage/core/utils/exceptions/enrollments_exception.dart';
 import 'package:lingo_manage/core/utils/status_enrollments_enum.dart';
@@ -50,10 +51,12 @@ class EnrollmentDatasources {
   }
 
   Future<void> deleteEnrollment({required String enrollmentId}) async {
+    debugPrint("START DELETE");
     await _db
         .from(DatabaseTableName.enrollmentsCollection)
         .delete()
         .eq('id', enrollmentId);
+    debugPrint("FINISH DELETE");
   }
 
   Future<void> updateStatusEnrollment({
@@ -125,7 +128,7 @@ class EnrollmentDatasources {
         .select()
         .eq('student_id', studentId)
         .eq('course_id', courseId)
-        .contains('status', [pending, approved]);
+        .inFilter('status', [pending, approved]);
 
     if (snapshot.isEmpty) {
       return null;

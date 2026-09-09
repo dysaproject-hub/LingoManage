@@ -139,7 +139,10 @@ class AdminDetailCoursePage extends ConsumerWidget {
                     error: (e, s) {
                       final err = ErrorMapper.map(e);
 
-                      return CustomErrorWidget(message: err.message, title: "Can't load course data",);
+                      return CustomErrorWidget(
+                        message: err.message,
+                        title: "Can't load course data",
+                      );
                     },
                     loading: () => LoadingWidget(),
                   ),
@@ -306,7 +309,13 @@ class AdminDetailCoursePage extends ConsumerWidget {
                   error: (e, s) {
                     final err = ErrorMapper.map(e);
 
-                    return CustomErrorWidget(message: err.message, icon: Icons.error_outline_outlined, title: "Can't load course program data",);
+                    debugPrint('$e');
+
+                    return CustomErrorWidget(
+                      message: err.message,
+                      icon: Icons.error_outline_outlined,
+                      title: "Can't load course program data",
+                    );
                   },
                   loading: () => LoadingWidget(),
                 ),

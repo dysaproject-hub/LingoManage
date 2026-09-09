@@ -6,8 +6,8 @@ class CourseProgramModel {
   final String name;
   final String? description;
 
-  final int registrationFee;
-  final int monthlyFee;
+  final double registrationFee;
+  final double monthlyFee;
 
   final DateTime? createdAt;
   final DateTime? updatedAt;

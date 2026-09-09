@@ -15,6 +15,7 @@ class AuthRepository {
     required String email,
     required String password,
     required String fullname,
+    required String role,
     String? nickname,
     String? phone,
   }) {
@@ -24,12 +25,9 @@ class AuthRepository {
       fullname: fullname,
       nickname: nickname,
       phone: phone,
+      role: role,
     );
   }
-
-  Future<void> becomeInstructor() async {
-  await _datasource.becomeInstructor();
-}
 
   Future<AuthResponse> signIn({
     required String email,

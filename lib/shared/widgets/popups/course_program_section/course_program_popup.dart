@@ -200,10 +200,10 @@ class CourseProgramPopup {
     );
 
     final TextEditingController registrationFeeController =
-        TextEditingController(text: program.registrationFee.toString());
+        TextEditingController(text: formatter(program.registrationFee));
 
     final TextEditingController monthlyFeeController = TextEditingController(
-      text: program.monthlyFee.toString(),
+      text: formatter(program.monthlyFee),
     );
 
     final formKey = GlobalKey<FormState>();

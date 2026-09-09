@@ -2,8 +2,6 @@ import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 class CurrencyInputFormatter extends TextInputFormatter {
-  final NumberFormat _formatter = NumberFormat('#,###', 'id_ID');
-
   @override
   TextEditingValue formatEditUpdate(
     TextEditingValue oldValue,
@@ -22,7 +20,7 @@ class CurrencyInputFormatter extends TextInputFormatter {
       return oldValue;
     }
 
-    final formatted = _formatter.format(number);
+    final formatted = formatter(number.toDouble());
 
     return TextEditingValue(
       text: formatted,
@@ -31,11 +29,18 @@ class CurrencyInputFormatter extends TextInputFormatter {
   }
 }
 
-String formatRupiah(int value) {
-    final formatted = value.toString().replaceAllMapped(
-      RegExp(r'\B(?=(\d{3})+(?!\d))'),
-      (match) => '.',
-    );
+String formatter(double value) {
+  final NumberFormat formatter = NumberFormat('#,###', 'id_ID');
+  return formatter.format(value.round());
+}
 
-    return "Rp$formatted";
-  }
+String formatRupiah(double value) {
+  final int pureNumber = value.round();
+
+  final formatted = pureNumber.toString().replaceAllMapped(
+    RegExp(r'\B(?=(\d{3})+(?!\d))'),
+    (match) => '.',
+  );
+
+  return "Rp$formatted";
+}

@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:lingo_manage/core/constants/database_table_name.dart';
 import 'package:lingo_manage/features/course/models/course_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -22,30 +23,45 @@ class CourseDatasources {
   Future<List<CourseModel>> getMyCourses() async {
     final uid = _currentUserId;
 
+    debugPrint("GET COURSE");
+
     final snapshot = await _client
         .from(DatabaseTableName.courseAdminsCollection)
         .select()
         .eq('admin_id', uid)
         .order('created_at', ascending: false);
 
-    final courseIds = snapshot.map((doc) => doc['courseId'] as String).toList();
+    debugPrint("GOT A SNAPSHOT");
 
-    final courses = await Future.wait(
-      courseIds.map((courseId) async {
-        final courseDoc = await _client
-            .from(DatabaseTableName.coursesCollection)
-            .select()
-            .eq('course_id', courseId).maybeSingle();
+    final courseIds = snapshot
+        .map((doc) => doc['course_id'] as String)
+        .toList();
 
-        if (courseDoc == null) {
-          return null;
-        }
+    debugPrint("COURSEIDS MAPPED");
 
-        return CourseModel.fromMap(courseDoc['id'], courseDoc);
-      }),
-    );
+    List<CourseModel> courses = [];
 
-    return courses.whereType<CourseModel>().toList();
+    try {
+      courses = await Future.wait(
+        courseIds.map((courseId) async {
+          final courseDoc = await _client
+              .from(DatabaseTableName.coursesCollection)
+              .select()
+              .eq('id', courseId)
+              .single();
+
+          debugPrint("GET SINGLE COURSE");
+
+          return CourseModel.fromMap(courseDoc['id'] as String, courseDoc);
+        }),
+      );
+    } catch (e) {
+      debugPrint("$e");
+    }
+
+    debugPrint("RETURN ALL");
+
+      return courses.whereType<CourseModel>().toList();
   }
 
   /// GET COURSE BY ID
@@ -82,24 +98,46 @@ class CourseDatasources {
   }) async {
     final uid = _currentUserId;
 
-    final courseRow = await _client
-        .from(DatabaseTableName.coursesCollection)
-        .insert({
-          'owner_id': uid,
-          'name': name,
-          'description': description,
-          'address': address,
-        })
-        .select()
-        .single();
+    if (uid.isEmpty) {
+      throw Exception('User belum login');
+    }
 
-    await _client.from(DatabaseTableName.courseAdminsCollection).insert({
-      'course_id': courseRow['id'],
-      'admin_id': uid,
-      'role': 'owner',
-    });
+    try {
+      debugPrint("=== START INSERT COURSE ===");
+      debugPrint("UID: $uid");
 
-    return CourseModel.fromMap(courseRow['id'] as String, courseRow);
+      final courseRow = await _client
+          .from(DatabaseTableName.coursesCollection)
+          .insert({
+            'owner_id': uid,
+            'name': name,
+            'description': description,
+            'address': address,
+          })
+          .select()
+          .single();
+
+      debugPrint("=== FINISH INSERT COURSE ===");
+      debugPrint("COURSE ROW: $courseRow");
+
+      debugPrint("=== START INSERT COURSE ADMINS ===");
+
+      await _client.from(DatabaseTableName.courseAdminsCollection).insert({
+        'course_id': courseRow['id'],
+        'admin_id': uid,
+        'role': 'admin',
+      });
+
+      debugPrint("=== FINISH INSERT COURSE ADMINS ===");
+
+      return CourseModel.fromMap(courseRow['id'] as String, courseRow);
+    } catch (e, stackTrace) {
+      debugPrint("=== ADD COURSE ERROR ===");
+      debugPrint("ERROR: $e");
+      debugPrint("STACKTRACE: $stackTrace");
+
+      rethrow;
+    }
   }
 
   /// UPDATE COURSE
@@ -109,30 +147,18 @@ class CourseDatasources {
     required String description,
     required String address,
   }) async {
-    await _client
-        .from(DatabaseTableName.coursesCollection)
-        .update({
-          'name': name,
-          'description': description,
-          'address': address,
-        });
+    await _client.from(DatabaseTableName.coursesCollection).update({
+      'name': name,
+      'description': description,
+      'address': address,
+    }).eq('id', courseId);
   }
 
   /// DELETE COURSE
   Future<void> deleteCourse(String courseId) async {
-  await _client
-      .from(DatabaseTableName.courseAdminsCollection)
-      .delete()
-      .eq('course_id', courseId);
-
-  await _client
-      .from(DatabaseTableName.programsCollection)
-      .delete()
-      .eq('course_id', courseId);
-
-  await _client
-      .from(DatabaseTableName.coursesCollection)
-      .delete()
-      .eq('id', courseId);
-}
+    await _client
+        .from(DatabaseTableName.coursesCollection)
+        .delete()
+        .eq('id', courseId);
+  }
 }
