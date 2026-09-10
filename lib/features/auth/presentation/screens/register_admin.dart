@@ -87,12 +87,17 @@ class _RegisterAdminState extends ConsumerState<RegisterAdmin> {
                   height: 150,
                 ),
                 textBaloo2(
-                  "LingoManage",
+                  'LingoManage',
                   fontSize: 32,
                   color: AppColors.black,
                   fontWeight: FontWeight.w800,
                 ),
-                const SizedBox(height: 80),
+                textPoppins(
+                  'Daftar akun instruktur',
+                  fontSize: 13,
+                  color: AppColors.mutedText,
+                ),
+                const SizedBox(height: 40),
                 Form(
                   key: _formKey,
                   child: Column(
@@ -103,11 +108,11 @@ class _RegisterAdminState extends ConsumerState<RegisterAdmin> {
                         keyboardType: TextInputType.emailAddress,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return "The email field cannot be empty!";
+                            return 'Email wajib diisi';
                           }
 
                           if (!Regex.emailRegex.hasMatch(value)) {
-                            return "Invalid email format";
+                            return 'Format email tidak valid';
                           }
 
                           return null;
@@ -136,11 +141,11 @@ class _RegisterAdminState extends ConsumerState<RegisterAdmin> {
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return "The password must be filled in!";
+                            return 'Kata sandi wajib diisi';
                           }
 
                           if (value.length < 8) {
-                            return "The password must has minimum 8 characters!";
+                            return 'Kata sandi minimal 8 karakter';
                           }
 
                           return null;
@@ -148,12 +153,12 @@ class _RegisterAdminState extends ConsumerState<RegisterAdmin> {
                       ),
                       const SizedBox(height: 16),
                       textFieldWidget(
-                        labelText: "Full Name",
+                        labelText: 'Nama Lengkap',
                         controller: _fullnameController,
                         keyboardType: TextInputType.text,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return "Full name field cannot be empty!";
+                            return 'Nama lengkap wajib diisi';
                           }
 
                           return null;
@@ -161,12 +166,12 @@ class _RegisterAdminState extends ConsumerState<RegisterAdmin> {
                       ),
                       const SizedBox(height: 16),
                       textFieldWidget(
-                        labelText: "Nick Name",
+                        labelText: 'Nama Panggilan',
                         controller: _nicknameController,
                         keyboardType: TextInputType.text,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return "Nick name field cannot be empty!";
+                            return 'Nama panggilan wajib diisi';
                           }
 
                           return null;
@@ -175,21 +180,15 @@ class _RegisterAdminState extends ConsumerState<RegisterAdmin> {
                       const SizedBox(height: 16),
                       textFieldWidget(
                         keyboardType: TextInputType.number,
-                        labelText: "Phone",
+                        labelText: 'Nomor WhatsApp',
                         controller: _phoneController,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return "The phone field is required!";
+                            return 'Nomor WhatsApp wajib diisi';
                           }
 
-                          final phone = int.tryParse(value);
-
-                          if (phone == null) {
-                            return "Phone must be a number!";
-                          }
-
-                          if (phone < 1) {
-                            return "Invalid phone number!";
+                          if (value.trim().length < 10) {
+                            return 'Nomor tidak valid';
                           }
 
                           return null;
@@ -202,7 +201,7 @@ class _RegisterAdminState extends ConsumerState<RegisterAdmin> {
                 authState.isLoading
                     ? const LoadingWidget()
                     : FlexibleButton(
-                        text: "Register",
+                        text: 'Daftar',
                         textColor: AppColors.lightText,
                         bgColor: AppColors.primary,
                         fontSize: 14,
@@ -241,13 +240,13 @@ class _RegisterAdminState extends ConsumerState<RegisterAdmin> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     textPoppins(
-                      "Already have an account?",
+                      'Sudah punya akun?',
                       color: AppColors.black,
                       fontSize: 12,
                       fontWeight: FontWeight.w300,
                     ),
                     Button(
-                      text: "Login",
+                      text: 'Masuk',
                       textColor: AppColors.black,
                       bgColor: AppColors.transparent,
                       fontSize: 12,

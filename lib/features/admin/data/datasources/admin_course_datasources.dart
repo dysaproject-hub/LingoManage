@@ -1,90 +1,108 @@
-import 'package:lingo_manage/core/constants/database_table_name.dart';
-import 'package:lingo_manage/core/constants/user_role.dart';
-import 'package:lingo_manage/core/models/app_users.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+// import 'package:flutter/widgets.dart';
+// import 'package:lingo_manage/core/constants/database_table_name.dart';
+// import 'package:lingo_manage/core/constants/user_role.dart';
+// import 'package:lingo_manage/core/models/app_users.dart';
+// import 'package:supabase_flutter/supabase_flutter.dart';
 
-class AdminCourseDatasources {
-  final SupabaseClient _db;
+// class AdminCourseDatasources {
+//   final SupabaseClient _db;
 
-  AdminCourseDatasources(this._db);
+//   AdminCourseDatasources(this._db);
 
-  Future<void> addAdminToCourse({
-    required String courseId,
-    required String adminId,
-  }) async {
-    final existing = await _db
-        .from(DatabaseTableName.courseAdminsCollection)
-        .select()
-        .eq('course_id', courseId)
-        .eq('admin_id', adminId);
+//   Future<void> addAdminToOrganization({
+//     required String organizationId,
+//     required String adminId,
+//   }) async {
+//     try {
+//       final existing = await _db
+//           .from(DatabaseTableName.organizationMemberCollection)
+//           .select()
+//           .eq('organization_id', organizationId)
+//           .eq('admin_id', adminId);
 
-    if (existing.isNotEmpty) {
-      throw Exception('Admin has been added in this course');
-    }
+//       if (existing.isNotEmpty) {
+//         throw Exception('Admin has been added in this course');
+//       }
 
-    final data = {
-      'course_id': courseId,
-      'admin_id': adminId,
-      'role': UserRole.instructor,
-    };
+//       final data = {
+//         'organization_id': organizationId,
+//         'admin_id': adminId,
+//         'role': UserRole.instructor,
+//       };
 
-    await _db.from(DatabaseTableName.courseAdminsCollection).insert(data);
-  }
+//       await _db.from(DatabaseTableName.organizationMemberCollection).insert(data);
+//     } catch (e) {
+//       debugPrint("$e");
+//     }
+//   }
 
-  Future<AppUser?> findAdminByEmail(String email) async {
-    final snapshot = await _db
-        .from(DatabaseTableName.usersCollection)
-        .select()
-        .eq('email', email)
-        .eq('role', UserRole.instructor)
-        .single();
+//   Future<AppUser?> findAdminByEmail(String email) async {
+//     try {
+//       debugPrint("=== SEARCH ADMIN ===");
 
-    if (snapshot.isEmpty) {
-      return null;
-    }
+//       debugPrint("=== SELECT ADMIN ===");
+//       final snapshot = await _db
+//           .from(DatabaseTableName.usersCollection)
+//           .select()
+//           .eq('email', email)
+//           .eq('role', UserRole.instructor)
+//           .maybeSingle();
 
-    return AppUser.fromMap(snapshot['id'] as String, snapshot);
-  }
+//       debugPrint("=== FINISH ADMIN ===");
 
-  Future<List<AppUser>> getCourseAdmins({required String courseId}) async {
-    final snapshot = await _db
-        .from(DatabaseTableName.courseAdminsCollection)
-        .select()
-        .eq('course_id', courseId);
+//       if (snapshot == null || snapshot.isEmpty) {
+//         debugPrint("=== NO ADMIN ===");
+//         return null;
+//       }
 
-    final List<AppUser> admins = [];
+//       debugPrint("=== RETURN ADMIN ===");
+//       return AppUser.fromMap(snapshot['id'] as String, snapshot);
+//     } catch (e) {
+//       debugPrint("$e");
+//     }
 
-    for (final data in snapshot) {
-      final adminId = data['admin_id'] as String;
+//     return null;
+//   }
 
-      final userDoc = await _db
-          .from(DatabaseTableName.usersCollection)
-          .select()
-          .eq('id', adminId)
-          .maybeSingle();
+//   Future<List<AppUser>> getCourseAdmins({required String organizationId}) async {
+//     final snapshot = await _db
+//         .from(DatabaseTableName.organizationMemberCollection)
+//         .select()
+//         .eq('organization_id', organizationId);
 
-      if (userDoc == null) {
-        continue;
-      }
+//     final List<AppUser> admins = [];
 
-      final user = AppUser.fromMap(userDoc['id'] as String, userDoc);
+//     for (final data in snapshot) {
+//       final adminId = data['admin_id'] as String;
 
-      if (user.role == UserRole.instructor) {
-        admins.add(user);
-      }
-    }
+//       final userDoc = await _db
+//           .from(DatabaseTableName.usersCollection)
+//           .select()
+//           .eq('id', adminId)
+//           .maybeSingle();
 
-    return admins;
-  }
+//       if (userDoc == null) {
+//         continue;
+//       }
 
-  Future<void> removeAdminFromCourse({
-    required String courseId,
-    required String adminId,
-  }) async {
-    await _db
-        .from(DatabaseTableName.courseAdminsCollection)
-        .delete()
-        .eq('course_id', courseId)
-        .eq('admin_id', adminId);
-  }
-}
+//       final user = AppUser.fromMap(userDoc['id'] as String, userDoc);
+
+//       if (user.role == UserRole.instructor) {
+//         admins.add(user);
+//       }
+//     }
+
+//     return admins;
+//   }
+
+//   Future<void> removeAdminFromCourse({
+//     required String organizationId,
+//     required String adminId,
+//   }) async {
+//     await _db
+//         .from(DatabaseTableName.organizationMemberCollection)
+//         .delete()
+//         .eq('organization_id', organizationId)
+//         .eq('admin_id', adminId);
+//   }
+// }

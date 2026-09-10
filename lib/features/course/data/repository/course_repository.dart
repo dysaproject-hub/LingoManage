@@ -23,8 +23,9 @@ CourseRepository {
     required String name,
     required String description,
     required String address,
+    required String organizationId
   }) async {
-    return await _datasources.addCourse(name: name, description: description, address: address);
+    return await _datasources.addCourse(name: name, description: description, address: address, organizationId: organizationId);
   }
 
   Future<void> updateCourse({

@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lingo_manage/core/constants/app_colors.dart';
 import 'package:lingo_manage/core/routes/routes.dart';
 import 'package:lingo_manage/core/utils/exceptions/app_error_mapper.dart';
-import 'package:lingo_manage/features/admin/presentation/providers/admin_course_provider.dart';
 import 'package:lingo_manage/features/course/models/course_model.dart';
 import 'package:lingo_manage/features/course/presentation/providers/course_program_provider.dart';
 import 'package:lingo_manage/features/course/presentation/providers/course_provider.dart';
@@ -26,7 +25,7 @@ class AdminDetailCoursePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final adminProvider = ref.watch(courseAdminsProvider(courseModel.id));
+    // final adminProvider = ref.watch(courseAdminsProvider(courseModel.id));
     final courseAsync = ref.watch(courseDetailProvider(courseModel.id));
     final courseProgramDataList = ref.watch(
       getAllCourseProgramProvider(courseModel.id),
@@ -186,19 +185,19 @@ class AdminDetailCoursePage extends ConsumerWidget {
 
                     const SizedBox(width: 10),
 
-                    Expanded(
-                      child: StatisticCard(
-                        icon: Icons.admin_panel_settings_outlined,
-                        title: 'Admins',
-                        value: adminProvider.when(
-                          data: (data) {
-                            return "${data.length}";
-                          },
-                          error: (error, s) => '-',
-                          loading: () => '...',
-                        ),
-                      ),
-                    ),
+                    // Expanded(
+                    //   child: StatisticCard(
+                    //     icon: Icons.admin_panel_settings_outlined,
+                    //     title: 'Admins',
+                    //     value: adminProvider.when(
+                    //       data: (data) {
+                    //         return "${data.length}";
+                    //       },
+                    //       error: (error, s) => '-',
+                    //       loading: () => '...',
+                    //     ),
+                    //   ),
+                    // ),
                   ],
                 ),
 
@@ -370,18 +369,18 @@ class AdminDetailCoursePage extends ConsumerWidget {
 
                 const SizedBox(height: 12),
 
-                ManagementButton(
-                  icon: Icons.admin_panel_settings_outlined,
-                  title: 'Manage Admins',
-                  description: 'Manage admins who have access to this course.',
-                  onPressed: () {
-                    Navigator.pushNamed(
-                      context,
-                      AppRoutes.manageAdminPage,
-                      arguments: {'courseModel': courseModel},
-                    );
-                  },
-                ),
+                // ManagementButton(
+                //   icon: Icons.admin_panel_settings_outlined,
+                //   title: 'Manage Admins',
+                //   description: 'Manage admins who have access to this course.',
+                //   onPressed: () {
+                //     Navigator.pushNamed(
+                //       context,
+                //       AppRoutes.manageAdminPage,
+                //       arguments: {'courseModel': courseModel},
+                //     );
+                //   },
+                // ),
 
                 const SizedBox(height: 10),
 

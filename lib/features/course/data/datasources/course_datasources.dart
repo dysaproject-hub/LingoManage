@@ -24,44 +24,48 @@ class CourseDatasources {
     final uid = _currentUserId;
 
     debugPrint("GET COURSE");
+    debugPrint("UID: $uid");
 
     final snapshot = await _client
-        .from(DatabaseTableName.courseAdminsCollection)
+        .from(DatabaseTableName.organizationMemberCollection)
         .select()
         .eq('admin_id', uid)
         .order('created_at', ascending: false);
 
     debugPrint("GOT A SNAPSHOT");
+    debugPrint("COURSE ADMIN DATA: $snapshot");
 
     final courseIds = snapshot
         .map((doc) => doc['course_id'] as String)
         .toList();
 
-    debugPrint("COURSEIDS MAPPED");
+    debugPrint("COURSE IDS: $courseIds");
 
-    List<CourseModel> courses = [];
+    final courses = await Future.wait(
+      courseIds.map((courseId) async {
+        debugPrint("GET COURSE: $courseId");
 
-    try {
-      courses = await Future.wait(
-        courseIds.map((courseId) async {
-          final courseDoc = await _client
-              .from(DatabaseTableName.coursesCollection)
-              .select()
-              .eq('id', courseId)
-              .single();
+        final courseDoc = await _client
+            .from(DatabaseTableName.coursesCollection)
+            .select()
+            .eq('id', courseId)
+            .maybeSingle();
 
-          debugPrint("GET SINGLE COURSE");
+        debugPrint("RESULT COURSE $courseId: $courseDoc");
 
-          return CourseModel.fromMap(courseDoc['id'] as String, courseDoc);
-        }),
-      );
-    } catch (e) {
-      debugPrint("$e");
-    }
+        if (courseDoc == null) {
+          throw Exception(
+            "Course tidak ditemukan / tidak bisa diakses: $courseId",
+          );
+        }
 
-    debugPrint("RETURN ALL");
+        return CourseModel.fromMap(courseDoc['id'] as String, courseDoc);
+      }),
+    );
 
-      return courses.whereType<CourseModel>().toList();
+    debugPrint("RETURN ALL: ${courses.length}");
+
+    return courses;
   }
 
   /// GET COURSE BY ID
@@ -94,6 +98,7 @@ class CourseDatasources {
   Future<CourseModel> addCourse({
     required String name,
     required String description,
+    required String organizationId,
     required String address,
   }) async {
     final uid = _currentUserId;
@@ -112,6 +117,7 @@ class CourseDatasources {
             'owner_id': uid,
             'name': name,
             'description': description,
+            'organization_id': organizationId,
             'address': address,
           })
           .select()
@@ -119,16 +125,6 @@ class CourseDatasources {
 
       debugPrint("=== FINISH INSERT COURSE ===");
       debugPrint("COURSE ROW: $courseRow");
-
-      debugPrint("=== START INSERT COURSE ADMINS ===");
-
-      await _client.from(DatabaseTableName.courseAdminsCollection).insert({
-        'course_id': courseRow['id'],
-        'admin_id': uid,
-        'role': 'admin',
-      });
-
-      debugPrint("=== FINISH INSERT COURSE ADMINS ===");
 
       return CourseModel.fromMap(courseRow['id'] as String, courseRow);
     } catch (e, stackTrace) {
@@ -147,11 +143,10 @@ class CourseDatasources {
     required String description,
     required String address,
   }) async {
-    await _client.from(DatabaseTableName.coursesCollection).update({
-      'name': name,
-      'description': description,
-      'address': address,
-    }).eq('id', courseId);
+    await _client
+        .from(DatabaseTableName.coursesCollection)
+        .update({'name': name, 'description': description, 'address': address})
+        .eq('id', courseId);
   }
 
   /// DELETE COURSE

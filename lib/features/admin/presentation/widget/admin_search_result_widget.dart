@@ -77,7 +77,7 @@ class AdminSearchResult
                   isLoading ? null : onAdd,
 
               child: isLoading
-                  ? LoadingWidget()
+                  ? LoadingWidget(size: 16,)
                   : textPoppins(
                       'Add',
                       color: AppColors.lightText,

@@ -193,6 +193,7 @@ class _EnrollmentPageState extends ConsumerState<EnrollmentPage> {
                     borderRadius: BorderRadius.circular(12),
                     onPressed: () async {
                       try {
+                        debugPrint("=== BUAT ENROLLMENT ===");
                         final enrollment = await ref
                             .read(enrollmentControllerProvider.notifier)
                             .addEnrollment(
@@ -207,8 +208,6 @@ class _EnrollmentPageState extends ConsumerState<EnrollmentPage> {
                               status: status,
                             );
 
-                        ref.invalidate(getStudentCourseProvider);
-
                         if (!context.mounted) return;
 
                         if (enrollment == null) {
@@ -219,6 +218,10 @@ class _EnrollmentPageState extends ConsumerState<EnrollmentPage> {
                           );
                           return;
                         }
+
+                        debugPrint("=== BERHASIL BUAT ENROLLMENT ===");
+
+                        ref.invalidate(getStudentCourseProvider);
 
                         Navigator.pop(context); // tutup bottom sheet
 
@@ -231,6 +234,8 @@ class _EnrollmentPageState extends ConsumerState<EnrollmentPage> {
                             'enrollmentModel': enrollment,
                           },
                         );
+
+                        debugPrint("=== BERHASIL Navigate ===");
                       } on EnrollmentException catch (e) {
                         Navigator.pop(context);
                         ScaffoldMessenger.of(

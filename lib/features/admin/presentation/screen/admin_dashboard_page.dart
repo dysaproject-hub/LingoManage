@@ -6,9 +6,10 @@ import 'package:lingo_manage/core/routes/routes.dart';
 import 'package:lingo_manage/core/utils/exceptions/app_error_mapper.dart';
 import 'package:lingo_manage/features/admin/presentation/widget/card_course_widget.dart';
 import 'package:lingo_manage/features/course/presentation/providers/course_provider.dart';
+import 'package:lingo_manage/features/organization/presentation/providers/organization_provider.dart';
 import 'package:lingo_manage/shared/widgets/app_bar/appbar_widget.dart';
 import 'package:lingo_manage/shared/widgets/buttons/button_widget.dart';
-import 'package:lingo_manage/shared/widgets/cards/card_widget.dart';
+import 'package:lingo_manage/shared/widgets/cards/empty_card.dart';
 import 'package:lingo_manage/shared/widgets/errors/error_widget.dart';
 import 'package:lingo_manage/shared/widgets/loadings/loading_widget.dart';
 import 'package:lingo_manage/shared/widgets/popups/course_section/course_popup.dart';
@@ -32,6 +33,7 @@ class _AdminDashboardPageState extends ConsumerState<AdminDashboardPage> {
   Widget build(BuildContext context) {
     final myCourseProvider = ref.watch(myCoursesProvider);
     final userDataProvider = ref.watch(appUserControllerProvider);
+    final orgAsync = ref.watch(myOrganizationProvider);
 
     debugPrint("AdminDashboardPage Rebuild");
     return Scaffold(
@@ -44,15 +46,78 @@ class _AdminDashboardPageState extends ConsumerState<AdminDashboardPage> {
               padding: const EdgeInsets.all(16),
               child: Column(
                 children: [
-                  AppbarWidget(userDataProvider: userDataProvider),
+                  AppbarWidget(
+                    userDataProvider: userDataProvider,
+                    orgAsync: orgAsync,
+                  ),
 
-                  const SizedBox(height: 50),
+                  const SizedBox(height: 30),
 
-                  CardWithStrokeWidget(
-                    title: "Welcome!",
-                    description: "Let's manage your course now!",
-                    image: Image.asset("assets/ilustration/ilustration_1.png"),
-                    borderRadius: 15,
+                  orgAsync.when(
+                    loading: () => const Center(child: LoadingWidget()),
+                    error: (e, _) => CustomErrorWidget(
+                      message: ErrorMapper.map(e).message,
+                      title: 'Gagal memuat organisasi',
+                      onRetry: () => ref.invalidate(myOrganizationProvider),
+                    ),
+                    data: (org) {
+                      return SizedBox(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.all(20),
+                              decoration: BoxDecoration(
+                                color: AppColors.primary.withValues(
+                                  alpha: 0.08,
+                                ),
+                                borderRadius: BorderRadius.circular(16),
+                                border: Border.all(
+                                  color: AppColors.primary.withValues(
+                                    alpha: 0.15,
+                                  ),
+                                ),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  textBaloo2(
+                                    'Dashboard',
+                                    fontSize: 22,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                  const SizedBox(height: 8),
+                                  textPoppins(
+                                    'Ringkasan kursus, pendaftaran, dan tagihan akan ditambahkan pada langkah berikutnya.',
+                                    fontSize: 13,
+                                    color: AppColors.mutedText,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 24),
+                            SizedBox(
+                              width: double.infinity,
+                              child: Button(
+                                text: 'Pengaturan Organisasi',
+                                textColor: AppColors.lightText,
+                                bgColor: AppColors.primary,
+                                fontSize: 14,
+                                fontWeight: FontWeight.w700,
+                                borderRadius: BorderRadius.circular(12),
+                                onPressed: () {
+                                  Navigator.pushNamed(
+                                    context,
+                                    AppRoutes.organizationSettingsPage,
+                                  );
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
                   ),
 
                   const SizedBox(height: 50),
@@ -91,7 +156,19 @@ class _AdminDashboardPageState extends ConsumerState<AdminDashboardPage> {
                     data: (data) {
                       if (data.isEmpty) {
                         return Center(
-                          child: textPoppins("You don't have a course yet"),
+                          child: EmptySection(
+                            icon: Icons.school,
+                            title: "Kamu belum memiliki kursus",
+                            description:
+                                "Tambahkan kursus yang kamu miliki sekarang!",
+                            buttonText: "Tambah Kursus",
+                            onPressed: () {
+                              Navigator.pushNamed(
+                                context,
+                                AppRoutes.courseFormPage,
+                              );
+                            },
+                          ),
                         );
                       }
 
@@ -150,7 +227,11 @@ class _AdminDashboardPageState extends ConsumerState<AdminDashboardPage> {
                     },
                     error: (e, s) {
                       final error = ErrorMapper.map(e);
-                      return CustomErrorWidget(message: error.message, icon: Icons.error_outline, title: "Can't load course data!",);
+                      return CustomErrorWidget(
+                        message: error.message,
+                        icon: Icons.error_outline,
+                        title: "Can't load course data!",
+                      );
                     },
                     loading: () => Center(child: LoadingWidget()),
                   ),

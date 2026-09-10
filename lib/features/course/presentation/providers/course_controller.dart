@@ -11,13 +11,14 @@ class CourseController extends AsyncNotifier<void> {
     required String name,
     required String description,
     required String address,
+    required String organizationId,
   }) async {
     state = const AsyncLoading();
 
     state = await AsyncValue.guard(() async {
       await ref
           .read(courseRepositoryProvider)
-          .addCourse(name: name, description: description, address: address);
+          .addCourse(name: name, description: description, address: address, organizationId: organizationId);
 
       ref.invalidate(myCoursesProvider);
     });

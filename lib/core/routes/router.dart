@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:lingo_manage/core/routes/routes.dart';
 import 'package:lingo_manage/features/admin/presentation/screen/admin_dashboard_page.dart';
-import 'package:lingo_manage/features/admin/presentation/screen/manage_admin_page.dart';
 import 'package:lingo_manage/features/admin/presentation/screen/manage_enrollment_page.dart';
 import 'package:lingo_manage/features/auth/presentation/screens/auth_gate.dart';
 import 'package:lingo_manage/features/auth/presentation/screens/verifikasi_email.dart';
@@ -11,6 +10,7 @@ import 'package:lingo_manage/features/course/presentation/screens/detail_course_
 import 'package:lingo_manage/features/course/presentation/screens/student_detail_course_page.dart';
 import 'package:lingo_manage/features/enrollments/presentation/screen/enrollment_detail_page.dart';
 import 'package:lingo_manage/features/enrollments/presentation/screen/enrollment_form.dart';
+import 'package:lingo_manage/features/organization/presentation/screens/organization_settings_page.dart';
 import 'package:lingo_manage/features/student/presentation/screens/manage_student_page.dart';
 import 'package:lingo_manage/features/student/presentation/screens/student_home_page.dart';
 import 'package:lingo_manage/shared/screens/error_page.dart';
@@ -55,11 +55,11 @@ class AppRouter {
       case AppRoutes.profileUserPage:
         return MaterialPageRoute(builder: (_) => ProfileUser());
 
-      case AppRoutes.manageAdminPage:
-        final courseModel = args['courseModel'];
-        return MaterialPageRoute(
-          builder: (_) => ManageAdminPage(courseModel: courseModel),
-        );
+      // case AppRoutes.manageAdminPage:
+      //   final courseModel = args['courseModel'];
+      //   return MaterialPageRoute(
+      //     builder: (_) => ManageAdminPage(courseModel: courseModel),
+      //   );
 
       case AppRoutes.adminDetailCourse:
         final courseModel = args['courseModel'];
@@ -117,6 +117,11 @@ class AppRouter {
         final email = args['email'];
         return MaterialPageRoute(
           builder: (_) => EmailVerificationPage(email: email),
+        );
+
+      case AppRoutes.organizationSettingsPage:
+        return MaterialPageRoute(
+          builder: (_) => const OrganizationSettingsPage(),
         );
 
       default:

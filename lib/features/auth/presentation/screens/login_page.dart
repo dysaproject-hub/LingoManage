@@ -102,11 +102,11 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         keyboardType: TextInputType.emailAddress,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return "The email field cannot be empty!";
+                            return 'Email wajib diisi';
                           }
 
                           if (!Regex.emailRegex.hasMatch(value)) {
-                            return "Invalid email format!";
+                            return 'Format email tidak valid';
                           }
 
                           return null;
@@ -135,11 +135,11 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         ),
                         validator: (value) {
                           if (value == null || value.isEmpty) {
-                            return "The password field must be filled in!";
+                            return 'Kata sandi wajib diisi';
                           }
 
                           if (value.length < 8) {
-                            return "The password must has minimum 8 characters!";
+                            return 'Kata sandi minimal 8 karakter';
                           }
 
                           return null;
@@ -152,7 +152,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 authState.isLoading
                     ? const LoadingWidget()
                     : FlexibleButton(
-                        text: "Login",
+                        text: 'Masuk',
                         textColor: AppColors.lightText,
                         bgColor: AppColors.primary,
                         fontSize: 14,
@@ -180,13 +180,13 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     textPoppins(
-                      "Don't have an account?",
+                      'Belum punya akun?',
                       color: AppColors.black,
                       fontSize: 12,
                       fontWeight: FontWeight.w300,
                     ),
                     Button(
-                      text: "Register",
+                      text: 'Daftar',
                       textColor: AppColors.black,
                       bgColor: AppColors.transparent,
                       fontSize: 12,

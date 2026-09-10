@@ -48,7 +48,7 @@ class _StudentHomePageState extends ConsumerState<StudentHomePage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  AppbarWidget(userDataProvider: userDataProvider),
+                  AppbarWidget(userDataProvider: userDataProvider,),
                   const SizedBox(height: 50),
                   CardWithStrokeWidget(
                     title: "Welcome!",

@@ -99,14 +99,14 @@ class CardCourseWidget extends StatelessWidget {
                       fontSize: 12,
                     ),
                   ),
-                  PopupMenuItem(
-                    value: "manage_admin",
-                    child: textPoppins(
-                      "Manage Admin",
-                      color: AppColors.black,
-                      fontSize: 12,
-                    ),
-                  ),
+                  // PopupMenuItem(
+                  //   value: "manage_admin",
+                  //   child: textPoppins(
+                  //     "Manage Admin",
+                  //     color: AppColors.black,
+                  //     fontSize: 12,
+                  //   ),
+                  // ),
                 ],
               ),
             ],

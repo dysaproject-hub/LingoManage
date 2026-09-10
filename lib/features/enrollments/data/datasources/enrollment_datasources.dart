@@ -6,9 +6,9 @@ import 'package:lingo_manage/features/enrollments/models/enrollment_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class EnrollmentDatasources {
-  final SupabaseClient _db;
+  final SupabaseClient _client;
 
-  EnrollmentDatasources(this._db);
+  EnrollmentDatasources(this._client);
 
   Future<EnrollmentModel> addEnrollments({
     required String studentId,
@@ -43,40 +43,50 @@ class EnrollmentDatasources {
       'enrolled_at': null,
     };
 
-    final enrollmentRef = await _db
+    final enrollmentRef = await _client
         .from(DatabaseTableName.enrollmentsCollection)
-        .insert(data);
+        .insert(data)
+        .select()
+        .single();
 
-    return EnrollmentModel.fromMap(enrollmentRef['id'], data);
+    return EnrollmentModel.fromMap(enrollmentRef['id'] as String, data);
   }
 
   Future<void> deleteEnrollment({required String enrollmentId}) async {
-    debugPrint("START DELETE");
-    await _db
+    await _client
         .from(DatabaseTableName.enrollmentsCollection)
         .delete()
         .eq('id', enrollmentId);
-    debugPrint("FINISH DELETE");
   }
 
   Future<void> updateStatusEnrollment({
     required String enrollmentId,
     required String statusEnrollment,
   }) async {
-    final reference = _db.from(DatabaseTableName.enrollmentsCollection);
+    try {
+      debugPrint("=== REFERENCE SET UP ===");
+      final reference = _client.from(DatabaseTableName.enrollmentsCollection);
 
-    return statusEnrollment == StatusEnrollments.approved.label
-        ? await reference.update({
-            'status': statusEnrollment,
-            'enrolled_at': DateTime.now(),
-          })
-        : await reference.update({'status': statusEnrollment});
+      debugPrint("=== START UPDATE ===");
+      return statusEnrollment == StatusEnrollments.approved.label
+          ? await reference
+                .update({
+                  'status': statusEnrollment,
+                  'enrolled_at': DateTime.now().toIso8601String(),
+                })
+                .eq('id', enrollmentId)
+          : await reference
+                .update({'status': statusEnrollment})
+                .eq('id', enrollmentId);
+    } catch (e) {
+      debugPrint("$e");
+    }
   }
 
   Future<EnrollmentModel> getEnrollmentById({
     required String enrollmentId,
   }) async {
-    final doc = await _db
+    final doc = await _client
         .from(DatabaseTableName.enrollmentsCollection)
         .select()
         .eq('id', enrollmentId)
@@ -92,7 +102,7 @@ class EnrollmentDatasources {
   Future<List<EnrollmentModel>> getEnrollmentsByStudentId({
     required String studentId,
   }) async {
-    final snapshot = await _db
+    final snapshot = await _client
         .from(DatabaseTableName.enrollmentsCollection)
         .select()
         .eq('student_id', studentId);
@@ -105,7 +115,7 @@ class EnrollmentDatasources {
   Future<List<EnrollmentModel>> getEnrollmentsByCourseIdAndStatusPending({
     required String courseId,
   }) async {
-    final snapshot = await _db
+    final snapshot = await _client
         .from(DatabaseTableName.enrollmentsCollection)
         .select()
         .eq('course_id', courseId)
@@ -123,7 +133,7 @@ class EnrollmentDatasources {
     final String pending = StatusEnrollments.pending.label;
     final String approved = StatusEnrollments.approved.label;
 
-    final snapshot = await _db
+    final snapshot = await _client
         .from(DatabaseTableName.enrollmentsCollection)
         .select()
         .eq('student_id', studentId)
