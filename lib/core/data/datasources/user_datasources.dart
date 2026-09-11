@@ -26,7 +26,6 @@ class UserDatasources {
     String? fullname,
     String? nickname,
     String? phone,
-    String? address,
   }) async {
     final Map<String, dynamic> data = {};
 
@@ -42,16 +41,11 @@ class UserDatasources {
       data["phone"] = phone;
     }
 
-    if (address != null) {
-      data["address"] = address;
-    }
-
     if (data.isEmpty) return;
 
     await _client
         .from(DatabaseTableName.usersCollection)
         .update(data)
-        .select()
-        .single();
+        .eq('id', uid);
   }
 }

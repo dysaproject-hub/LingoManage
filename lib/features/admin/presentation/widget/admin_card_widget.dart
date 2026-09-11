@@ -90,7 +90,7 @@ class AdminCardWidget extends StatelessWidget {
               ),
 
               child: textPoppins(
-                isOwner ? 'Owner' : 'Admin',
+                isOwner ? 'Owner' : 'Instructor',
 
                 fontSize: 11,
                 color: Colors.white,
@@ -100,7 +100,7 @@ class AdminCardWidget extends StatelessWidget {
               const SizedBox(width: 4),
 
               IconButton(
-                tooltip: 'Remove admin',
+                tooltip: 'Remove Instructor',
 
                 onPressed: onDelete,
 

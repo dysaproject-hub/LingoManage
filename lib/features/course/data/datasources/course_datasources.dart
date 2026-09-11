@@ -21,51 +21,57 @@ class CourseDatasources {
 
   /// GET MY COURSES
   Future<List<CourseModel>> getMyCourses() async {
-    final uid = _currentUserId;
+    try {
+      final uid = _currentUserId;
 
-    debugPrint("GET COURSE");
-    debugPrint("UID: $uid");
+      debugPrint("GET COURSE");
+      debugPrint("UID: $uid");
 
-    final snapshot = await _client
-        .from(DatabaseTableName.organizationMemberCollection)
-        .select()
-        .eq('admin_id', uid)
-        .order('created_at', ascending: false);
+      final snapshot = await _client
+          .from(DatabaseTableName.organizationMemberCollection)
+          .select()
+          .eq('admin_id', uid)
+          .order('created_at', ascending: false);
 
-    debugPrint("GOT A SNAPSHOT");
-    debugPrint("COURSE ADMIN DATA: $snapshot");
+      debugPrint("GOT A SNAPSHOT");
+      debugPrint("Organization DATA: $snapshot");
 
-    final courseIds = snapshot
-        .map((doc) => doc['course_id'] as String)
-        .toList();
+      final courseIds = snapshot
+          .map((doc) => doc['organization_id'] as String)
+          .toList();
 
-    debugPrint("COURSE IDS: $courseIds");
+      debugPrint("Organization IDS: $courseIds");
 
-    final courses = await Future.wait(
-      courseIds.map((courseId) async {
-        debugPrint("GET COURSE: $courseId");
+      final courses = await Future.wait(
+        courseIds.map((courseId) async {
+          debugPrint("GET COURSE: $courseId");
 
-        final courseDoc = await _client
-            .from(DatabaseTableName.coursesCollection)
-            .select()
-            .eq('id', courseId)
-            .maybeSingle();
+          final courseDoc = await _client
+              .from(DatabaseTableName.coursesCollection)
+              .select()
+              .eq('id', courseId)
+              .maybeSingle();
 
-        debugPrint("RESULT COURSE $courseId: $courseDoc");
+          debugPrint("RESULT COURSE $courseId: $courseDoc");
 
-        if (courseDoc == null) {
-          throw Exception(
-            "Course tidak ditemukan / tidak bisa diakses: $courseId",
-          );
-        }
+          if (courseDoc == null) {
+            throw Exception(
+              "Course tidak ditemukan / tidak bisa diakses: $courseId",
+            );
+          }
 
-        return CourseModel.fromMap(courseDoc['id'] as String, courseDoc);
-      }),
-    );
+          return CourseModel.fromMap(courseDoc['id'] as String, courseDoc);
+        }),
+      );
 
-    debugPrint("RETURN ALL: ${courses.length}");
+      debugPrint("RETURN ALL: ${courses.length}");
 
-    return courses;
+      return courses;
+    } catch (e) {
+      debugPrint('$e');
+    }
+
+    return [];
   }
 
   /// GET COURSE BY ID

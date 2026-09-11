@@ -23,9 +23,6 @@ class AppUserController extends AsyncNotifier<AppUser> {
     String? fullname,
     String? nickname,
     String? phone,
-    String? address,
-    String? schoolName,
-    String? educationLevel
   }) async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() async {
@@ -42,9 +39,6 @@ class AppUserController extends AsyncNotifier<AppUser> {
         fullname: fullname,
         nickname: nickname,
         phone: phone,
-        address: address,
-        schoolName: schoolName,
-        educationLevel: educationLevel,
       );
 
       return await repo.getDataUser(uid: currentUser.uid);

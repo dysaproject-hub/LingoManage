@@ -19,7 +19,7 @@ class AdminCourseModel {
       id: id,
       courseId: data['course_id'] ?? '',
       adminId: data['admin_id'] ?? '',
-      role: data['role'] ?? 'admin',
+      role: data['role'] ?? 'owner',
     );
   }
 

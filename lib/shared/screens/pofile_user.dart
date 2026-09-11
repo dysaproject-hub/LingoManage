@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lingo_manage/core/constants/app_colors.dart';
 import 'package:lingo_manage/core/providers/app_users_provider.dart';
-import 'package:lingo_manage/core/utils/education_level_enum.dart';
 import 'package:lingo_manage/core/utils/exceptions/app_error_mapper.dart';
 import 'package:lingo_manage/features/auth/presentation/providers/auth_controller.dart';
 import 'package:lingo_manage/shared/widgets/buttons/button_widget.dart';
@@ -24,26 +23,18 @@ class _ProfileUserState extends ConsumerState<ProfileUser> {
   final _fullnameController = TextEditingController();
   final _nicknameController = TextEditingController();
   final _phoneController = TextEditingController();
-  final _addressController = TextEditingController();
-  final _schoolNameController = TextEditingController();
 
   String originalFullname = "";
   String originalNickname = "";
   String originalPhone = "";
-  String originalAddress = "";
-  String originalSchoolName = "";
-  EducationLevel? originalEducationLevel;
 
   bool isEditing = false;
-  EducationLevel? selectedValue;
 
   @override
   void dispose() {
     _fullnameController.dispose();
     _nicknameController.dispose();
     _phoneController.dispose();
-    _addressController.dispose();
-    _schoolNameController.dispose();
     super.dispose();
   }
 
@@ -59,11 +50,8 @@ class _ProfileUserState extends ConsumerState<ProfileUser> {
     _fullnameController.text = originalFullname;
     _nicknameController.text = originalNickname;
     _phoneController.text = originalPhone;
-    _addressController.text = originalAddress;
-    _schoolNameController.text = originalSchoolName;
 
     setState(() {
-      selectedValue = originalEducationLevel;
       isEditing = false;
     });
   }
@@ -75,8 +63,6 @@ class _ProfileUserState extends ConsumerState<ProfileUser> {
       final fullname = _fullnameController.text.trim();
       final nickname = _nicknameController.text.trim();
       final phone = _phoneController.text.trim();
-      final address = _addressController.text.trim();
-      final schoolName = _schoolNameController.text.trim();
 
       await ref
           .read(appUserControllerProvider.notifier)
@@ -84,17 +70,11 @@ class _ProfileUserState extends ConsumerState<ProfileUser> {
             fullname: fullname,
             nickname: nickname,
             phone: phone,
-            address: address,
-            schoolName: schoolName,
-            educationLevel: selectedValue?.label,
           );
 
       originalFullname = fullname;
       originalNickname = nickname;
       originalPhone = phone;
-      originalAddress = address;
-      originalSchoolName = schoolName;
-      originalEducationLevel = selectedValue;
 
       if (!mounted) return;
 

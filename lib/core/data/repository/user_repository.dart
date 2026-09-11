@@ -15,16 +15,12 @@ class UserRepository {
     String? fullname,
     String? nickname,
     String? phone,
-    String? address,
-    String? schoolName,
-    String? educationLevel,
   }) async {
     return await _datasources.updateDataUser(
       uid: uid,
       fullname: fullname,
       nickname: nickname,
       phone: phone,
-      address: address,
     );
   }
 }
